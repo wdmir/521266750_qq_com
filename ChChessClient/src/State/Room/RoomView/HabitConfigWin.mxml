@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="400" 
+	height="230" 
+	title="习惯设置"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+	
+	<mx:Button id="btnOk" x="119" y="157" label="确定" click="btnOk_clickHandler(event)"/>
+	<mx:Button id="btnCancel" x="207" y="157" label="取消" click="btnCancel_clickHandler(event)"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.core.FlexGlobals;
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				this.btnOk.addEventListener(MouseEvent.CLICK,btnOk_clickHandler);
+							
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+			/**
+			 * 设置音量并关闭窗口
+			 */ 
+			public function btnOk_clickHandler(event:MouseEvent):void
+			{				
+				//
+				GameGlobals.habit.seeWayPoint = this.chk1.selected;
+				
+				(FlexGlobals.topLevelApplication as ChChess).roomViewBg.refreshRoadAlpha();
+				
+				//
+				__close();			
+			}
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent):void
+			{
+				//
+				__close();	
+			}
+			
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Label x="53" y="75" text="显示路点" fontSize="28"/>
+	<mx:CheckBox x="178" y="84" label="" id="chk1"/>
+	
+	
+</mx:TitleWindow>

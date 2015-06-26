@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="50" 
+		   height="50" 
+		   xmlns:ns1="*" 
+		   cornerRadius="6" 
+		   alpha="1.0" 
+		   borderStyle="solid" 		    
+		   creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			
+			import net.wdmir.core.QiPaiEvent;
+			
+			public function get lang_GoldPointName():String
+			{
+				return GameGlobals.qpc.data.lang_GoldPointName() + ":";
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//
+				
+
+				
+			}
+			
+			public function onLoadHeadPhoto(qevt:QiPaiEvent=null):void
+			{
+				this.person_img_down.source = GameGlobals.qpc.data.hero.getHeadIco(
+					GameGlobals.qpc.data.getClientConfig().payUser,
+					GameGlobals.url,
+					GameGlobals.qpc.data.getClientConfig().InstallDir,
+					GameGlobals.qpc.data.selectDB.mode);
+				
+				//
+				this.person_img_down.toolTip = GameGlobals.qpc.data.hero.NickName;
+				
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Image id="person_img_down" x="0" y="0" width="48" height="48"/>
+	
+	
+</mx:Canvas>

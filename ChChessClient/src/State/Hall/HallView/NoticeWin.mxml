@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+				layout="absolute" 
+				width="300" 
+				height="428" 
+				title="通知"
+				clipContent="false"
+				showCloseButton="true" 
+				creationComplete="creationComplete()">
+	
+	<mx:Label id="lblMsg" fontSize="13" width="207" x="10" height="300" y="35"/>
+	<mx:Button label="确 定" id="btnCancel"  click="btnCancel_clickHandler(event)" y="360" horizontalCenter="0"/>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			
+			
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent=null):void
+			{
+				//
+				__close();	
+			}			
+			
+			public function look():void
+			{				
+				
+				lblMsg.htmlText = GameGlobals.qpc.data.getClientConfig().Notice;
+				
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Image x="184" width="400" height="413" source="assets/notice_horse.png" y="56"/>
+	
+	
+	
+	
+	
+</mx:TitleWindow>

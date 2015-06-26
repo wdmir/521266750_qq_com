@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="200" 
+		   height="44" borderSkin="{null}"
+		   xmlns:ns1="*">
+	
+	<mx:Label id="lblGoldPoint"  
+			  x="42" y="9" text="0" fontSize="14" width="148" textAlign="left" 
+			  fontWeight="bold" color="#FFFFFF" />
+	
+	
+	<ns1:mc_goldPoint_small x="15" verticalCenter="0"/>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+	
+</mx:Canvas>
