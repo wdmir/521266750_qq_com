@@ -1,0 +1,9 @@
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\Qipai4Core\bin\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\Qipai4Core\bin\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\Qipai4Core\obj\Debug\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\Qipai4Core\obj\Debug\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\bin\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\bin\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\obj\Debug\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\obj\Debug\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\Qipai4Core\Qipai4Core\bin\MySql.Data.dll
