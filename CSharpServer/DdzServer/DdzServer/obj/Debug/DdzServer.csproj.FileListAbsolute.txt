@@ -1,0 +1,17 @@
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\bin\DdzServer.exe.config
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\bin\DdzServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\bin\DdzServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\bin\qipai_server4.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\bin\qipai_server4.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\obj\Debug\DdzServer.csprojResolveAssemblyReference.cache
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\obj\Debug\DdzServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\DdzServer\obj\Debug\DdzServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\bin\DdzServer.exe.config
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\obj\Debug\DdzServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\obj\Debug\DdzServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\bin\DdzServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\bin\DdzServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\bin\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\bin\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\obj\Debug\DdzServer.csprojResolveAssemblyReference.cache
+C:\D\kuaipan\521266750_qq_com\CSharpServer\DdzServer\DdzServer\bin\MySql.Data.dll

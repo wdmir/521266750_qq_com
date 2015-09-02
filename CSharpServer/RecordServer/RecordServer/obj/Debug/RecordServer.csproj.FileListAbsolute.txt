@@ -1,0 +1,9 @@
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\obj\Debug\RecordServer.csprojResolveAssemblyReference.cache
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\obj\Debug\RecordServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\obj\Debug\RecordServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\bin\RecordServer.exe.config
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\bin\RecordServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\bin\RecordServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\bin\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\bin\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\RecordServer\RecordServer\bin\MySql.Data.dll

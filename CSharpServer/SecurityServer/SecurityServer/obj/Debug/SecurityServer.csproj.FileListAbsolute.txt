@@ -1,0 +1,15 @@
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\SecurityServer\bin\Debug\SecurityServer.exe.config
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\SecurityServer\bin\Debug\SecurityServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\SecurityServer\bin\Debug\SecurityServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\SecurityServer\obj\Debug\SecurityServer.csprojResolveAssemblyReference.cache
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\SecurityServer\obj\Debug\SecurityServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\SecurityServer\obj\Debug\SecurityServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\obj\Debug\SecurityServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\obj\Debug\SecurityServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\obj\Debug\SecurityServer.csprojResolveAssemblyReference.cache
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\bin\SecurityServer.exe.config
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\bin\SecurityServer.exe
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\bin\SecurityServer.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\bin\Qipai4Core.dll
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\bin\Qipai4Core.pdb
+C:\D\kuaipan\521266750_qq_com\CSharpServer\SecurityServer\SecurityServer\bin\MySql.Data.dll
