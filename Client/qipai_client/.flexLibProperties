@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="net.wdmir.core.data.model.level2.RuleModelByBAW"/>
+    <classEntry path="net.wdmir.core.data.model.level2.HallRoomModelByBAW"/>
+    <classEntry path="net.wdmir.core.AnimalName"/>
+    <classEntry path="net.wdmir.core.QiPaiColor"/>
+    <classEntry path="com.netease.protobuf.Binary64"/>
+    <classEntry path="com.netease.protobuf.UInt64"/>
+    <classEntry path="net.wdmir.core.QiPaiAD"/>
+    <classEntry path="net.wdmir.core.db.DBTypeModel"/>
+    <classEntry path="net.wdqipai.core.factory.HallRoomModelFactory"/>
+    <classEntry path="net.wdqipai.core.model.level2.HallRoomModelByCom"/>
+    <classEntry path="net.wdqipai.core.factory.UserModelFactory"/>
+    <classEntry path="net.wdqipai.core.model.level2.UserModelByCom"/>
+    <classEntry path="net.wdmir.core.QiPaiFont"/>
+    <classEntry path="com.qq.QQApi"/>
+    <classEntry path="net.wdqipai.core.model.ITabModel"/>
+    <classEntry path="net.wdqipai.core.factory.TabModelFactory"/>
+    <classEntry path="net.wdqipai.core.model.level2.TabModelByCom"/>
+    <classEntry path="net.wdqipai.core.model.FChat4"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
