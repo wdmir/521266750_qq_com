@@ -1,4 +1,4 @@
 # SilverFoxServer
-massive multiplayer platform¡£
-Multiplayer poker online game¡£
-Quickly create a multiplayer online game¡£
+massive multiplayer game server for Flash, 
+Quickly create a multiplayer online game.
+example poker online game
