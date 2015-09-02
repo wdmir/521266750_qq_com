@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-06-01T16:36:45</date>
+  <millis>1433147805351</millis>
+  <sequence>0</sequence>
+  <logger>ChChess</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;ChChess t='16:36:45,350000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>

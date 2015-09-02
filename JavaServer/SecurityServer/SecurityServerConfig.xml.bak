@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<www.wdmir.net>
+  <group>
+    <!-- Adobe 843 ,so not need set port -->
+    <!-- 允许的域名  比如 *.wdqipai.net 或所有 * -->
+    <security-server>
+      <ip>Any</ip>
+      <allow-access-from-domain>*</allow-access-from-domain>
+      <pay-user></pay-user>
+    </security-server>
+  </group>
+</www.wdmir.net>

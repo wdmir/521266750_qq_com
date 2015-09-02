@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-05-23T17:30:01</date>
+  <millis>1432373401569</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadChart 原因:2 源:Line=1406 Method=doorLoadChart</message>
+</record>

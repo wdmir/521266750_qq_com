@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-05-02T09:40:01</date>
+  <millis>1430530801391</millis>
+  <sequence>0</sequence>
+  <logger>ChChess</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>11</thread>
+  <message>&lt;ChChess t='09:40:01,390000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-02T10:46:44</date>
+  <millis>1430534804822</millis>
+  <sequence>1</sequence>
+  <logger>ChChess</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>11</thread>
+  <message>&lt;ChChess t='10:46:44,822000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-02T10:49:29</date>
+  <millis>1430534969181</millis>
+  <sequence>2</sequence>
+  <logger>ChChess</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>11</thread>
+  <message>&lt;ChChess t='10:49:29,181000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-02T10:52:49</date>
+  <millis>1430535169480</millis>
+  <sequence>3</sequence>
+  <logger>ChChess</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>11</thread>
+  <message>&lt;ChChess t='10:52:49,480000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>

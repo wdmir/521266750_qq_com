@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-05-21T17:31:10</date>
+  <millis>1432200670885</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='17:31:10,884000000' a='dz update' row='1' c='g' p1='sub:1' p2='897' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-21T17:31:10</date>
+  <millis>1432200670918</millis>
+  <sequence>1</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='17:31:10,918000000' a='dz update' row='1' c='g' p1='add:1' p2='3292' n='admin' /&gt;</message>
+</record>

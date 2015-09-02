@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-05-06T16:26:00</date>
+  <millis>1430900760057</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='16:26:00,56000000' a='dz update' row='1' c='g' p1='add:300' p2='-400' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-06T16:26:00</date>
+  <millis>1430900760139</millis>
+  <sequence>1</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='16:26:00,139000000' a='dz update' row='1' c='g' p1='sub:300' p2='3200' n='' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-06T16:26:00</date>
+  <millis>1430900760252</millis>
+  <sequence>2</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='16:26:00,252000000' a='dz update' row='1' c='g' p1='add:200' p2='-200' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-06T16:32:56</date>
+  <millis>1430901176129</millis>
+  <sequence>3</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='16:32:56,129000000' a='dz update' row='1' c='g' p1='add:300' p2='3500' n='admin' /&gt;</message>
+</record>
+<record>
+  <date>2015-05-06T16:35:38</date>
+  <millis>1430901338300</millis>
+  <sequence>4</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='16:35:38,300000000' a='dz update' row='1' c='g' p1='add:300' p2='3800' n='' /&gt;</message>
+</record>

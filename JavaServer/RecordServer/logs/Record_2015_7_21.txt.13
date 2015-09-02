@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-07-21T17:30:41</date>
+  <millis>1437471041947</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='17:30:41,946000000' a='dz update' row='1' c='g' p1='add:693' p2='9993150' n='iui2006' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-21T17:30:41</date>
+  <millis>1437471041985</millis>
+  <sequence>1</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='17:30:41,985000000' a='dz update' row='1' c='g' p1='add:693' p2='3592408' n='iui2007' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-21T17:30:42</date>
+  <millis>1437471042010</millis>
+  <sequence>2</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='17:30:42,9000000' a='dz update' row='1' c='g' p1='sub:1800' p2='66661896' n='iui2004' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-21T17:36:02</date>
+  <millis>1437471362814</millis>
+  <sequence>3</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorUpdHonor 原因:Unknown column 'f7beef76d0ee584a924f8a12a174ef54' in 'where clause' 源:Line=-2 File=null</message>
+</record>

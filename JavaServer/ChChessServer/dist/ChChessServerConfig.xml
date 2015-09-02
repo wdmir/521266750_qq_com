@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- server_config_chChess.xml for game server,and connect dataBase Server -->
+<!-- tab4-room can ju -->
+<!-- grid[x,y] -->
+<www.wdmir.net>
+	<group>
+		<main-server>
+			<ip>Any</ip>
+			<port>9302</port>
+
+			<tab0-room g="300"  costG="0.233" vip="0">	
+				<room n='楚汉之争' pwd='123456'/>		
+				<room n='abc' pwd=''/>	
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>	
+				<room n='' pwd='88'/>
+			</tab0-room>
+
+			<tab1-room g="500"  costG="0.233" vip="0">
+				<room n='' pwd=''/>	
+			</tab1-room>
+
+			<tab2-room g="1000" costG="0.233" vip="0">
+				<room n='' pwd=''/>		
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>				
+			</tab2-room>
+
+			<tab3-room g="1500" costG="0.233" vip="0">
+				<room n='' pwd=''/>		
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>
+			</tab3-room>
+			
+			<tab4-room g="1500" costG="0.233" vip="1">
+				<room n='' pwd=''/>		
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>	
+				<room n='' pwd=''/>
+			</tab4-room>
+
+			<tab5-room g="3000" costG="0.233" vip="0">
+				<incomplete name="八仙过海">
+					<item n="black_ju_2"    x="0" y="4" />
+					<item n="black_jiang_1" x="0" y="5" />					
+					<item n="red_bing_1"    x="1" y="3" />					
+					<item n="black_xiang_2" x="2" y="4" />					
+					<item n="red_bing_2"    x="2" y="5" />					
+					<item n="red_pao_1"     x="5" y="7" />
+					<item n="red_pao_2"     x="5" y="8" />
+					<item n="red_ju_1"      x="6" y="6" />
+					<item n="black_pao_1"   x="6" y="8" />
+					<item n="black_ma_2"    x="7" y="4" />
+					<item n="black_bing_5"  x="8" y="3" />
+					<item n="black_ju_1"    x="8" y="5" />
+					<item n="black_bing_4"  x="9" y="1" />					
+					<item n="red_jiang_1"   x="9" y="4" />
+					<item n="red_xiang_2"   x="9" y="6" />
+					<item n="red_ju_2"      x="9" y="7" />
+				</incomplete>
+
+				<incomplete name="前赴后继">
+					<item n="black_xiang_1" x="0" y="2" />
+					<item n="black_shi_1"   x="0" y="3" />					
+					<item n="black_jiang_1" x="0" y="4" />
+
+					<item n="black_shi_2"   x="1" y="4" />
+
+					<item n="red_bing_1"    x="2" y="2" />					
+					
+					<item n="red_ju_1"      x="3" y="3" />
+					
+					<item n="black_xiang_2" x="4" y="2" />
+					<item n="black_ma_1"    x="4" y="4" />
+
+					<item n="red_ma_2"      x="6" y="3" />
+					<item n="red_ju_2"      x="6" y="5" />
+
+					<item n="black_ju_1"    x="7" y="3" />
+					
+					<item n="black_ju_2"    x="8" y="4" />
+
+					<item n="red_pao_1"     x="9" y="0" />
+					<item n="red_jiang_1"   x="9" y="5" />
+					
+				</incomplete>
+
+				<incomplete name="抽丝拨茧">
+					<item n="black_jiang_1" x="0" y="4" />
+					<item n="black_shi_1"   x="0" y="5" />
+					
+					<item n="black_shi_2"   x="1" y="4" />					
+					<item n="red_bing_1"    x="1" y="5" />
+
+					<item n="red_pao_1"     x="3" y="2" />
+
+					<item n="black_bing_3"  x="4" y="6" />
+
+					<item n="red_pao_2"     x="6" y="2" />
+
+					<item n="red_xiang_1"   x="7" y="4" />
+
+					<item n="black_bing_1"  x="8" y="1" />
+					<item n="black_ju_1"    x="8" y="4" />
+					<item n="black_bing_2"  x="8" y="5" />
+					<item n="black_bing_4"  x="8" y="6" />
+
+					<item n="red_jiang_1"   x="9" y="3" />
+					
+				</incomplete>
+
+        <incomplete name=""></incomplete>
+       
+        <incomplete name=""></incomplete>
+        
+        <incomplete name=""></incomplete>
+          
+        <incomplete name=""></incomplete>
+          
+        <incomplete name=""></incomplete>
+        
+				<incomplete name="乘风破浪">
+					<item n="black_jiang_1" x="0" y="3" />
+					<item n="black_ju_1"    x="0" y="5" />
+					
+					<item n="red_bing_1"    x="1" y="4" />
+					
+					<item n="black_bing_3"  x="5" y="4" />
+
+					<item n="black_bing_2"  x="6" y="3" />
+					<item n="red_pao_1"     x="6" y="6" />
+					<item n="red_pao_2"     x="6" y="7" />
+					<item n="red_ju_1"      x="6" y="8" />
+
+					<item n="red_xiang_1"   x="7" y="0" />
+					<item n="red_xiang_2"   x="7" y="8" />
+
+					<item n="black_bing_1"  x="8" y="2" />
+					<item n="black_bing_5"  x="8" y="5" />
+
+					<item n="red_jiang_1"   x="9" y="3" />
+					
+					
+					
+				</incomplete>				
+				
+      
+      
+      
+		  </tab5-room>
+
+
+		 
+						
+			<allow-access-from-domain>*</allow-access-from-domain>
+			<allow-player-g-less-than-zero-on-gameover>yes</allow-player-g-less-than-zero-on-gameover>
+			<log-level>2</log-level>
+			<socket-send-timeout>2</socket-send-timeout>
+			<cost-store-user></cost-store-user>
+      <pay-user></pay-user>
+	  <room-gaming-reconnection-time>60</room-gaming-reconnection-time>
+      <room-every-day-login>200</room-every-day-login>
+			<!-- multi main-server connect database-server -->
+			<!-- proof is main-server connect database-server passwd -->
+			<record-server>
+				<ip>127.0.0.1</ip>
+				<port>9500</port>
+				<proof>www.wdmir.net</proof>
+			</record-server>
+			
+		</main-server>
+	</group>
+</www.wdmir.net>

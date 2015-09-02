@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-07-23T13:58:35</date>
+  <millis>1437631115268</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='13:58:35,267000000' a='dz update' row='1' c='g' p1='add:693' p2='3699' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T13:58:35</date>
+  <millis>1437631115371</millis>
+  <sequence>1</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='13:58:35,371000000' a='dz update' row='1' c='g' p1='add:693' p2='3580966' n='iui2007' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T13:58:35</date>
+  <millis>1437631115411</millis>
+  <sequence>2</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='13:58:35,411000000' a='dz update' row='1' c='g' p1='sub:1800' p2='5451' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:00:31</date>
+  <millis>1437631231186</millis>
+  <sequence>3</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:00:31,186000000' a='dz update' row='1' c='g' p1='add:693' p2='4392' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:00:31</date>
+  <millis>1437631231224</millis>
+  <sequence>4</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:00:31,224000000' a='dz update' row='1' c='g' p1='add:693' p2='6144' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:00:31</date>
+  <millis>1437631231249</millis>
+  <sequence>5</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:00:31,249000000' a='dz update' row='1' c='g' p1='sub:1800' p2='3579166' n='iui2007' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:00:53</date>
+  <millis>1437631253141</millis>
+  <sequence>6</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:00:53,140000000' a='dz update' row='1' c='g' p1='add:5544' p2='9936' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:00:53</date>
+  <millis>1437631253173</millis>
+  <sequence>7</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:00:53,173000000' a='dz update' row='1' c='g' p1='add:5544' p2='11688' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:00:53</date>
+  <millis>1437631253193</millis>
+  <sequence>8</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:00:53,193000000' a='dz update' row='1' c='g' p1='sub:14400' p2='3564766' n='iui2007' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:01:13</date>
+  <millis>1437631273369</millis>
+  <sequence>9</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadTopList 原因:null 源:Line=61 File=DataRow.java</message>
+</record>
+<record>
+  <date>2015-07-23T14:01:13</date>
+  <millis>1437631273383</millis>
+  <sequence>10</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadTopList 原因:null 源:Line=61 File=DataRow.java</message>
+</record>
+<record>
+  <date>2015-07-23T14:01:22</date>
+  <millis>1437631282317</millis>
+  <sequence>11</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadTopList 原因:null 源:Line=61 File=DataRow.java</message>
+</record>
+<record>
+  <date>2015-07-23T14:02:30</date>
+  <millis>1437631350990</millis>
+  <sequence>12</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:02:30,990000000' a='dz update' row='1' c='g' p1='add:1386' p2='11322' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:02:31</date>
+  <millis>1437631351070</millis>
+  <sequence>13</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:02:31,70000000' a='dz update' row='1' c='g' p1='sub:900' p2='10788' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:02:31</date>
+  <millis>1437631351093</millis>
+  <sequence>14</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>15</thread>
+  <message>&lt;Record t='14:02:31,93000000' a='dz update' row='1' c='g' p1='sub:900' p2='3563866' n='iui2007' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-23T14:02:51</date>
+  <millis>1437631371138</millis>
+  <sequence>15</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadTopList 原因:null 源:Line=61 File=DataRow.java</message>
+</record>
+<record>
+  <date>2015-07-23T14:02:51</date>
+  <millis>1437631371163</millis>
+  <sequence>16</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadTopList 原因:null 源:Line=61 File=DataRow.java</message>
+</record>
+<record>
+  <date>2015-07-23T14:03:00</date>
+  <millis>1437631380558</millis>
+  <sequence>17</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadTopList 原因:null 源:Line=61 File=DataRow.java</message>
+</record>

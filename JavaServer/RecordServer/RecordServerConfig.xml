@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<www.wdmir.net>
+  <group>
+    <!-- xml database ,file system -->
+    <!-- \db_users\ -->
+    <database-file>
+      <local-path using="0">
+      </local-path>
+      <dz-path using="1">
+        server=127.0.0.1;Port=3306;
+        user id=root; password=6JSBwhX8PCWENh2n;
+        database=ultrax; pooling=false;charset=utf8</dz-path>
+      <dz-ver>X2.0</dz-ver>
+      <dz-sql engine='MyISAM'>MySql</dz-sql>
+      <dz-tablepre>pre_</dz-tablepre>
+      <dz-cloumn>extcredits2</dz-cloumn>
+      <pw-path using="0">
+		server=127.0.0.1;Port=3306;
+        user id=root; password=;
+        database=pw87; pooling=false;charset=utf8
+      </pw-path>
+      <pw-ver>8.7</pw-ver>
+      <pw-sql>MySql</pw-sql>
+      <pw-tablepre>pw_</pw-tablepre>
+      <pw-cloumn>
+      </pw-cloumn>
+      <phpbb-path using="0">Data Source=211.144.85.211;Initial Catalog=dudu;
+Persist Security Info=True;
+User ID=dudu;Password=zxc123456</phpbb-path>
+      <phpbb-ver>
+      </phpbb-ver>
+      <phpbb-sql></phpbb-sql>
+      <phpbb-tablepre></phpbb-tablepre>
+      <phpbb-cloumn>extcredits2</phpbb-cloumn>
+      <x-path using="0">server=127.0.0.1;Port=3306;
+        user id=root; password=;
+        database=ultrax; pooling=false;charset=utf</x-path>
+      <x-ver>
+      </x-ver>
+      <x-sql>MySql</x-sql>
+      <x-table>pre_common_member</x-table>
+      <x-cloumnId>uid</x-cloumnId>
+      <x-cloumnNick>username</x-cloumnNick>
+      <x-cloumnMail>email</x-cloumnMail>
+      <x-tableMoney>pre_common_member_count</x-tableMoney>
+      <x-cloumnMoney>extcredits2</x-cloumnMoney>
+	  <x-tableSession></x-tableSession>
+	  <x-cloumnSessionId></x-cloumnSessionId>
+    </database-file>
+    <!-- game servers connect record server -->
+    <record-server>
+      <ip>Any</ip>
+      <port>9500</port>
+      <proof>www.silverfoxserver.net</proof>
+      <TableLog autoClearWithStart='0'>game_logs</TableLog>
+      <TableEveryDayLogin autoClearWithStart='0'>every_day_login</TableEveryDayLogin>
+      <TableHonor>honor_list</TableHonor>
+	  <TableUsers>users</TableUsers>
+    </record-server>
+  </group>
+</www.wdmir.net>

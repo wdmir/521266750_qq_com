@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- this file for game server,and config connect dataBase Server IP Address-->
+<!-- g :goldPoint  
+     carryG : play game minimum holding coins carry 
+     costG : dues
+     autoMatchMode : auto join room and start
+     quickMode : fast over
+-->
+<www.wdmir.net>
+  <group>
+    <!-- room num -->
+    <!-- money -->
+    <main-server>
+      <ip>Any</ip>
+      <port>9300</port>
+
+	  <tabList>
+
+		<tab id="0" n="يىڭىلار مەيدانى" g="2" carryG="2" costG="0.0" autoMatchMode="0" quickMode="0">
+			<room n="" pwd=''/>
+			<room n="" pwd=''/>   
+		</tab>
+
+		<tab id="1" n="يىڭىلار مەيدانى 2" g="2" carryG="4" costG="0.0" autoMatchMode="0" quickMode="0">
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+		</tab>
+
+		 <tab id="2" n="پۇختىلار مەيدانى" g="5" carryG="50" costG="0.0" autoMatchMode="1" quickMode="1">         
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+		</tab>
+
+		<tab id="3" n="ئۇستىلار مەيدانى" g="10" carryG="100" costG="0.0" autoMatchMode="1" quickMode="0">         
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+		</tab>
+
+		<tab id="4" n="ئۇستىلار مەيدانى 2" g="15" carryG="150" costG="0.0" autoMatchMode="1" quickMode="0">   
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+			<room n='' pwd=''/>
+		</tab>
+
+	  </tabList>
+
+          
+      <max-online-people>2000</max-online-people>
+      <allow-access-from-domain>*</allow-access-from-domain>
+      <allow-player-g-less-than-zero-on-gameover>yes</allow-player-g-less-than-zero-on-gameover>
+      <log-level>2</log-level>
+      <cost-store-user>admin</cost-store-user>
+      <pay-user>
+      </pay-user>
+      <room-gaming-ran-away-multi-g>1</room-gaming-ran-away-multi-g>
+      <room-gaming-reconnection-time>60</room-gaming-reconnection-time>
+      <room-every-day-login>200</room-every-day-login>
+      <other-modules>
+        <turn-over-a-card run="1" g1="100" g2="500" g3="1000" costG="0.05">
+        </turn-over-a-card>
+      </other-modules>
+      <!-- multi main-server connect database-server -->
+      <!-- proof is main-server connect database-server passwd -->
+      <record-server>
+        <ip>192.168.0.100</ip>
+        <port>9500</port>
+        <proof>www.wdmir.net</proof>
+      </record-server>
+    </main-server>
+  </group>
+</www.wdmir.net>

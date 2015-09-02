@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-08-12T09:14:01</date>
+  <millis>1439342041089</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:14:01,89000000' a='dz update' row='1' c='g' p1='add:8' p2='11468' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:14:01</date>
+  <millis>1439342041128</millis>
+  <sequence>1</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:14:01,128000000' a='dz update' row='1' c='g' p1='add:8' p2='66665042' n='iui2004' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:14:01</date>
+  <millis>1439342041152</millis>
+  <sequence>2</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:14:01,151000000' a='dz update' row='1' c='g' p1='sub:16' p2='11266' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:14:01</date>
+  <millis>1439342041252</millis>
+  <sequence>3</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:14:01,252000000' a='dz update' row='1' c='g' p1='add:200' p2='11466' n='iui2002' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:14:01</date>
+  <millis>1439342041281</millis>
+  <sequence>4</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:14:01,281000000' a='dz update' row='1' c='g' p1='add:200' p2='11668' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:14:01</date>
+  <millis>1439342041306</millis>
+  <sequence>5</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:14:01,306000000' a='dz update' row='1' c='g' p1='add:200' p2='66665242' n='iui2004' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:29:02</date>
+  <millis>1439342942738</millis>
+  <sequence>6</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:29:02,737000000' a='dz update' row='1' c='g' p1='add:6' p2='66665248' n='iui2004' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:29:02</date>
+  <millis>1439342942761</millis>
+  <sequence>7</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:29:02,760000000' a='dz update' row='1' c='g' p1='add:6' p2='11674' n='iui2003' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-12T09:29:02</date>
+  <millis>1439342942780</millis>
+  <sequence>8</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByMySqlRecv</method>
+  <thread>12</thread>
+  <message>&lt;Record t='09:29:02,780000000' a='dz update' row='1' c='g' p1='sub:12' p2='11454' n='iui2002' /&gt;</message>
+</record>

@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-07-06T14:11:40</date>
+  <millis>1436163100158</millis>
+  <sequence>0</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:11:40,157000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:11:50</date>
+  <millis>1436163110699</millis>
+  <sequence>1</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:11:50,699000000' logined='iui2002' ip='127.0.0.1:49505'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:11:50</date>
+  <millis>1436163110700</millis>
+  <sequence>2</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:11:50,700000000' online='1'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:11:59</date>
+  <millis>1436163119055</millis>
+  <sequence>3</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:11:59,55000000' logined='iui2003' ip='127.0.0.1:49492'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:11:59</date>
+  <millis>1436163119056</millis>
+  <sequence>4</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:11:59,56000000' online='2'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:12:07</date>
+  <millis>1436163127383</millis>
+  <sequence>5</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:12:07,383000000' logined='iui2004' ip='127.0.0.1:49500'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:12:07</date>
+  <millis>1436163127384</millis>
+  <sequence>6</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:12:07,384000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:13:28</date>
+  <millis>1436163208826</millis>
+  <sequence>7</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:13:28,826000000' content='无效协议号: chkEveryDayLoginAndGetOK' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:15:30</date>
+  <millis>1436163330779</millis>
+  <sequence>8</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:15:30,779000000' logined='iui2002' ip='127.0.0.1:49615'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:15:30</date>
+  <millis>1436163330780</millis>
+  <sequence>9</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:15:30,780000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:15:56</date>
+  <millis>1436163356541</millis>
+  <sequence>10</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:15:56,541000000' content='无效协议号: chkEveryDayLoginAndGetOK' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:16:42</date>
+  <millis>1436163402491</millis>
+  <sequence>11</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:16:42,491000000' content='无效协议号: chkEveryDayLoginAndGetOK' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:17:53</date>
+  <millis>1436163473606</millis>
+  <sequence>12</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:17:53,606000000' logined='iui2002' ip='127.0.0.1:49814'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:17:53</date>
+  <millis>1436163473607</millis>
+  <sequence>13</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:17:53,607000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:18:31</date>
+  <millis>1436163511075</millis>
+  <sequence>14</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:18:31,75000000' logined='iui2002' ip='127.0.0.1:49838'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:18:31</date>
+  <millis>1436163511076</millis>
+  <sequence>15</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:18:31,76000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:21:47</date>
+  <millis>1436163707794</millis>
+  <sequence>16</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:21:47,794000000' content='无效协议号: chkEveryDayLoginAndGetOK' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:22:27</date>
+  <millis>1436163747715</millis>
+  <sequence>17</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:22:27,715000000' logined='iui2003' ip='127.0.0.1:49884'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:22:27</date>
+  <millis>1436163747715</millis>
+  <sequence>18</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:22:27,715000000' online='1'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:22:45</date>
+  <millis>1436163765995</millis>
+  <sequence>19</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:22:45,995000000' logined='iui2004' ip='127.0.0.1:49895'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:22:45</date>
+  <millis>1436163765997</millis>
+  <sequence>20</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:22:45,996000000' online='2'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:22:53</date>
+  <millis>1436163773355</millis>
+  <sequence>21</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:22:53,355000000' logined='iui2002' ip='127.0.0.1:49900'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:22:53</date>
+  <millis>1436163773356</millis>
+  <sequence>22</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:22:53,356000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:23:22</date>
+  <millis>1436163802101</millis>
+  <sequence>23</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:23:22,101000000' logined='iui2002' ip='127.0.0.1:49929'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:23:22</date>
+  <millis>1436163802102</millis>
+  <sequence>24</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:23:22,102000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:25:15</date>
+  <millis>1436163915823</millis>
+  <sequence>25</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:25:15,823000000' logined='iui2002' ip='127.0.0.1:49949'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:25:15</date>
+  <millis>1436163915824</millis>
+  <sequence>26</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:25:15,824000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:26:18</date>
+  <millis>1436163978248</millis>
+  <sequence>27</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:26:18,248000000' content='无效协议号: chkEveryDayLoginAndGetOK' /&gt;</message>
+</record>
+<record>
+  <date>2015-07-06T14:26:29</date>
+  <millis>1436163989257</millis>
+  <sequence>28</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>14</thread>
+  <message>&lt;Ddz t='14:26:29,257000000' content='无效协议号: leaveRoomAndGoHallAutoMatch' /&gt;</message>
+</record>

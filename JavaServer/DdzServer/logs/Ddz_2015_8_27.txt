@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-08-27T13:23:02</date>
+  <millis>1440652982843</millis>
+  <sequence>0</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFile</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:23:02,821000000' content='通过服务 127.0.0.1:9500 证书验证!' /&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:20</date>
+  <millis>1440653900397</millis>
+  <sequence>1</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:20,397000000' logined='iui2003' ip='127.0.0.1:62768'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:20</date>
+  <millis>1440653900399</millis>
+  <sequence>2</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:20,399000000' online='1'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:26</date>
+  <millis>1440653906337</millis>
+  <sequence>3</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:26,337000000' logined='iui2004' ip='127.0.0.1:62770'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:26</date>
+  <millis>1440653906338</millis>
+  <sequence>4</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:26,338000000' online='2'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:42</date>
+  <millis>1440653922606</millis>
+  <sequence>5</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:42,606000000' logined='iui2002' ip='127.0.0.1:62764'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:42</date>
+  <millis>1440653922607</millis>
+  <sequence>6</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:42,607000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:59</date>
+  <millis>1440653939007</millis>
+  <sequence>7</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:59,7000000' logined='iui2002' ip='127.0.0.1:62796'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:38:59</date>
+  <millis>1440653939007</millis>
+  <sequence>8</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:38:59,7000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:40:18</date>
+  <millis>1440654018646</millis>
+  <sequence>9</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:40:18,645000000' logined='iui2002' ip='127.0.0.1:62814'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:40:18</date>
+  <millis>1440654018647</millis>
+  <sequence>10</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:40:18,647000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:45:36</date>
+  <millis>1440654336573</millis>
+  <sequence>11</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:45:36,573000000' logined='iui2002' ip='127.0.0.1:62874'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:45:36</date>
+  <millis>1440654336578</millis>
+  <sequence>12</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:45:36,578000000' online='4'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:59:05</date>
+  <millis>1440655145217</millis>
+  <sequence>13</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:59:05,217000000' logined='iui2002' ip='127.0.0.1:63037'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:59:05</date>
+  <millis>1440655145218</millis>
+  <sequence>14</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:59:05,218000000' online='1'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:59:17</date>
+  <millis>1440655157306</millis>
+  <sequence>15</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:59:17,306000000' logined='iui2004' ip='127.0.0.1:63089'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:59:17</date>
+  <millis>1440655157307</millis>
+  <sequence>16</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:59:17,306000000' online='2'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:59:24</date>
+  <millis>1440655164468</millis>
+  <sequence>17</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:59:24,468000000' logined='iui2003' ip='127.0.0.1:63114'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T13:59:24</date>
+  <millis>1440655164469</millis>
+  <sequence>18</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='13:59:24,469000000' online='3'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T14:09:56</date>
+  <millis>1440655796801</millis>
+  <sequence>19</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByLoginSuccess</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='14:09:56,801000000' logined='iui2002' ip='127.0.0.1:63401'/&gt;</message>
+</record>
+<record>
+  <date>2015-08-27T14:09:56</date>
+  <millis>1440655796802</millis>
+  <sequence>20</sequence>
+  <logger>Ddz</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByOnlineUserCount</method>
+  <thread>11</thread>
+  <message>&lt;Ddz t='14:09:56,802000000' online='3'/&gt;</message>
+</record>

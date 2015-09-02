@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2015-05-23T17:39:50</date>
+  <millis>1432373990132</millis>
+  <sequence>0</sequence>
+  <logger>Record</logger>
+  <level>INFO</level>
+  <class>net.wdqipai.core.log.Log</class>
+  <method>WriteFileByException</method>
+  <thread>15</thread>
+  <message>异常:类名:net.wdqipai.server.RCLogic 函数:doorLoadChart 原因:For input string: "254df8dfa6a2aaf9c7087a0c68f6dcda" 源:Line=65 File=NumberFormatException.java</message>
+</record>
