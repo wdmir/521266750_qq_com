@@ -1,0 +1,620 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   xmlns:s="library://ns.adobe.com/flex/spark"   
+	width="660" 
+	height="400" 
+	creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	<mx:Style>
+			
+		@namespace mx "library://ns.adobe.com/flex/mx"; 
+		
+		
+		.selectedTab{
+			font-weight:bold;
+			color:#000000;
+			textRollOverColor: #000000;
+		}
+		
+		
+		
+	</mx:Style>
+		
+	<mx:TabNavigator id="tabNavi1" selectedTabTextStyleName="selectedTab"
+		width="660" 
+		height="400" 	
+		fontFamily="MicrosoftYaHei"  
+		fontSize="14" 
+		horizontalGap="10"
+		cornerRadius="6" 
+		creationComplete="creationComplete()">
+		
+	</mx:TabNavigator>
+
+	<mx:DataGrid id="dg1" 
+				 	width="660"
+					height="300" 					 
+					alpha="1.0" 
+					doubleClickEnabled="true" 
+					itemDoubleClick="dg1_itemDoubleClickHandler(event)" 
+					fontSize="12" y="37"
+					visible="{!GameGlobals.qpc.data.isTabAutoMatchMode}" 
+					horizontalCenter="0"
+					>
+					<mx:columns>
+						
+						<mx:DataGridColumn id="col1" width="80" headerText="{lang_Dg1_Col1_Str_Group}" dataField="Id">
+							<mx:itemRenderer>
+							                 <mx:Component>
+							                     <mx:Label text="{data.Id}" textAlign="center"/>
+							                 </mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn id="col2" width="150" headerText="{lang_Dg1_Col2_Str_Group}" dataField="Name">
+							<mx:itemRenderer>
+							                 <mx:Component>
+							                     <mx:Label text="{data.Name}" textAlign="left" textIndent="3"/>
+							                 </mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn id="col3" headerText="{lang_Dg1_Col3_Str}" dataField="HasPeopleChairCountStr">
+							<mx:itemRenderer>
+							                 <mx:Component>
+							                     <mx:Label text="{data.HasPeopleChairCountStr}" textAlign="left"  textIndent="3"/>
+							                 </mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						
+						
+						
+						<mx:DataGridColumn id="col4" headerText="{lang_Dg1_Col4_Str}" dataField="DiFen">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{data.DiFen}" textAlign="left"  textIndent="3"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn id="col5" headerText="{lang_Dg1_Col5_Str}" dataField="Carry">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{data.Carry}" textAlign="left"  textIndent="3"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+				
+	<mx:Canvas id="dg2" 
+			   width="660" height="372" 
+			   y="28"			  
+			   visible="{GameGlobals.qpc.data.isTabAutoMatchMode}" x="0">
+				
+		<mx:Image id="imgTabAutoMatch" mouseEnabled="false"
+				   x="0"
+				  y="0" width="660" height="372" 
+				  horizontalCenter="0" 
+				  scaleContent="false"/>
+		
+		<mx:Label id="lblOnline" text="{GameGlobals.qpc.data.maxPeople}"  x="386" y="300" fontSize="16" color="#ECC408">
+			
+		</mx:Label>
+		
+		<mx:Button id="btnTabAutoMatch" label="{lang_BtnTab_AutoMatch_0_Str}( {GameGlobals.qpc.data.maxPeople} {lang_BtnTab_AutoMatch_1_Str})" width="200" height="42" 
+				   fontSize="14" 
+				   fontWeight="normal" 
+				   y="325" 
+				   click="btnTabAutoMatch_click(event)" 
+				   horizontalCenter="8" 
+				   alpha="0.0"/>
+		
+		<mx:Label x="59" y="6" width="195" id="lblDiFenValue" text="{GameGlobals.qpc.data.difen}" textAlign="left"
+				  color="#F0C103" fontSize="18" fontFamily="Candara"/>
+		<mx:Label x="88" y="27" width="193" id="lblCarryValue" text="{GameGlobals.qpc.data.carryG}" textAlign="left" 
+				  color="#F0C103" fontSize="18" fontFamily="Candara"/>
+		<mx:ProgressBar id="barAutoMatch" y="168" label="{lang_BarAutoMatch_Label}" indeterminate="false" fontSize="12" width="200" horizontalCenter="-10"/>
+		<mx:CheckBox x="441" y="335" label="{lang_AutoMatch_MingPai_Label}" id="chkAutoMatchMingPai" selected="false" change="chkAutoMatchMingPai_changeHandler(event)"/>
+		
+	</mx:Canvas>
+	
+	<!-- 加入房间，创建房间 ，不需要快速加入，如要请去自动匹配场 -->
+	<mx:ButtonBar id="btnBar1" itemClick="BtnBarClick(event);"
+				  visible="{!GameGlobals.qpc.data.isTabAutoMatchMode}" bottom="20" horizontalCenter="0">
+		     <mx:dataProvider>
+		         <mx:Array>
+		             <mx:String>{lang_BtnBar1_0_Str_Gruop}</mx:String>
+		             <mx:String>{lang_BtnBar1_2_Str_Gruop}</mx:String>
+		         </mx:Array>
+		     </mx:dataProvider>
+		 </mx:ButtonBar>
+		
+	
+	
+<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.TabBar;
+			import mx.core.Application;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiFont;
+			import net.wdmir.core.QiPaiStr;
+			import net.wdqipai.client.extfactory.ChairModelFactory;
+			import net.wdqipai.client.extmodel.ItemModelByDdz;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.ITabModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			import spark.components.NavigatorContent;
+			
+			
+			public function get lang_BtnTab_AutoMatch_0_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_btnTabAutoMatch_0_str;
+				
+			}
+			
+			public function get lang_BtnTab_AutoMatch_1_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_btnTabAutoMatch_1_str;
+				
+			}
+			
+			public function get lang_Navi1_Canvas1_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_tabNavi1_canvas1_label;
+				
+			}
+			
+			
+			public function get lang_Navi1_Canvas2_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_tabNavi1_canvas2_label;
+				
+			}
+			
+			
+			public function get lang_Navi1_Canvas3_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_tabNavi1_canvas3_label;
+				
+			}
+			
+			
+			public function get lang_Navi1_Canvas4_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_tabNavi1_canvas4_label;
+				
+			}
+			
+			
+			public function get lang_Navi1_Canvas5_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_tabNavi1_canvas5_label;
+				
+			}
+						
+			
+			public function get lang_Dg1_Col1_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_dg1_col1_str;
+				
+			}
+			
+			public function get lang_Dg1_Col2_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_dg1_col2_str;
+				
+			}
+			
+			public function get lang_Dg1_Col3_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_dg1_col3_str;
+				
+			}
+			
+			public function get lang_Dg1_Col4_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_dg1_col4_str;
+				
+			}
+			
+			public function get lang_Dg1_Col5_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_dg1_col5_str;
+				
+			}
+			
+			public function get lang_BtnBar1_0_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_btnBar1_0_str;
+			}
+			
+			public function get lang_BtnBar1_1_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_btnBar1_1_str;
+			}
+			
+			public function get lang_BtnBar1_2_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_btnBar1_2_str;
+			}
+					
+			
+			public function get lang_Dg1_Col1_Str_Group():String
+			{
+				return lang_RoomName + lang_Dg1_Col1_Str;
+			}
+			
+			public function get lang_Dg1_Col2_Str_Group():String
+			{
+				return lang_RoomName + lang_Dg1_Col2_Str;
+			}
+			
+			public function get lang_BtnBar1_0_Str_Gruop():String
+			{
+				return  lang_BtnBar1_0_Str + lang_RoomName;
+			}
+			
+			public function get lang_BtnBar1_2_Str_Gruop():String
+			{
+				return  lang_BtnBar1_2_Str + lang_RoomName;
+			}
+			
+			public function get lang_BarAutoMatch_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_barAutoMatch_label;
+			}
+			
+			
+			public function get lang_AutoMatch_MingPai_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_autoMatch_mingPai_label;
+			}
+			
+			public function GetLang_AutoMatchIng(second:int):String
+			{
+				
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_barAutoMatch_Matching_str;
+				
+				langStr = langStr.replace("#param1",second.toString());
+				
+				return langStr;
+			}
+			
+			public function GetLang_CanJoinRoom_CarryIsNotEnough(carry:int):String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.HallRoomList2MXML_canJoinRoom_carryIsNotEnough_str;
+				
+				//"抱歉，进入房间失败！您持有的" + lang_GoldPointName + "低于" + carry.toString() +"。"
+				//抱歉，进入房间失败！您持有的#param1低于#param2。
+				langStr = langStr.replace("#param1",lang_GoldPointName);
+				langStr = langStr.replace("#param2",carry.toString());
+				
+				return langStr;
+				
+			}
+			
+			
+			public function get lang_RoomName():String
+			{
+				return GameGlobals.qpc.data.lang_RoomName();
+			}
+			
+			public function get lang_GoldPointName():String
+			{
+				return GameGlobals.qpc.data.lang_GoldPointName();
+			}
+			
+			
+			public function chkOpen(value:String):Boolean
+			{
+				if("关闭" == value ||
+				   "close" == value ||
+				   "CLOSE" == value)
+				{				
+					return false;
+				}
+			
+				return true;
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				this.imgTabAutoMatch.source = GameGlobals.rootUrl + "assets/" + GameGlobals.color + "_hall_tabAutoMatch_bg.jpg"
+			
+				//
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomListCreate,onRoomListCreate);
+			}
+			
+			
+			//IRoomModel(data).Name()
+			public function creationComplete():void
+			{
+				tabNavi1.addEventListener(IndexChangedEvent.CHANGE,indexChangeHandler);
+								
+				
+				tabNavi1_dataProvider(GameGlobals.qpc.data.tabList);
+				
+				
+				dg1.dataProvider = GameGlobals.qpc.data.hallRoomList;
+			
+//				//
+//				if(!chkOpen(lang_Navi1_Canvas1_Label)){					
+//					this.tabNavi1.getTabAt(0).visible = false;
+//					
+//				}	
+			}
+			
+			public function onRoomListCreate(event:QiPaiEvent):void
+			{
+					
+				if(tabNavi1.numChildren == 0)
+				{
+					
+					tabNavi1_dataProvider(GameGlobals.qpc.data.tabList);
+				
+				}
+			
+			}
+			
+			protected function tabNavi1_dataProvider(value:ArrayCollection):void
+			{
+				tabNavi1.removeAll();
+				
+				//
+				for(var i:int=0;i<value.length;i++){
+					
+					var s:NavigatorContent = new NavigatorContent();
+					s.label = (value[i] as ITabModel).getTabName;
+					s.id = "canvas" + (value[i] as ITabModel).getTab.toString();
+					
+					
+					
+					tabNavi1.addItem(s);
+					
+					//this.tabNavi1.getTabAt(i).visible = false;
+				}
+			}
+	
+			protected function dg1_itemDoubleClickHandler(event:ListEvent):void
+			{								
+				//
+				var room:IHallRoomModel = event.itemRenderer.data as IHallRoomModel;
+								
+				joinRoom(room.Id,room.getDiFen(),room.getCarry());
+				
+			}
+			
+			private function indexChangeHandler(event:IndexChangedEvent):void 
+			{
+                // Access target TabBar control.
+                //var targetComp:TabBar = TabBar(event.currentTarget);
+                
+               
+                /*
+                forClick.text="label is: " + event.label + ", index is: " + 
+                    event.index + ", capital is: " +
+                    targetComp.dataProvider[event.index].data;
+                */
+                
+                //GameGlobals.qpc.data.activeTab = event.index;
+                
+                GameGlobals.qpc.data.activeTab = event.newIndex;
+                    
+               (this.parentApplication as client_ddz).HallEnter(); 
+            }   
+			
+			// Event handler function to print a message
+            // describing the selected Button control.
+            private function BtnBarClick(event:ItemClickEvent):void
+            {
+                //myTA.text="Selected button index: " + String(event.index) +
+                //    "\n" + "Selected button label: " + event.label;
+                
+                if(0 == event.index)
+                {
+                
+                	BtnJoinRoom_Click();
+                
+                }else if(1 == event.index)
+                {
+                	//BtnAutoJoinRoom_Click();
+                
+                
+				}else if(2 == event.index)
+				{
+				
+				
+				
+				}
+                
+              
+                
+            }
+			
+			protected function BtnJoinRoom_Click(event:MouseEvent=null):void
+			{
+				if(null != dg1.selectedItem)
+				{
+					var room:IHallRoomModel = dg1.selectedItem as IHallRoomModel;
+					
+					joinRoom(room.Id,room.getDiFen(),room.getCarry());
+				}
+			
+			}
+			
+			protected function BtnAutoJoinRoom_Click(event:MouseEvent=null):void
+			{
+			
+				autoJoinRoom();
+			
+			}
+			
+			public function canJoinRoom(difen:int,carry:int):Boolean
+			{
+				//如果是负分或0分，则不可进游戏
+				var g:String = GameGlobals.qpc.data.hero.G;
+				//负分无法发贴，现根据房间底分来改
+				//if(Number(g) < difen)
+				if(parseInt(g) < carry)
+				{
+					//Alert.show("抱歉，进入房间失败！您持有的" + lang_GoldPointName + "低于" + carry.toString() +"。",
+					//	QiPaiStr.ALERT_TITLE,4);
+					
+					Alert.show(GetLang_CanJoinRoom_CarryIsNotEnough(carry),
+							QiPaiStr.ALERT_TITLE,4);
+					
+					
+					return false;
+				}				
+				
+				// - 减号
+				/* if(g.indexOf("-") == 0)
+				{
+					Alert.show("抱歉！负分无法进入房间！",QiPaiStr.ALERT_TITLE,4);
+					return false;	
+				}	 */	
+				
+				return true;
+			}
+			
+			public function joinRoom(id:int,difen:int,carry:int):void
+			{
+						
+				if(canJoinRoom(difen,carry))
+				{
+					//
+					//(this.parentApplication as client_ddz).showLoadingScr();
+				
+					GameGlobals.qpc.joinRoom(id);
+				}
+			}
+			
+			protected function autoJoinRoom():void
+			{
+				
+				GameGlobals.qpc.autoJoinRoom();
+					
+			}
+			
+			public function resetBarAutoMatch():void
+			{
+				barAutoMatch.indeterminate = false;
+				
+				barAutoMatch.label = this.lang_BarAutoMatch_Label;
+			}
+			
+			private var _autoMatchingTimer:Timer;
+			
+			public function stopAutoMatchingTimer():void
+			{
+				if(null == _autoMatchingTimer)
+				{
+					return;
+				}
+				
+				_autoMatchingTimer.stop();
+			}
+			
+			public function runAutoMatchingTimer():void
+			{
+				if(null == _autoMatchingTimer)
+				{
+					_autoMatchingTimer = new Timer(1000);
+					_autoMatchingTimer.addEventListener(TimerEvent.TIMER,refreshBarAutoMatchingStr);
+					
+				}
+				
+				if(_autoMatchingTimer.running)
+				{
+					return;
+				}
+				
+				_autoMatchingTimer.reset();
+				_autoMatchingTimer.start();
+			
+			
+			}
+			
+			public function refreshBarAutoMatchingStr(e:TimerEvent):void
+			{
+				var second:int = _autoMatchingTimer.currentCount;
+				
+				barAutoMatch.label = GetLang_AutoMatchIng(second);
+			}
+			
+
+			public function btnTabAutoMatch_click(event:MouseEvent=null):void
+			{
+				
+				if(GameGlobals.qpc.data.hallRoomList.length > 0)
+				{
+					var difen:int = (GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel).getDiFen();
+					var carry:int = (GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel).getCarry();
+					
+					
+					if(canJoinRoom(difen,carry))
+					{
+						//
+						//(this.parentApplication as client_ddz).showLoadingScr();
+						
+						barAutoMatch.indeterminate = true;
+						
+						//
+						barAutoMatch.label = GetLang_AutoMatchIng(0);						
+						runAutoMatchingTimer();
+						
+						
+						GameGlobals.qpc.autoMatchRoom();
+					}
+				}
+				
+				
+			}
+
+			
+			public function chkAutoMatchMingPai_reset():void
+			{
+				GameGlobals.qpc.data.isAutoMatchMingPai = this.chkAutoMatchMingPai.selected = false;
+			
+			}
+
+			protected function chkAutoMatchMingPai_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				GameGlobals.qpc.data.isAutoMatchMingPai = this.chkAutoMatchMingPai.selected;
+			}
+
+
+			protected function dg1_itemRollOverHandler(event:ListEvent):void
+			{
+				// TODO Auto-generated method stub
+				//event.itemRenderer
+			}
+
+
+
+			
+		]]>
+	</mx:Script>	
+	
+
+</mx:Canvas>

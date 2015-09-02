@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+
+				width="560" 
+				height="480" 
+				xmlns:local="*" 
+			
+				creationComplete="creationComplete()" 
+				>
+	
+	
+	<local:mc_win_winOrLostBg id="imgLostOrWin" x="10" y="10"/>
+	
+	<mx:Canvas x="123" y="109" width="314" height="165" >
+		
+		
+		<mx:Label id="lbl1" x="43" y="22" text="{lang_lbl1_text}" fontSize="14" color="#000000"/>
+		<mx:Label id="lbl2" x="186" y="22" text="{lang_lbl2_text}" fontSize="14" color="#000000"/>
+		
+		<mx:Label x="43" y="53" id="lbl_leftID" fontSize="14" color="#000000" visible="false"/>
+		<mx:Label x="43" y="84" id="lbl_downID" fontSize="14" color="#000000" visible="false"/>
+		<mx:Label x="43" y="115" id="lbl_rightID" fontSize="14" color="#040404" visible="false"/>		
+		
+		<mx:Label x="43" y="53" id="lbl_left" fontSize="14" color="#000000"/>
+		<mx:Label x="43" y="84" id="lbl_down" fontSize="14" color="#000000"/>
+		<mx:Label x="43" y="115" id="lbl_right" fontSize="14" color="#040404"/>
+		
+		<mx:Image id="imgLeft" source="{this.iconWin}" x="156" y="69" visible="false"/>
+		<mx:Image id="imgDown" source="{this.iconLostOrWin}" x="156" y="69" visible="false" />
+		<mx:Image id="imgRight" source="{this.iconLost}" x="156" y="69" visible="false" />
+		
+		<mx:Label x="186" y="49" id="lbl_leftG" fontSize="18" fontWeight="bold" color="#000000"/>
+		<mx:Label x="186" y="80" id="lbl_downG" fontSize="18" fontWeight="bold" color="#000000"/>
+		<mx:Label x="186" y="110" id="lbl_rightG" fontSize="18" fontWeight="bold" color="#000000"/>
+	</mx:Canvas>
+	
+	<mx:Button id="btnOk" y="440.9" x="245"/>
+	<mx:Button id="btnOk_ContinueGame" x="334" y="440.9" click="btnOk_ContinueGame_clickHandler(event)"/>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;
+			
+			import net.wdqipai.client.extfactory.ChairModelFactory;
+			import net.wdqipai.client.extmodel.ItemModelByDdz;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			private var closeTimer:Timer;
+			//快些关闭窗口，但游戏结束要长一点，因此设为1500//
+			//现改为2000，倒计时Timer为倒计时3次，
+			//1200
+			private var closeTimerDealy:int = 1200;
+			
+			public function get lang_lbl1_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWin3MXML_lbl1_text;
+			}
+			
+			public function get lang_lbl2_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWin3MXML_lbl2_text;
+			}
+			
+			
+			public function get lang_btnOk_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWin3MXML_btnOk_label;
+			}
+			
+			public function get lang_btnOk_ContinueGame_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWin3MXML_btnOk_ContinueGame_label;
+			}
+			
+			//
+			[Bindable]
+			public var iconWin:MovieClip = new mc_win_winOrLostIcon();
+			
+			[Bindable]
+			public var iconLostOrWin:MovieClip = new mc_win_winOrLostIcon();
+			
+			[Bindable]
+			public var iconLost:MovieClip = new mc_win_winOrLostIcon();
+			
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				this.isPopUp = false;		
+				
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{
+				if(null != closeTimer)
+				{
+					if(closeTimer.hasEventListener(TimerEvent.TIMER))
+					{
+						closeTimer.removeEventListener(TimerEvent.TIMER,timeHandler);
+					}
+					
+					if(closeTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					{
+						closeTimer.removeEventListener(TimerEvent.TIMER_COMPLETE,timeCompleteHandler);
+					}
+					
+					closeTimer.stop();
+					
+				}//end if
+				
+				if(null != closeTimer)
+				{
+					if(closeTimer.running)
+					{
+						closeTimer.stop();
+					}
+				}
+				
+				//
+				PopUpManager.removePopUp(this);
+				
+				
+				
+				
+				
+				
+			}
+			
+			private function chkAutoMatch():void
+			{
+			
+				//示意图
+				
+				//游戏结束 弹窗 -> 主动退出房间 -> 到另一个Hall，
+				//负分自动离开房间
+				var g:String = GameGlobals.qpc.data.hero.G;
+				
+				//只要携带够，就能进入房间，而退出房间按底分来，
+				var difen:int = (GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel).getDiFen();
+				
+				
+				//负分无法发贴，现根据房间底分来改
+				if(Number(g) >= difen)
+				{	
+					//
+					if(
+						GameGlobals.qpc.data.isTabAutoMatchMode &&
+						"GameOver" == GameGlobals.qpc.data.activeRoom.Status)
+					{					
+						
+						//清扬要求的逻辑，自动准备，游戏结束后返回大厅，或点继续游戏 按钮 转到 自动匹配大厅界面
+						if("清扬" == GameGlobals.qpc.data.getClientConfig().payUserNickName)
+						{
+							GameGlobals.qpc.leaveRoom(GameGlobals.qpc.data.hero.activeRoomId);				
+							
+						}else
+						{
+							GameGlobals.qpc.leaveRoomAndGoHallAutoMatch(GameGlobals.qpc.data.hero.activeRoomId);				
+						}
+						
+							
+					}
+					
+				}
+			
+			}
+			
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			/**
+			 * popup后调用该方法
+			 * 
+			 * 该方法3秒后会自动关闭窗口
+			 * 
+			 */ 
+			public var delayMaxCount:int;
+			public function startCloseTimeCount():void
+			{
+				//
+				//this.btnOk.label = "确定(3)";
+				
+				delayMaxCount = 5;//3;
+				
+				//清扬要求的逻辑，自动准备，游戏结束后返回大厅，或点继续游戏 按钮 转到 自动匹配大厅界面
+				//if("清扬" == GameGlobals.qpc.data.getClientConfig().payUserNickName ||
+				//   "团购潮人" == GameGlobals.qpc.data.getClientConfig().payUserNickName)
+				if(GameGlobals.qpc.data.isTabAutoMatchMode)
+				{
+					delayMaxCount = 9;
+					this.btnOk_ContinueGame.visible = true;
+				
+				}
+				else
+				{
+					this.btnOk_ContinueGame.visible = false;
+				}
+				
+				this.btnOk.label = lang_btnOk_label + "(" + delayMaxCount.toString() +")";				
+				this.btnOk.removeEventListener(MouseEvent.CLICK,clickHandler);
+				this.btnOk.addEventListener(MouseEvent.CLICK,clickHandler);
+				
+				//
+				this.btnOk_ContinueGame.label = lang_btnOk_ContinueGame_label;
+				this.btnOk_ContinueGame.removeEventListener(MouseEvent.CLICK,btnOk_ContinueGame_clickHandler);
+				this.btnOk_ContinueGame.addEventListener(MouseEvent.CLICK,btnOk_ContinueGame_clickHandler);
+				
+				//
+				closeTimer = new Timer(closeTimerDealy,delayMaxCount);
+				
+				closeTimer.addEventListener(TimerEvent.TIMER,timeHandler);
+				closeTimer.addEventListener(TimerEvent.TIMER_COMPLETE,timeCompleteHandler);
+				
+				closeTimer.start();
+				
+				//游戏结束时调用
+				GameGlobals.qpc.loadGoldPoint();
+				
+			}
+			
+			/**
+			 * 
+			 * 继续游戏
+			 */ 
+			protected function btnOk_ContinueGame_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				//清扬要求的逻辑，自动准备，游戏结束后返回大厅，或点继续游戏 按钮 转到 自动匹配大厅界面
+				if("清扬" == GameGlobals.qpc.data.getClientConfig().payUserNickName)
+				{
+					//					
+					__close();
+					
+					//
+					GameGlobals.qpc.leaveRoomAndGoHallAutoMatch(GameGlobals.qpc.data.hero.activeRoomId);	
+					
+					
+				}
+			}
+
+			
+			public function clickHandler(event:MouseEvent=null):void
+			{
+				
+				
+				__close();
+				
+				
+				//鼠标点击
+				if(null != event)
+				{					
+					chkAutoMatch();
+				}
+				
+			}
+			
+			public function timeHandler(event:TimerEvent):void
+			{
+				//this.btnOk.label = "确定(" + (3-closeTimer.currentCount).toString() + ")";
+				this.btnOk.label = lang_btnOk_label + "(" + (delayMaxCount-closeTimer.currentCount).toString() + ")";
+				
+				
+				
+			}			
+			
+			
+			public function timeCompleteHandler(event:TimerEvent):void
+			{
+				__close();			
+				
+				chkAutoMatch();
+				
+				
+			}
+			
+			
+			
+
+			
+		]]>
+	</mx:Script>
+		
+	
+</mx:Canvas>

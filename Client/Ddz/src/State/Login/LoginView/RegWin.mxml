@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="320" 
+	height="320" 	
+	title="{lang_Title}"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			import net.wdmir.core.QiPaiFont;
+			import net.wdmir.core.QiPaiUser;	
+			
+			public function get lang_Email_cannot_be_empty_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_email_cannot_be_empty_str;
+			}
+			
+			public function get lang_Secondary_passwords_do_not_match_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_secondary_passwords_do_not_match_str;
+			}
+			
+			public function get lang_Pwd_cannot_be_empty_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_pwd_cannot_be_empty_str;
+			}
+			
+			public function get lang_Username_cannot_be_empty_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_username_cannot_be_empty_str;
+			}
+			
+			public function get lang_Please_select_yours_sex_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_please_select_yours_sex_str;
+				
+			}
+			
+			public function get lang_Radio2_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_radio2_label;
+				
+			}
+			
+			public function get lang_Radio1_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_radio1_label;
+				
+			}
+			
+			public function get lang_BtnReg_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_btn_reg_label;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_email_cannot_be_empty_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_email_cannot_be_empty_str;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_username_cannot_be_empty_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_username_cannot_be_empty_str;
+				
+			}
+			
+						
+			public function get lang_RegWinMXML_pwd_cannot_be_empty_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_pwd_cannot_be_empty_str;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_secondary_passwords_do_not_match_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_secondary_passwords_do_not_match_str;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_please_select_yours_sex_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_please_select_yours_sex_str;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_game_password():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_game_password;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_btn_reg_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_btn_reg_label;
+				
+			}
+			
+			
+			public function get lang_RegWinMXML_lbl5_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_lbl5_text;
+				
+			}
+			
+			public function get lang_RegWinMXML_lbl4_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_lbl4_text;
+				
+			}
+			
+			public function get lang_RegWinMXML_lbl3_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_lbl3_text;
+				
+			}
+			
+			public function get lang_RegWinMXML_lbl2_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_lbl2_text;
+				
+			}
+			
+			public function get lang_RegWinMXML_lbl1_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_lbl1_text;
+				
+			}
+			
+			public function get lang_Title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RegWinMXML_title;
+				
+			}
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{			
+				//	
+				ti_userpwd.displayAsPassword = true;
+				
+				//
+				ti_userpwd_repeat.displayAsPassword = true;
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				//
+				var mode:String = GameGlobals.qpc.data.selectDB.mode;
+				
+				if(mode == "dz" || mode == "x"){
+					
+					//允许选择性别
+					//lbl_gender.visible = false;
+					//this.rbBoy.visible = false;
+					//this.rbGirl.visible = false;
+					
+					if(GameGlobals.pageVars.hasOwnProperty("gender"))
+					{
+						if(0 == QiPaiUser.convertSexNumByDz(GameGlobals.pageVars["gender"]))
+						{
+							this.rbBoy.selected = true;
+						}else
+						{
+							this.rbGirl.selected = true;
+						}
+					
+					}					
+					
+					lbl_title.visible = true;
+					lbl_title.text = "欢迎！您是第一次登陆游戏，请\n设定您的游戏密码";
+					lbl_title.toolTip = "设定单独的游戏密码有助于提高帐户安全性";
+					
+					lbl_username.visible = false;
+					ti_username.visible = false;
+					
+					lbl_userpwd.text = lang_RegWinMXML_game_password;//"游戏密码：";
+				
+					
+					lbl_usermail.visible = false;
+					ti_usermail.visible = false;
+					ti_usermail.text = GameGlobals.pageVars["email"];
+				
+				}else{
+				
+					lbl_title.visible = false;
+					lbl_title.text = "";
+					
+				}
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(evt:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(evt:CloseEvent):void
+			{
+				__close(null);
+			}			
+			
+			/**
+			 * 重置所有文本框
+			 * 按钮状态还原
+			 */ 
+			public function Reset():void
+			{
+				//ti_username.text = "";
+				ti_userpwd.text = "";
+				ti_userpwd_repeat.text = "";
+				//ti_usermail.text = "";				
+			
+				lbl_msg.text = "";
+				btn_reg.enabled = true;
+			}
+			
+			/**
+			 * 发送注册指令
+			 * 
+			 */ 
+			public function btn_reg_click():void
+			{
+				
+				if(null == this.radiogroup1.selection)
+				{
+					lbl_msg.text = lang_RegWinMXML_please_select_yours_sex_str;//"·请选择性别！";
+										
+					return;
+				}
+				
+				var mode:String = GameGlobals.qpc.data.selectDB.mode;
+				
+				if(mode == "dz" || mode == "x"){
+					
+								
+				
+				}else{
+				
+				
+					if("" == ti_username.text)
+					{
+						lbl_msg.text = lang_RegWinMXML_username_cannot_be_empty_str;//"·用户名不可为空！";
+						
+						ti_username.setFocus();
+						
+						return;
+					}	
+				
+				}
+				
+				if("" == ti_userpwd.text)
+				{
+					//·
+					lbl_msg.text = lang_RegWinMXML_pwd_cannot_be_empty_str;//"·密码不可为空！";
+					
+					ti_userpwd.setFocus();
+					
+					return;				
+				}
+				
+				if(ti_userpwd.text != ti_userpwd_repeat.text)
+				{
+					lbl_msg.text = lang_RegWinMXML_secondary_passwords_do_not_match_str;"·二次密码不相符";
+					
+					ti_userpwd_repeat.setFocus();
+				
+					return;
+				}		
+				
+				//clear info	
+				if("" == ti_usermail.text)
+				{
+					//lbl_msg.text = lang_RegWinMXML_email_cannot_be_empty_str;//"邮箱未填写！注册成功后可在个人资料中\n补充！";
+				
+					//此项非必填项，可略过
+				}else
+				{
+					lbl_msg.text = "";
+				}	
+								
+				//
+				btn_reg.enabled = false;
+				
+				//改成鼠标忙
+				CursorManager.setBusyCursor();
+				
+				//reg
+				GameGlobals.qpc.reg(
+										
+										StringUtil.trim(this.ti_username.text),
+										GameGlobals.pageVars["session"],										
+										StringUtil.trim(this.ti_userpwd.text),
+										//QiPaiUser.getSex(this.radiogroup1.selectedValue.toString()),
+										QiPaiUser.getSex(this.radiogroup1.selection.id),
+										StringUtil.trim(this.ti_usermail.text),
+										GameGlobals.qpc.data.selectDB.mode,
+										GameGlobals.pageVars["id_sql"]
+										
+									);	
+				
+			}
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="lbl_gender" x="19" y="65" text="性    别：" fontSize="13"/>
+	<mx:Label id="lbl_username" x="19" y="33" text="用户名：" fontSize="13"/>
+	<mx:Label id="lbl_userpwd" x="19" y="92" text="{lang_RegWinMXML_lbl3_text}" fontSize="13"/>
+	<mx:Label x="19" y="122" text="{lang_RegWinMXML_lbl4_text}" fontSize="13"/>
+	<mx:Label id="lbl_usermail" x="19" y="149" text="电子邮箱：" fontSize="13"/>
+	<mx:TextInput id="ti_username" x="91" y="33" width="160" maxChars="20"/>
+	<mx:TextInput id="ti_userpwd" x="91" y="92" width="160" maxChars="12"/>
+	<mx:TextInput id="ti_userpwd_repeat" x="91" y="122" width="160" maxChars="12"/>
+	<mx:TextInput x="91" y="152" id="ti_usermail"/>
+	<mx:Button id="btn_reg" y="228" label="{lang_RegWinMXML_btn_reg_label}" click="{btn_reg_click()}"
+			   horizontalCenter="0"/>
+	<mx:Label id="lbl_msg" y="184" width="276" height="40" color="#FB0000" fontSize="13"
+			  horizontalCenter="0" textAlign="center"/>
+	<mx:RadioButtonGroup id="radiogroup1"/>
+	<mx:RadioButton id="rbBoy" x="91" y="63" label="男" groupName="radiogroup1"/>
+	<mx:RadioButton id="rbGirl" x="185" y="63" label="女" groupName="radiogroup1"/>
+	<mx:Label id="lbl_title" y="10" width="262" height="45" fontSize="14" fontStyle="normal"
+			  fontWeight="bold" horizontalCenter="0" text="..." textAlign="center"
+			  textDecoration="none" fontFamily="SimSun" />
+	
+	
+</mx:TitleWindow>

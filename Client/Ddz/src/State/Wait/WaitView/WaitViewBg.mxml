@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:flexiframe="com.google.code.flexiframe.*"
+		   xmlns:s="library://ns.adobe.com/flex/spark"
+		   width="{GameGlobals.stageWidth}" 
+		   height="{GameGlobals.stageHeight}"
+		   borderSkin="{null}"
+		   creationComplete="canvas1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.google.code.flexiframe.IFrame;
+			
+			import mx.events.FlexEvent;
+			
+			import net.wdmir.core.QiPaiAD;
+			import net.wdmir.core.QiPaiFont;
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<flexiframe:IFrame top="50" 
+					   horizontalCenter="0" 
+					   width="480" height="380" 
+					   source="{QiPaiAD.ALIMAMA}">
+	</flexiframe:IFrame>
+	
+	<mx:Label id="lblMsg" y="547" left="0" right="0" color="#5D5555" 
+			  fontFamily="SimSun"
+			  horizontalCenter="0" text="..." textAlign="center"/>
+	
+	
+	
+</mx:Canvas>

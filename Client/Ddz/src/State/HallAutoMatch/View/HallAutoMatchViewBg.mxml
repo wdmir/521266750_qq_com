@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="100%" 
+		   height="100%" 
+		   xmlns:local="*" 
+		   initialize="initializeComplete()"  
+		   creationComplete="canvas1_creationCompleteHandler(event)"
+		   verticalScrollPolicy="auto">
+	
+	<mx:Image id="b1" x="0" y="0"/>
+	
+	
+	<mx:ProgressBar id="barAutoMatch" label="{lang_BarAutoMatch_Label}" indeterminate="false" fontSize="12" width="200" horizontalCenter="0" verticalCenter="0"/>
+	
+	<!-- 这里不用加取消按钮，或返回大厅按钮 -->
+	<!-- 是因为进入房间后，不是自动准备，可点退出返回大厅-->
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			private var _autoMatchingTimer:Timer;
+			
+			public function get lang_BarAutoMatch_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallAutoMatchViewBgMXML_barAutoMatch_label;
+			}
+			
+			public function GetLang_AutoMatchIng(second:int):String
+			{
+				
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.HallAutoMatchViewBgMXML_barAutoMatch_Matching_str;
+				
+				langStr = langStr.replace("#param1",second.toString());
+				
+				return langStr;
+			}
+			
+			/**
+			 * initialize
+			 */ 
+			public function initializeComplete():void
+			{
+				
+			
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				b1.source = GameGlobals.rootUrl + "assets/" + GameGlobals.color + "_hall_automatch_bg.jpg";
+			}
+			
+			public function firstIn():void
+			{
+				
+				resetBarAutoMatch();
+				
+				//
+				//barAutoMatch.label = GetLang_AutoMatchIng(0);						
+				runAutoMatchingTimer();
+				
+				
+				GameGlobals.qpc.autoMatchRoom();
+				
+			}
+			
+			public function resetBarAutoMatch():void
+			{
+				barAutoMatch.indeterminate = false;
+				
+				barAutoMatch.label = this.lang_BarAutoMatch_Label;
+			}
+			
+			public function runAutoMatchingTimer():void
+			{
+				if(null == _autoMatchingTimer)
+				{
+					_autoMatchingTimer = new Timer(1000);
+					_autoMatchingTimer.addEventListener(TimerEvent.TIMER,refreshBarAutoMatchingStr);
+					
+				}
+				
+				if(_autoMatchingTimer.running)
+				{
+					return;
+				}
+				
+				_autoMatchingTimer.reset();
+				_autoMatchingTimer.start();
+				
+				
+			}
+			
+			
+			public function refreshBarAutoMatchingStr(e:TimerEvent):void
+			{
+				var second:int = _autoMatchingTimer.currentCount;
+				
+				barAutoMatch.label = GetLang_AutoMatchIng(second);
+			}
+			
+			
+			public function stopAutoMatchingTimer():void
+			{
+				if(null == _autoMatchingTimer)
+				{
+					return;
+				}
+				
+				_autoMatchingTimer.stop();
+			}
+			
+						
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+</mx:Canvas>

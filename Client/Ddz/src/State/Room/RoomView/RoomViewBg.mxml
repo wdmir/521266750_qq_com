@@ -1,0 +1,5881 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="900" 
+	height="680" 
+	xmlns:local="*"
+	xmlns:ns1="State.Room.RoomView.*"
+	initialize="{initializeComplete()}" 
+    creationComplete="canvas1_creationCompleteHandler(event)">
+
+<mx:Image id="b1" x="0" y="0"/>
+	
+	<local:bg_paiboard id="board" x="0" y="0" >		
+	</local:bg_paiboard>
+	
+	<mx:Image x="8"   y="93" width="120" height="120" id="mc_person_img_left"/>
+	<mx:Image x="771" y="93" width="120" height="120" id="mc_person_img_right"/>
+	<mx:Image x="21"  y="382" width="120" height="120" id="mc_person_img_down"/>
+	
+	<local:mc_waitOrReadyIcon x="39" y="93" id="mc_person_ico_left"/>		
+	<local:mc_waitOrReadyIcon x="800" y="93" id="mc_person_ico_right"/>		
+	<local:mc_waitOrReadyIcon x="52" y="382" id="mc_person_ico_down"/>	
+	
+	<ns1:JiaoFenBar id="jiaoFenBar" y="325" x="243">
+	</ns1:JiaoFenBar>
+	
+	<ns1:ChuPaiBar id="chuPaiBar" y="343" horizontalCenter="-16">
+	</ns1:ChuPaiBar>
+	
+	<mx:ComboBox id="cb1" x="20" y="632" width="270" close="closeHandler(event)" cornerRadius="6"
+				 editable="true" fontSize="12" keyDown="cb1_keyDown(event)">
+		</mx:ComboBox>
+
+	<!--
+	<mx:List id="idleUserList" 
+		width="535" height="84" x="243" y="516" alpha="0.43" cornerRadius="6">
+	</mx:List>
+	-->
+	
+	<mx:TileList id="idleUserList" 
+	  width="456" height="22" x="336" y="632" backgroundAlpha="0.0" alpha="1.0" cornerRadius="6" borderThickness="0">
+		
+	</mx:TileList>
+	
+	<mx:Button id="btnAskIdleUser" x="796" y="628" label="邀 请" click="mc_btn_askIdleUser_click(event)"/>
+	<mx:Button id="btnTuoGuan" x="760" y="512" label="托　管" click="{TuoGuan()}"/>
+	<mx:Button id="btnTuoGuan0" x="760" y="472" label="排　序" click="{SortPai()}"/>
+	<mx:TextArea x="14" y="554" width="256" height="70" id="textBox1" fontSize="12" backgroundAlpha="0.0" borderThickness="0"/>
+	
+	<ns1:GameRecordView id="recordView" x="464" y="28">		
+	</ns1:GameRecordView>
+	
+	<mx:Script>
+		<![CDATA[
+			import State.Room.RoomModel.*;
+			
+			import com.adobe.utils.DictionaryUtil;
+			import com.adobe.utils.IntUtil;
+			import com.greensock.TweenLite;
+			
+			import mx.charts.AreaChart;
+			import mx.charts.chartClasses.StackedSeries;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.effects.effectClasses.MoveInstance;
+			import mx.events.FlexEvent;
+			import mx.flash.UIMovieClip;
+			import mx.managers.PopUpManager;
+			import mx.messaging.channels.StreamingAMFChannel;
+			
+			import net.wdmir.core.PokerName;
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiRandom;
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;
+			import net.wdmir.core.logic.ddz.*;
+			import net.wdqipai.client.extfactory.ChairModelFactory;
+			import net.wdqipai.client.extmodel.ItemModelByDdz;
+			import net.wdqipai.client.extmodel.MatchGModelByDdz;
+			import net.wdqipai.client.extmodel.RoomModelByDdz;
+			import net.wdqipai.client.extmodel.RoundModelByDdz;
+			import net.wdqipai.client.extmodel.RoundTypeByDdz;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			public function GetLang_CanNotReady_G_NotEnough(value:int):String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_can_not_ready_g_not_enough;
+				
+				//"抱歉，进入房间失败！您持有的" + lang_GoldPointName + "低于" + carry.toString() +"。"
+				//抱歉，进入房间失败！您持有的#param1低于#param2。
+				langStr = langStr.replace("#param1",lang_GoldPointName);
+				langStr = langStr.replace("#param2",value.toString());
+				
+				return langStr;
+				
+			}
+			
+			public function GetLang_bomb_down_str(difen:int,bomb:int):String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_bomb_down_str;
+				
+				langStr = langStr.replace("#param1",difen.toString());
+				langStr = langStr.replace("#param2",bomb.toString());
+				
+				return langStr;
+				
+			
+			}
+			
+			public function GetLang_sorry_you_must_exit_room_str(difen:int):String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_sorry_you_must_exit_room_str;
+				
+				langStr = langStr.replace("#param1",lang_RoomName);
+				langStr = langStr.replace("#param2",lang_GoldPointName);
+				langStr = langStr.replace("#param3",difen.toString());
+				
+				return langStr;
+			
+			}
+			
+			public function GetLang_send_mail_str(idel_user_name:String):String
+			{
+			
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_send_mail_str;
+				
+				langStr = langStr.replace("#param1",idel_user_name);
+				
+				return langStr;
+			}
+			
+			public function get lang_please_click_idel_user_list_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_please_click_idel_user_list_str;
+				
+			
+			}
+			
+			public function get lang_nongming_win_title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWinMXML_nongming_win_title;
+				
+			}	
+			
+			public function get lang_dizhu_win_title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWinMXML_dizhu_win_title;
+							
+			}			
+			
+			public function get lang_btnTuoGuan_cancel_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_btnTuoGuan_cancel_str;
+				
+			}
+			
+			public function get lang_btnTuoGuan_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_btnTuoGuan_label;
+			
+			}
+			
+			public function get lang_talk_0_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_talk_0_str;
+			}
+			
+			public function get lang_talk_1_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_talk_1_str;
+			}
+			
+			public function get lang_talk_2_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_talk_2_str;
+			}
+			
+			public function get lang_talk_3_str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.RoomViewBgMXML_talk_3_str;
+			}
+			
+			/**
+			 * 
+			 */ 
+			public function get lang_RoomName():String
+			{
+				return GameGlobals.qpc.data.lang_RoomName();
+			}
+			
+			public function get lang_GoldPointName():String
+			{
+				return GameGlobals.qpc.data.lang_GoldPointName();
+			}
+			
+			/**
+			 * 视图only
+			 * 
+			 * 牌列表，方便遍历
+			 * 
+			 * 54张
+			 */ 		
+			public var paiList:Array = new Array();
+			
+			/**
+			 * 54张
+			 */ 
+			public var dipaiList:Array = new Array();
+			
+			/**
+			 * 34张,
+			 * left用前17张
+			 * right用后17张
+			 */ 
+			public var bgPaiList_normal:Array = new Array();
+			
+			/**
+			 * 20张
+			 */ 
+			public var bgPaiList_diZhu:Array = new Array();
+			
+			/**
+			 * 34张,
+			 * left用前17张
+			 * right用后17张
+			 */
+			public var bgPaiList_nongMing:Array = new Array();		
+			
+			
+			/**
+			 * 比牌规则
+			 */			
+			public var paiRule:PaiManager; 
+			
+			/**
+			 * 
+			 */ 
+			public var faPaiTimer:Timer;
+			
+			/**
+			 * 
+			 */
+			private var _chuPaiTimer:Timer; 
+			
+			public var chuPaiTimerPaused:Boolean = false;
+			
+			public function get chuPaiTimer():Timer
+			{				
+				if(null == _chuPaiTimer)
+				{
+					_chuPaiTimer = new Timer(1000,PaiRule.CLOCK_DAOJISHI);
+				}
+				
+				return _chuPaiTimer;
+			}
+			
+			public function chuPaiTimer_Reset():void
+			{
+				this.chuPaiTimer.reset();
+				
+				var isQuick:Boolean =  GameGlobals.qpc.data.activeRoom.isQuick;
+				
+				var normalSecond:int = PaiRule.CLOCK_DAOJISHI;
+				var quickSecond:int = PaiRule.CLOCK_QUICK_DAOJISHI;
+				
+				var chuPaiSecond:int = true == isQuick ? quickSecond:normalSecond;
+				this.chuPaiTimer.repeatCount = chuPaiSecond;
+			}
+									
+			/**
+		 	* 游戏结束窗口
+		 	*/ 
+			private var _gameOverWin:GameOverWin = new GameOverWin();
+			//private var _gameOverWin2:GameOverWin2 = new GameOverWin2();
+			private var _gameOverWin2:GameOverWin3 = new GameOverWin3();
+			
+			/**
+			 * 退出房间询问窗口	
+			 */ 
+			private var _roomExitWin:RoomExitWin = new RoomExitWin();
+			
+			/**
+			 * 游戏设置窗口
+			 */ 
+			private var _configWin:GameConfigWin =  new GameConfigWin();
+			
+			/**
+			 * 习惯设置窗口
+			 * 
+			 */  		 
+			private var _habitWin:HabitConfigWin = new HabitConfigWin();
+			
+			/**
+			 * 屏幕截图保存窗口
+			 * 
+			 */ 
+			private var _screenSaveWin:ScreenSaveWin = new ScreenSaveWin();
+			
+			/**
+			 * 等待对方断线重连窗口
+			 */ 
+			private var _waitUserReconnectionWin:WaitUserReconnectionWin = new WaitUserReconnectionWin();
+			
+			/**
+			 * 显示对话内容
+			 */ 
+			private var _chat:FChat;
+			
+			/**
+			 * 
+			 * 	62.wav穷追猛打，太狠了吧？!
+			 *	63.wav拜托拜托，别这么用力想.
+			 *	66.wav老兄，加油加油
+			 *	68.wav老哥，穷寇莫追哦!
+			 *	71.wav前辈，快入局了!
+			 *	75.wav奇怪，会不会翻盘哪？
+			 */
+			public const talk:Array = new Array(
+									   //"这牌也太差了吧?",
+				                       //"速度快点，打完这局我要上洗手间.",
+				                       //"我不但手气好，脚气也不错",
+				                       //"输牌不输人"
+										lang_talk_0_str,
+										lang_talk_1_str,
+										lang_talk_2_str,
+										lang_talk_3_str
+										);
+			                           
+			private var talk0:Sound;
+			private var talk1:Sound;
+			private var talk2:Sound;
+			private var talk3:Sound;
+			
+			private var soundWin:Sound;
+			private var soundLose:Sound;
+			
+			//private var soundTwoCardAlert:Sound = new sound_twoCardAlert();
+			
+			private var soundChuPai:Sound = new sound_chuPai();
+			
+			//报警
+			//mc_robotAlert_right
+			private var soundRobotAlert:Sound;
+			private var soundRobotAlertPlayCount:int;
+						
+			
+			/**		
+			* function:copyArr
+			*/		 
+			private function copyArr(arr:Array):Array
+			{
+			  	if(null == arr)
+			  	{
+			 		throw new Error("arr source can not be null!");
+			  	}
+			 	
+			  	//concat是flash提供的一个拷贝和组合数组的方法
+			  	//将参数中指定的元素与数组中的元素连接，并创建新的数组。 如果这些参数指定了一个数组，将连接该数组中的元素。 
+			  	var xin:Array = arr.concat();
+			  		
+			  	return xin;
+			}
+		
+			public function initializeComplete():void
+			{
+				
+				(this.board.mc_btn_systemConfig as MovieClip).gotoAndStop(1);
+				(this.board.mc_btn_systemConfig as MovieClip).addEventListener(MouseEvent.ROLL_OVER,mc_btn_systemConfig_rollOver);
+				(this.board.mc_btn_systemConfig as MovieClip).addEventListener(MouseEvent.ROLL_OUT,mc_btn_systemConfig_rollOut);
+				(this.board.mc_btn_systemConfig as MovieClip).addEventListener(MouseEvent.CLICK,mc_btn_systemConfig_click);
+				
+				(this.board.mc_btn_habitConfig as MovieClip).gotoAndStop(1);
+				(this.board.mc_btn_habitConfig as MovieClip).addEventListener(MouseEvent.ROLL_OVER,mc_btn_habitConfig_rollOver);
+				(this.board.mc_btn_habitConfig as MovieClip).addEventListener(MouseEvent.ROLL_OUT,mc_btn_habitConfig_rollOut);
+				(this.board.mc_btn_habitConfig as MovieClip).addEventListener(MouseEvent.CLICK,mc_btn_habitConfig_click);			
+				
+				(this.board.mc_btn_exitRoom as MovieClip).gotoAndStop(1);
+				(this.board.mc_btn_exitRoom as MovieClip).addEventListener(MouseEvent.ROLL_OVER,mc_btn_exitRoom_rollOver);
+				(this.board.mc_btn_exitRoom as MovieClip).addEventListener(MouseEvent.ROLL_OUT,mc_btn_exitRoom_rollOut);
+				(this.board.mc_btn_exitRoom as MovieClip).addEventListener(MouseEvent.CLICK,mc_btn_exitRoom_click);
+				
+				(this.board.mc_btn_record as MovieClip).gotoAndStop(1);
+				(this.board.mc_btn_record as MovieClip).addEventListener(MouseEvent.ROLL_OVER,mc_btn_record_rollOver);
+				(this.board.mc_btn_record as MovieClip).addEventListener(MouseEvent.ROLL_OUT,mc_btn_record_rollOut);
+				(this.board.mc_btn_record as MovieClip).addEventListener(MouseEvent.CLICK,mc_btn_record_click);
+				
+				//鼠标拖拽选牌功能 modified by liuaobo at 2013.07.21
+				this.openDragPoker();
+				//此按钮只1帧，该按钮点了后会从屏幕删除，因此做简单，鼠标移上去有手形
+				this.board.mc_btn_ready.gotoAndStop(1);
+				this.board.mc_btn_ready.addEventListener(MouseEvent.CLICK,mc_btn_ready_click);
+				(this.board.mc_btn_ready as MovieClip).buttonMode = true;
+				//
+				this.board.mc_btn_mingPai_ready.gotoAndStop(1);
+				this.board.mc_btn_mingPai_ready.addEventListener(MouseEvent.CLICK,mc_btn_mingPai_ready_click);
+				(this.board.mc_btn_mingPai_ready as MovieClip).buttonMode = true;
+				
+				//
+				faPaiTimer = new Timer(120,17);	//old delay 150				
+				
+				//TIMER_COMPLETE 处理函数动态指定				
+				//_chuPaiTimer = new Timer(1000,30);
+								
+				//loop use
+				var j:int;
+				
+				var dragColor:uint = GameGlobals.qpc.data.getClientConfig().dragPorkerColor;
+				
+				//list
+				//这里也是牌名称和牌code对应表
+				paiList.push(new Pai(new f_3(),PaiCode.F_3,dragColor));
+				paiList.push(new Pai(new f_4(),PaiCode.F_4,dragColor));
+				paiList.push(new Pai(new f_5(),PaiCode.F_5,dragColor));
+				paiList.push(new Pai(new f_6(),PaiCode.F_6,dragColor));
+				paiList.push(new Pai(new f_7(),PaiCode.F_7,dragColor));
+				paiList.push(new Pai(new f_8(),PaiCode.F_8,dragColor));
+				paiList.push(new Pai(new f_9(),PaiCode.F_9,dragColor));
+				paiList.push(new Pai(new f_10(),PaiCode.F_10,dragColor));
+				paiList.push(new Pai(new f_J(),PaiCode.F_J,dragColor));
+				paiList.push(new Pai(new f_Q(),PaiCode.F_Q,dragColor));
+				paiList.push(new Pai(new f_K(),PaiCode.F_K,dragColor));
+				paiList.push(new Pai(new f_A(),PaiCode.F_A,dragColor));
+				paiList.push(new Pai(new f_2(),PaiCode.F_2,dragColor));
+				
+				paiList.push(new Pai(new m_3(),PaiCode.M_3,dragColor));
+				paiList.push(new Pai(new m_4(),PaiCode.M_4,dragColor));
+				paiList.push(new Pai(new m_5(),PaiCode.M_5,dragColor));
+				paiList.push(new Pai(new m_6(),PaiCode.M_6,dragColor));
+				paiList.push(new Pai(new m_7(),PaiCode.M_7,dragColor));
+				paiList.push(new Pai(new m_8(),PaiCode.M_8,dragColor));
+				paiList.push(new Pai(new m_9(),PaiCode.M_9,dragColor));
+				paiList.push(new Pai(new m_10(),PaiCode.M_10,dragColor));
+				paiList.push(new Pai(new m_J(),PaiCode.M_J,dragColor));
+				paiList.push(new Pai(new m_Q(),PaiCode.M_Q,dragColor));
+				paiList.push(new Pai(new m_K(),PaiCode.M_K,dragColor));
+				paiList.push(new Pai(new m_A(),PaiCode.M_A,dragColor));
+				paiList.push(new Pai(new m_2(),PaiCode.M_2,dragColor));
+				
+				paiList.push(new Pai(new x_3(),PaiCode.X_3,dragColor));
+				paiList.push(new Pai(new x_4(),PaiCode.X_4,dragColor));
+				paiList.push(new Pai(new x_5(),PaiCode.X_5,dragColor));
+				paiList.push(new Pai(new x_6(),PaiCode.X_6,dragColor));
+				paiList.push(new Pai(new x_7(),PaiCode.X_7,dragColor));
+				paiList.push(new Pai(new x_8(),PaiCode.X_8,dragColor));
+				paiList.push(new Pai(new x_9(),PaiCode.X_9,dragColor));
+				paiList.push(new Pai(new x_10(),PaiCode.X_10,dragColor));
+				paiList.push(new Pai(new x_J(),PaiCode.X_J,dragColor));
+				paiList.push(new Pai(new x_Q(),PaiCode.X_Q,dragColor));
+				paiList.push(new Pai(new x_K(),PaiCode.X_K,dragColor));
+				paiList.push(new Pai(new x_A(),PaiCode.X_A,dragColor));
+				paiList.push(new Pai(new x_2(),PaiCode.X_2,dragColor));
+				
+				paiList.push(new Pai(new t_3(),PaiCode.T_3,dragColor));
+				paiList.push(new Pai(new t_4(),PaiCode.T_4,dragColor));
+				paiList.push(new Pai(new t_5(),PaiCode.T_5,dragColor));
+				paiList.push(new Pai(new t_6(),PaiCode.T_6,dragColor));
+				paiList.push(new Pai(new t_7(),PaiCode.T_7,dragColor));
+				paiList.push(new Pai(new t_8(),PaiCode.T_8,dragColor));
+				paiList.push(new Pai(new t_9(),PaiCode.T_9,dragColor));
+				paiList.push(new Pai(new t_10(),PaiCode.T_10,dragColor));
+				paiList.push(new Pai(new t_J(),PaiCode.T_J,dragColor));
+				paiList.push(new Pai(new t_Q(),PaiCode.T_Q,dragColor));
+				paiList.push(new Pai(new t_K(),PaiCode.T_K,dragColor));
+				paiList.push(new Pai(new t_A(),PaiCode.T_A,dragColor));
+				paiList.push(new Pai(new t_2(),PaiCode.T_2,dragColor));
+				
+				paiList.push(new Pai(new Joker_xiao(),PaiCode.JOKER_XIAO,dragColor));
+				paiList.push(new Pai(new Joker_da(),PaiCode.JOKER_DA,dragColor));
+				
+				//
+				dipaiList.push(new Pai(new f_3(),PaiCode.F_3,dragColor));
+				dipaiList.push(new Pai(new f_4(),PaiCode.F_4,dragColor));
+				dipaiList.push(new Pai(new f_5(),PaiCode.F_5,dragColor));
+				dipaiList.push(new Pai(new f_6(),PaiCode.F_6,dragColor));
+				dipaiList.push(new Pai(new f_7(),PaiCode.F_7,dragColor));
+				dipaiList.push(new Pai(new f_8(),PaiCode.F_8,dragColor));
+				dipaiList.push(new Pai(new f_9(),PaiCode.F_9,dragColor));
+				dipaiList.push(new Pai(new f_10(),PaiCode.F_10,dragColor));
+				dipaiList.push(new Pai(new f_J(),PaiCode.F_J,dragColor));
+				dipaiList.push(new Pai(new f_Q(),PaiCode.F_Q,dragColor));
+				dipaiList.push(new Pai(new f_K(),PaiCode.F_K,dragColor));
+				dipaiList.push(new Pai(new f_A(),PaiCode.F_A,dragColor));
+				dipaiList.push(new Pai(new f_2(),PaiCode.F_2,dragColor));
+				
+				dipaiList.push(new Pai(new m_3(),PaiCode.M_3,dragColor));
+				dipaiList.push(new Pai(new m_4(),PaiCode.M_4,dragColor));
+				dipaiList.push(new Pai(new m_5(),PaiCode.M_5,dragColor));
+				dipaiList.push(new Pai(new m_6(),PaiCode.M_6,dragColor));
+				dipaiList.push(new Pai(new m_7(),PaiCode.M_7,dragColor));
+				dipaiList.push(new Pai(new m_8(),PaiCode.M_8,dragColor));
+				dipaiList.push(new Pai(new m_9(),PaiCode.M_9,dragColor));
+				dipaiList.push(new Pai(new m_10(),PaiCode.M_10,dragColor));
+				dipaiList.push(new Pai(new m_J(),PaiCode.M_J,dragColor));
+				dipaiList.push(new Pai(new m_Q(),PaiCode.M_Q,dragColor));
+				dipaiList.push(new Pai(new m_K(),PaiCode.M_K,dragColor));
+				dipaiList.push(new Pai(new m_A(),PaiCode.M_A,dragColor));
+				dipaiList.push(new Pai(new m_2(),PaiCode.M_2,dragColor));
+				
+				dipaiList.push(new Pai(new x_3(),PaiCode.X_3,dragColor));
+				dipaiList.push(new Pai(new x_4(),PaiCode.X_4,dragColor));
+				dipaiList.push(new Pai(new x_5(),PaiCode.X_5,dragColor));
+				dipaiList.push(new Pai(new x_6(),PaiCode.X_6,dragColor));
+				dipaiList.push(new Pai(new x_7(),PaiCode.X_7,dragColor));
+				dipaiList.push(new Pai(new x_8(),PaiCode.X_8,dragColor));
+				dipaiList.push(new Pai(new x_9(),PaiCode.X_9,dragColor));
+				dipaiList.push(new Pai(new x_10(),PaiCode.X_10,dragColor));
+				dipaiList.push(new Pai(new x_J(),PaiCode.X_J,dragColor));
+				dipaiList.push(new Pai(new x_Q(),PaiCode.X_Q,dragColor));
+				dipaiList.push(new Pai(new x_K(),PaiCode.X_K,dragColor));
+				dipaiList.push(new Pai(new x_A(),PaiCode.X_A,dragColor));
+				dipaiList.push(new Pai(new x_2(),PaiCode.X_2,dragColor));
+				
+				dipaiList.push(new Pai(new t_3(),PaiCode.T_3,dragColor));
+				dipaiList.push(new Pai(new t_4(),PaiCode.T_4,dragColor));
+				dipaiList.push(new Pai(new t_5(),PaiCode.T_5,dragColor));
+				dipaiList.push(new Pai(new t_6(),PaiCode.T_6,dragColor));
+				dipaiList.push(new Pai(new t_7(),PaiCode.T_7,dragColor));
+				dipaiList.push(new Pai(new t_8(),PaiCode.T_8,dragColor));
+				dipaiList.push(new Pai(new t_9(),PaiCode.T_9,dragColor));
+				dipaiList.push(new Pai(new t_10(),PaiCode.T_10,dragColor));
+				dipaiList.push(new Pai(new t_J(),PaiCode.T_J,dragColor));
+				dipaiList.push(new Pai(new t_Q(),PaiCode.T_Q,dragColor));
+				dipaiList.push(new Pai(new t_K(),PaiCode.T_K,dragColor));
+				dipaiList.push(new Pai(new t_A(),PaiCode.T_A,dragColor));
+				dipaiList.push(new Pai(new t_2(),PaiCode.T_2,dragColor));
+				
+				dipaiList.push(new Pai(new Joker_xiao(),PaiCode.JOKER_XIAO,dragColor));
+				dipaiList.push(new Pai(new Joker_da(),PaiCode.JOKER_DA,dragColor));
+				
+				//
+				var c:Object;
+				for(j=0;j<20;j++)
+				{
+					c = GameGlobals.pokerAssets.contentLoaderInfo.applicationDomain.getDefinition("bg_dizhu");
+					//trace(c);
+					bgPaiList_diZhu.push(new c());
+					//bgPaiList_diZhu.push(new bg_dizhu());
+				}
+				
+				//
+				for(j=0;j<34;j++)
+				{
+					c = GameGlobals.pokerAssets.contentLoaderInfo.applicationDomain.getDefinition("bg_nongming");
+					//trace(c);
+					bgPaiList_nongMing.push(new c());
+					
+					//bgPaiList_nongMing.push(new bg_nongming());
+				}				
+				
+				//34张
+				for(j=0;j<34;j++)
+				{
+					c = GameGlobals.pokerAssets.contentLoaderInfo.applicationDomain.getDefinition("bg_normal");
+					//trace(c);
+					bgPaiList_normal.push(new c());
+					
+					//bgPaiList_normal.push(new bg_normal());
+				}
+				
+				//走棋规则初始化
+				paiRule = new PaiManager(this.paiList,this.dipaiList);
+				
+				//象棋游戏聊天最大30行足以
+				_chat = new FChat(this.textBox1,30);
+				
+				//
+				this.cb1.dataProvider = talk;
+				
+				//
+				this.talk0 = new Sound();
+				this.talk1 = new Sound();
+				this.talk2 = new Sound();
+				this.talk3 = new Sound();
+				
+				this.soundRobotAlert = new Sound();
+				this.soundRobotAlertPlayCount = 0;
+				
+				this.soundWin = new Sound();
+				this.soundLose = new Sound();
+				
+				//
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onUserEnterRoom,onUserEnterRoom);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onUserLeaveRoom,onUserLeaveRoom);				
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomLeft,onRoomLeft);
+				
+				//模式2
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomLeftAndGoHallAutoMatch,onRoomLeftAndGoHallAutoMatch);
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomVariablesUpdate,onRoomVariablesUpdate);
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onIdleList,onIdleList);	
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomGameStart,onRoomGameStart);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomGameReconnection,onRoomGameReconnection);
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomGameOver,onRoomGameOver);
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onPublicMessage,onPublicMessage);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onPublicAudioMessage,onPublicAudioMessage);
+				
+				
+				//
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onLoadHeadPhoto,onLoadHeadPhoto);
+				
+				//
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onUserWaitReconnectionRoomStart,onUserWaitReconnectionRoomStart);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onUserWaitReconnectionRoomEnd,onUserWaitReconnectionRoomEnd);
+				
+				//
+				
+			
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				try
+				{
+					b1.source = GameGlobals.rootUrl + "assets/" + GameGlobals.color + "_room_bg.jpg";
+					
+					
+					this.talk0.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/SOUND_VOICE_9.mp3"));
+					this.talk1.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/SOUND_VOICE_18.mp3"));
+					this.talk2.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/SOUND_VOICE_59.mp3"));
+					this.talk3.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/SOUND_VOICE_92.mp3"));
+					//
+					this.soundRobotAlert.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/ALARM3.mp3"));
+					//
+					this.soundWin.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/WIN.mp3"));
+					this.soundLose.load(new URLRequest(GameGlobals.rootUrl + "assets/sound/LOSE.mp3"));
+					
+				}
+				catch (exd:Error) 
+				{            		
+					Alert.show(QiPaiStr.getErrorMessage("canvas1_creationCompleteHandler",exd.message));
+				}	
+				
+			}
+			
+			/**
+			 * 
+			 * 
+			 */ 
+			private function onUserWaitReconnectionRoomStart(event:QiPaiEvent):void
+			{				
+				//
+				PopUpManager.addPopUp(_waitUserReconnectionWin,this,true);
+				PopUpManager.centerPopUp(_waitUserReconnectionWin);
+				
+				//
+				_waitUserReconnectionWin.waitUserNickName = event.params.userNickName;
+				_waitUserReconnectionWin.waitUserTime = event.params.userTime;
+				
+				//
+				if(this.chuPaiTimer.running)
+				{
+					chuPaiTimerPaused = true;
+					this.chuPaiTimer.stop();
+				}
+				
+			}
+			
+			private function onUserWaitReconnectionRoomEnd(event:QiPaiEvent):void
+			{
+				//
+				_waitUserReconnectionWin.Close();
+				
+				//
+				if(chuPaiTimerPaused)
+				{
+					chuPaiTimerPaused = false;
+					this.chuPaiTimer.start();
+				}
+				
+			}
+			/**
+			 * 开启扑克牌拖动功能
+			 */
+			private function openDragPoker():void{
+				(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.MOUSE_DOWN,onStartDragPokerHandler);
+				(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.MOUSE_UP,onStopDragPokerHandler);
+				(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.ROLL_OUT,onStopDragPokerHandler);
+			}
+			
+			/**
+			 * 关闭扑克牌拖动功能
+			 */
+			private function closeDragPoker():void{
+				(this.board.mc_pailist_h_down as MovieClip).removeEventListener(MouseEvent.MOUSE_DOWN,onStartDragPokerHandler);
+				(this.board.mc_pailist_h_down as MovieClip).removeEventListener(MouseEvent.MOUSE_UP,onStopDragPokerHandler);
+				(this.board.mc_pailist_h_down as MovieClip).removeEventListener(MouseEvent.ROLL_OUT,onStopDragPokerHandler);
+			}
+			
+			private var inMoving:Boolean = false;
+			private var starMouseX:Number = 0;
+			private var downTarget:Object = null;
+			
+			private function onStartDragPokerHandler(e:MouseEvent):void{
+				//
+				downPoker = null;
+				lastPoker = null;
+				pokerTx=0;
+				inMoving = false;
+				downTarget = e.target;
+				
+				if (e.target.parent){
+					if (e.target.parent == board.mc_pailist_h_down.mc_container){
+						starMouseX = e.stageX;
+						(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.MOUSE_MOVE,onMoveHandler)
+					}
+				}
+				
+//				onSelectPokerHandler(e);
+//				starMouseX = e.stageX;
+//				(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.MOUSE_MOVE,onMoveHandler)
+				//
+//				(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.MOUSE_OVER,onSelectPokerHandler);
+			}
+			
+			private function onMoveHandler(e:MouseEvent):void{
+				if (Math.abs(starMouseX-e.stageX)>=10){
+					(this.board.mc_pailist_h_down as MovieClip).removeEventListener(MouseEvent.MOUSE_MOVE,onMoveHandler);
+					if (e.target.parent){
+						if (e.target.parent == board.mc_pailist_h_down.mc_container){
+							if (e.target != downTarget){
+								trace("moving is too false!");
+								this.selectPoker(downTarget as DisplayObject); 
+//								return;
+							}
+						}
+					}
+					
+					inMoving = true;
+					onSelectPokerHandler(e);
+					(this.board.mc_pailist_h_down as MovieClip).addEventListener(MouseEvent.MOUSE_OVER,onSelectPokerHandler);
+				}
+			}
+
+			private function onStopDragPokerHandler(e:MouseEvent):void{
+				(this.board.mc_pailist_h_down as MovieClip).removeEventListener(MouseEvent.MOUSE_MOVE,onMoveHandler);
+				(this.board.mc_pailist_h_down as MovieClip).removeEventListener(MouseEvent.MOUSE_OVER,onSelectPokerHandler);
+				
+				//trace("onStopDragPokerHandler--------",e.target,e.currentTarget,e.target.parent,e.currentTarget.parent);
+				if (inMoving==false){
+					return;					
+				}
+					inMoving = false;
+				//all selected = false
+				var clickTarget:MovieClip = null;
+//				if (e.target.parent){
+//					if (e.target.parent == board.mc_pailist_h_down.mc_container){
+//						clickTarget= e.target as MovieClip;
+//					}
+//				}
+				
+				var reset:Boolean = e.type == MouseEvent.ROLL_OUT;//当鼠标移出当前容器，则之前当选中操作都无效
+				
+				for(var j:int=0;j<(this.board.mc_pailist_h_down.mc_container as MovieClip).numChildren;j++)
+				{
+					var dj:MovieClip = (this.board.mc_pailist_h_down.mc_container as MovieClip).getChildAt(j) as MovieClip;
+					if(null != dj){
+						
+						if (reset){
+							dj.data.selected = false;
+							continue;
+						}
+						
+						if (dj == clickTarget){
+							continue;
+						}
+						if (dj.data.selected){
+							dj.data.selected = false;
+							if(0 == dj.y)
+							{
+								dj.y = dj.y - PaiLayout.PAI_CLICK_V_PADDING;
+							}else
+							{
+								dj.y = 0;
+							}
+						}
+					}
+				}	
+			}
+			
+			private var downPoker:DisplayObject = null;
+			private var lastPoker:DisplayObject = null;
+			private var pokerTx:int= 0;
+
+			/**
+			* 当鼠标按下时，判定鼠标是否在自己的牌上，如果是，则将当前的牌状态置为与之前相反的状态，即：selected = ！selected; 同时更改牌的y坐标
+			* modified by liuaobo at 2013.07.22
+			*/
+			private function onSelectPokerHandler(e:MouseEvent=null):void{
+			  var dis:DisplayObject = e.target as DisplayObject;
+			  this.selectPoker(dis);
+			}
+			
+			private function selectPoker(dis:DisplayObject):void{
+				if (dis.parent){
+					if (dis.parent == board.mc_pailist_h_down.mc_container){
+						if (downPoker==null){
+							downPoker = dis;
+						}else{
+							if (downPoker == dis){
+								return;
+							}
+						}
+						if (lastPoker== null){
+							lastPoker = dis;
+						}else{
+							if (pokerTx!=0){
+								if (pokerTx<0){
+									if (dis.x-lastPoker.x>0){
+										(lastPoker as MovieClip).data.selected = !(lastPoker as MovieClip).data.selected;
+									}
+								}else{
+									if (dis.x-lastPoker.x<0){
+										(lastPoker as MovieClip).data.selected = !(lastPoker as MovieClip).data.selected;
+									}
+								}
+							}
+							//						else{
+							//							pokerTx = dis.x-lastPoker.x;
+							//						}
+							pokerTx = dis.x-lastPoker.x;
+							lastPoker = dis;
+						}
+						(dis as MovieClip).data.selected = !(dis as MovieClip).data.selected;
+						//					(dis as MovieClip).data.selected = true;
+						//					
+						//					if (0 == dis.y)
+						//					{
+						//						dis.y = dis.y - PaiLayout.PAI_CLICK_V_PADDING;
+						//												
+						//					}else{
+						//						
+						//						dis.y = 0;
+						//					}					
+						
+					} 
+				}
+			}
+			/**
+			 * 
+			 * 
+			 */
+			public function onLoadHeadPhoto(qevt:QiPaiEvent=null):void
+			{
+				var img_down_url:String;
+				
+				//这里不需要GameGlobals.url
+				
+					//this.mc_person_img_down.source = createHeadPhotoPath(qevt.params.id_sql);
+					
+					img_down_url = GameGlobals.qpc.data.hero.getHeadIco(
+						GameGlobals.qpc.data.selectDB.mode,
+						GameGlobals.rootUrl,
+						GameGlobals.qpc.data.getClientConfig().InstallDir,
+						GameGlobals.GAMENAME);
+					
+					
+					this.mc_person_img_down.source = img_down_url;
+			
+			
+			}
+				
+			/**
+			 * 另外一种形式的GameStart
+			 * 
+			 */ 
+			public function onRoomGameReconnection(qevt:QiPaiEvent):void
+			{
+				var hero:IUserModel;
+				var chair:IChairModel;
+				var rival:Array;
+				
+				var rivalChair:IChairModel;	
+				var rivalUser:IUserModel;
+				var isLeftOrRight:String;
+				
+				//
+				(this.board.mc_btn_ready as MovieClip).visible = false;
+				(this.board.mc_btn_mingPai_ready as MovieClip).visible = false;
+				
+				//停止自动离开房间倒计时				
+				GameGlobals.qpc.data.stopAutoLeaveRoomTimer();
+				
+				//恢复出牌记录
+				this.paiRule.rebuild(qevt.params.roundInfo,
+					                 qevt.params.roundMeta);
+				
+				//
+				var ro:RoundModelByDdz = this.paiRule.Record;
+				
+				if(ro.isEmpty())
+				{
+					var roListLen:int = this.paiRule.Round.length;
+					
+					if(roListLen > 0){
+						ro = this.paiRule.Round[roListLen-1];
+						
+					}
+				}
+				
+				//loop use
+				var i:int;
+				
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				
+				//
+				var a:String = GameGlobals.qpc.data.hero.Id;
+				
+				//叫分阶段还未决出地主
+				if("" == matchInfo.dizhu)
+				{
+					this.jiaoFenBar.reset();
+					//this.jiaoFenBar.disableByFen(fen);
+					var fen:int = IntUtil.selectMax(
+						IntUtil.selectMax(ro.clock_one_jiaofen,ro.clock_two_jiaofen),
+						ro.clock_three_jiaofen);
+					this.jiaoFenBar.disableByFen(fen);
+					
+					//
+					//this.paiRule.reset();
+					
+					this.laseTipPx = null;
+					
+					//
+					this.ClearPai(PaiLayout.TOP);
+					this.ClearPai(PaiLayout.DOWN);
+					this.ClearPai(PaiLayout.DOWN2);
+					this.ClearPai(PaiLayout.LEFT);
+					this.ClearPai(PaiLayout.LEFT2);
+					this.ClearPai(PaiLayout.RIGHT);
+					this.ClearPai(PaiLayout.RIGHT2);
+					//
+					this.JiaoFenIcon(PaiLayout.LEFT,false);
+					this.JiaoFenIcon(PaiLayout.RIGHT,false);
+					this.JiaoFenIcon(PaiLayout.DOWN,false);
+					
+					//显示上家牌和下家牌
+					//-------------------------------------------------------
+					
+					hero = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+					chair = GameGlobals.qpc.data.activeRoom.getChair(hero);
+					//rival - 对手						
+					rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser   = (rival[i] as IChairModel).getUser();	
+						var jiaoFen:int=-1;
+						
+						//if(rivalUser.Id == matchInfo.turn)//注意这里要找的是turn
+						//{
+						
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						//
+						if(rivalUser.Id == ro.clock_one)
+						{								
+							jiaoFen = ro.clock_one_jiaofen;
+							
+						}else if(rivalUser.Id == ro.clock_two)
+						{
+							jiaoFen = ro.clock_two_jiaofen;
+							
+						}else if(rivalUser.Id == ro.clock_three)
+						{
+							jiaoFen = ro.clock_three_jiaofen;
+						}
+						else{
+							//paiArr = [];
+							
+						}
+						//
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{
+							
+							//
+							if(-1 != jiaoFen)
+								this.JiaoFenIcon(PaiLayout.LEFT,true,jiaoFen);
+							
+						}else if(PaiLayout.RIGHT == isLeftOrRight)
+						{
+							if(-1 != jiaoFen)
+								this.JiaoFenIcon(PaiLayout.RIGHT,true,jiaoFen);
+							
+						}	
+						
+						continue;
+						//}
+						
+					}//end for						
+					
+					//-------------------------------------------------------
+					
+					//
+					this.DzOrNongMingIcon(PaiLayout.LEFT,false);
+					this.DzOrNongMingIcon(PaiLayout.RIGHT,false);				
+					this.DzOrNongMingIcon(PaiLayout.DOWN,false);	
+					
+					//
+					this.refreshRoom(true);
+					
+					//
+					soundRobotAlertPlayCount = 0;
+					
+					//faPaiTimer
+					faPaiComplete();
+					
+					
+					
+				}
+				else
+				{					
+					//clear
+					this.jiaoFenBar.visible = false;
+					this.JiaoFenIcon(PaiLayout.LEFT,false);
+					this.JiaoFenIcon(PaiLayout.RIGHT,false);
+					this.JiaoFenIcon(PaiLayout.DOWN,false);
+					
+					//save
+					//this.paiRule.saveRecordAndChangeTypeToChuPai();
+					
+					//显示上家牌和下家牌
+					//-------------------------------------------------------
+					
+					hero = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+					chair = GameGlobals.qpc.data.activeRoom.getChair(hero);
+					//rival - 对手						
+					rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser   = (rival[i] as IChairModel).getUser();	
+						var paiArr:Array;
+						
+						//if(rivalUser.Id == matchInfo.turn)//注意这里要找的是turn
+						//{
+						
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						//
+						if(rivalUser.Id == ro.clock_one)
+						{								
+							paiArr = ro.toArray(ro.clock_one_chupai);
+							
+						}else if(rivalUser.Id == ro.clock_two)
+						{
+							paiArr = ro.toArray(ro.clock_two_chupai);
+							
+						}else if(rivalUser.Id == ro.clock_three)
+						{
+							paiArr = ro.toArray(ro.clock_three_chupai);
+						}
+						else{
+							//paiArr = [];
+							
+						}
+						//
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{
+							
+							//
+							if(null != paiArr)
+								this.AddPai(PaiLayout.LEFT2,paiArr);
+							
+						}else if(PaiLayout.RIGHT == isLeftOrRight)
+						{
+							if(null != paiArr)
+								this.AddPai(PaiLayout.RIGHT2,paiArr);
+							
+						}	
+						
+						continue;
+						//}
+						
+					}//end for						
+					
+					//-------------------------------------------------------
+					
+					
+					//开始出牌					
+					//显示闹钟			
+					if(GameGlobals.qpc.data.hero.Id == matchInfo.dizhu)
+					{
+						this.DzOrNongMingIcon(PaiLayout.LEFT,true,false);
+						this.DzOrNongMingIcon(PaiLayout.RIGHT,true,false);				
+						this.DzOrNongMingIcon(PaiLayout.DOWN,true,true);
+						
+					}else
+					{
+						
+						this.DzOrNongMingIcon(PaiLayout.DOWN,true,false);	
+						
+						hero = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+						chair = GameGlobals.qpc.data.activeRoom.getChair(hero);
+						//rival - 对手						
+						rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+						
+						for(i = 0;i<rival.length;i++)
+						{
+							rivalChair = rival[i] as IChairModel;	
+							rivalUser   = (rival[i] as IChairModel).getUser();	
+							
+							//
+							isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+							
+							if(rivalUser.Id == matchInfo.dizhu)//注意这里要找的是turn
+							{
+								if(PaiLayout.LEFT == isLeftOrRight)
+								{
+									//ChuPaiClock(PaiLayout.LEFT);	
+									this.DzOrNongMingIcon(PaiLayout.LEFT,true,true);
+									this.DzOrNongMingIcon(PaiLayout.RIGHT,true,false);
+									
+								}else if(PaiLayout.RIGHT == isLeftOrRight)
+								{
+									//ChuPaiClock(PaiLayout.RIGHT);
+									this.DzOrNongMingIcon(PaiLayout.LEFT,true,false);
+									this.DzOrNongMingIcon(PaiLayout.RIGHT,true,true);
+									
+								}	
+								
+								continue;
+							}
+							
+						}//end for
+					}
+					
+					if(GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+					{
+						this.chuPaiBar.visible = true;
+						this.chuPaiBar.currentState = PaiRule.CHUPAI_BAR_STATE_MUSTCHUPAI;
+						this.ChuPaiClock(PaiLayout.DOWN,true,this.clockDown_compSystemAutoChuPai);
+						
+						//		
+						//this.DzOrNongMingIcon(PaiLayout.LEFT,true,false);
+						//this.DzOrNongMingIcon(PaiLayout.RIGHT,true,false);				
+						//this.DzOrNongMingIcon(PaiLayout.DOWN,true,true);
+						
+						
+						
+					}
+					else
+					{				
+						this.DzOrNongMingIcon(PaiLayout.DOWN,true,false);	
+						
+						hero = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+						chair = GameGlobals.qpc.data.activeRoom.getChair(hero);
+						//rival - 对手						
+						rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+						
+						for(i = 0;i<rival.length;i++)
+						{
+							rivalChair = rival[i] as IChairModel;	
+							rivalUser   = (rival[i] as IChairModel).getUser();	
+							
+							if(rivalUser.Id == matchInfo.turn)//注意这里要找的是turn
+							{
+								isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+								
+								if(PaiLayout.LEFT == isLeftOrRight)
+								{
+									ChuPaiClock(PaiLayout.LEFT);	
+									//this.DzOrNongMingIcon(PaiLayout.LEFT,true,true);
+									//this.DzOrNongMingIcon(PaiLayout.RIGHT,true,false);
+									
+								}else if(PaiLayout.RIGHT == isLeftOrRight)
+								{
+									ChuPaiClock(PaiLayout.RIGHT);
+									//this.DzOrNongMingIcon(PaiLayout.LEFT,true,false);
+									//this.DzOrNongMingIcon(PaiLayout.RIGHT,true,true);
+									
+								}	
+								
+								break;
+							}
+							
+						}//end for
+					}				
+					
+					
+					
+					
+					this.refreshRoom(true);	
+					
+					//点底牌
+					if(GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+					{
+						//获取底牌
+						//棋子
+						var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();	
+						var len:int = items.length;
+						//
+						var h:int = 3;
+						var value:Array = new Array();
+						
+						for(i =0;i<len;i++)
+						{
+							if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+							{
+								value.push((items[i] as ItemModelByDdz).name);							
+							}
+						}
+						
+						this.DianPai(value);
+						
+					}//end 点底牌		
+					
+					
+					//
+					//if(GameGlobals.TEST_ROBOT_MODE)
+					//{
+					//	this.TuoGuan();
+					//}
+					
+				}//end if
+			
+			
+			
+			}
+			
+			/**
+			 * 
+			 * 
+			 */ 
+			public function onRoomGameStart(qevt:QiPaiEvent):void
+			{					
+				//loop use
+				var i:int;
+				
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				
+				//叫分阶段还未决出地主
+				if("" == matchInfo.dizhu)
+				{
+					this.jiaoFenBar.reset();
+					this.paiRule.reset();
+					
+					this.laseTipPx = null;
+					
+					//
+					this.ClearPai(PaiLayout.TOP);
+					this.ClearPai(PaiLayout.DOWN);
+					this.ClearPai(PaiLayout.DOWN2);
+					this.ClearPai(PaiLayout.LEFT);
+					this.ClearPai(PaiLayout.LEFT2);
+					this.ClearPai(PaiLayout.RIGHT);
+					this.ClearPai(PaiLayout.RIGHT2);
+					//
+					this.JiaoFenIcon(PaiLayout.LEFT,false);
+					this.JiaoFenIcon(PaiLayout.RIGHT,false);
+					this.JiaoFenIcon(PaiLayout.DOWN,false);
+					//
+					this.DzOrNongMingIcon(PaiLayout.LEFT,false);
+					this.DzOrNongMingIcon(PaiLayout.RIGHT,false);				
+					this.DzOrNongMingIcon(PaiLayout.DOWN,false);	
+					
+					//
+					this.refreshRoom(false);
+					
+					//
+					soundRobotAlertPlayCount = 0;
+					
+					//
+					if(this.faPaiTimer.running)
+					{
+						this.faPaiTimer.stop();
+					}
+					
+					this.faPaiTimer.reset();
+					
+					if(!faPaiTimer.hasEventListener(TimerEvent.TIMER))
+					{
+						faPaiTimer.addEventListener(TimerEvent.TIMER,faPaiTimerHandler);
+					}
+					
+					if(!faPaiTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					{
+						faPaiTimer.addEventListener(TimerEvent.TIMER_COMPLETE,faPaiComplete);
+					}					
+					
+					this.faPaiTimer.start();
+					
+					
+				}
+				else
+				{					
+					//clear
+					this.jiaoFenBar.visible = false;
+					this.JiaoFenIcon(PaiLayout.LEFT,false);
+					this.JiaoFenIcon(PaiLayout.RIGHT,false);
+					this.JiaoFenIcon(PaiLayout.DOWN,false);
+					
+					//save
+					this.paiRule.saveRecordAndChangeTypeToChuPai();
+					
+					//开始出牌					
+					//显示闹钟					
+					if(GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+					{
+						this.chuPaiBar.visible = true;
+						this.chuPaiBar.currentState = PaiRule.CHUPAI_BAR_STATE_MUSTCHUPAI;
+						this.ChuPaiClock(PaiLayout.DOWN,true,this.clockDown_compSystemAutoChuPai);
+						
+						//		
+						this.DzOrNongMingIcon(PaiLayout.LEFT,true,false);
+						this.DzOrNongMingIcon(PaiLayout.RIGHT,true,false);				
+						this.DzOrNongMingIcon(PaiLayout.DOWN,true,true);	
+											
+					}
+					else
+					{				
+						this.DzOrNongMingIcon(PaiLayout.DOWN,true,false);	
+					
+						var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+						var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+						//rival - 对手						
+						var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+						
+						for(i = 0;i<rival.length;i++)
+						{
+							var rivalChair:IChairModel = rival[i] as IChairModel;	
+							var rivalUser:IUserModel   = (rival[i] as IChairModel).getUser();	
+							
+							if(rivalUser.Id == matchInfo.turn)//注意这里要找的是turn
+							{
+								var isLeftOrRight:String = this.leftOrRight(chair,rivalChair,rivalUser);
+								
+								if(PaiLayout.LEFT == isLeftOrRight)
+								{
+									ChuPaiClock(PaiLayout.LEFT);	
+									this.DzOrNongMingIcon(PaiLayout.LEFT,true,true);
+									this.DzOrNongMingIcon(PaiLayout.RIGHT,true,false);
+									
+								}else if(PaiLayout.RIGHT == isLeftOrRight)
+								{
+									ChuPaiClock(PaiLayout.RIGHT);
+									this.DzOrNongMingIcon(PaiLayout.LEFT,true,false);
+									this.DzOrNongMingIcon(PaiLayout.RIGHT,true,true);
+								
+								}	
+								
+								break;
+							}
+						
+						}//end for
+					}				
+					
+					this.refreshRoom(true);	
+					
+					//点底牌
+					if(GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+					{
+						//获取底牌
+						//棋子
+						var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();	
+					 	var len:int = items.length;
+					 	//
+					 	var h:int = 3;
+					 	var value:Array = new Array();
+						
+						for(i =0;i<len;i++)
+						{
+						   	if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+							{
+								value.push((items[i] as ItemModelByDdz).name);							
+							}
+						}
+						
+						this.DianPai(value);
+					
+					}//end 点底牌			
+					
+					//
+					if(GameGlobals.TEST_ROBOT_MODE)
+					{
+						this.TuoGuan();
+					}
+					
+				}//end if
+				
+			}
+			
+						
+			public function checkG():Boolean
+			{
+			
+				//负分自动离开房间
+				var g:String = GameGlobals.qpc.data.hero.G;
+				
+				//
+				(this.board.lbl_goldPoint_down as TextField).htmlText = "<font color='#ffff00'>$" + ":</font>" + g + "";
+				
+				//只要携带够，就能进入房间，而退出房间按底分来，
+				var difen:int = (GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel).getDiFen();
+				
+				
+				//负分无法发贴，现根据房间底分来改
+				if(Number(g) < difen)
+				{	
+					//Alert.show("抱歉啦！您被请离开" + lang_RoomName +",原因是您持有的" + lang_GoldPointName + 
+					//	"低于 " + difen.toString() +" 底分。",
+					//	QiPaiStr.ALERT_TITLE,4);
+					
+					Alert.show(
+						GetLang_sorry_you_must_exit_room_str(difen),
+						QiPaiStr.ALERT_TITLE,4);
+					
+					//close gameOverWin2
+					if(_gameOverWin2.isPopUp)
+					{
+						_gameOverWin2.clickHandler();
+					}
+					
+					this.mc_btn_exitRoom_click();
+					
+					return true;
+					
+				}else
+				{
+					//startAutoLeaveRoom();
+					
+					return false;
+				}
+			
+				/* if(g.indexOf("-") == 0)
+				{
+				Alert.show("抱歉！您现在为负分，现在会离开" + this.lang_RoomName +
+				"！",QiPaiStr.ALERT_TITLE);		
+				
+				//close gameOverWin2
+				_gameOverWin2.clickHandler();
+				
+				this.mc_btn_exitRoom_click();
+				} */
+			
+			}
+			
+			
+			/**
+			 * 
+			 * 
+			 */ 
+			public function onRoomGameOver(qevt:QiPaiEvent):void
+			{								
+				
+				//
+				this.stopChuPaiTimer();
+				
+				//
+				this.jiaoFenBar.visible = false;
+				
+				this.chuPaiBar.visible = false;
+				
+				//
+				this.showGameOverWin2();
+				
+				//
+				this.refreshRoom(true);		
+				
+				//
+				(this.board.mc_btn_ready as MovieClip).visible = true;
+				(this.board.mc_btn_mingPai_ready as MovieClip).visible = true;
+				
+				
+				//托管机器人图标
+				this.RobotIcon(PaiLayout.LEFT,false);
+				this.RobotIcon(PaiLayout.RIGHT,false);				
+				this.RobotIcon(PaiLayout.DOWN,false);				
+				
+				//报警机器人图标
+				//注意这个是没有down的
+				this.RobotAlertIcon(PaiLayout.LEFT,false);
+				this.RobotAlertIcon(PaiLayout.RIGHT,false);	
+				
+				//
+				//this.btnTuoGuan.label = "托　管";
+				this.btnTuoGuan.label = lang_btnTuoGuan_label;
+								
+				
+				//
+				if(!checkG())
+				{	
+					startAutoLeaveRoom();
+					
+				}
+				
+			}
+			
+			
+			/**
+			 * 发17张牌
+			 */ 
+			public function faPaiTimerHandler(event:TimerEvent):void
+			{	
+				//currentCount
+				updateBoardByFaPaiTimer((this.faPaiTimer.currentCount-1));
+			}
+			
+			public function updateBoardByFaPaiTimer(curInd:int):void
+			{
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+				//
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				
+				//自已
+				this.AddPaiByTimer(PaiLayout.DOWN,curInd);		
+				
+				//rival - 对手
+				var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+				
+				for(var i:int = 0;i<rival.length;i++)
+				{
+					var rivalChair:IChairModel = rival[i] as IChairModel;	
+					var rivalUser:IUserModel   = (rival[i] as IChairModel).getUser();	
+					
+					var isLeftOrRight:String = this.leftOrRight(chair,rivalChair,rivalUser);
+					
+					if(PaiLayout.LEFT == isLeftOrRight)
+					{
+						AddPaiByTimer(PaiLayout.LEFT,curInd,rivalUser,rivalChair);
+						
+					}else if(PaiLayout.RIGHT == isLeftOrRight)
+					{
+						AddPaiByTimer(PaiLayout.RIGHT,curInd,rivalUser,rivalChair);
+					}	
+				
+				}//end for
+			
+			}
+			
+			/**
+			 * 发牌完，如果turn是自已，显示叫分bar
+			 * 不是则在对方显示闹钟
+			 */ 
+			public function faPaiComplete(event:TimerEvent=null):void
+			{
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				
+				//
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);	
+											
+				if(GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+				{
+					this.jiaoFenBar.visible = true;
+					this.JiaoFenClock(PaiLayout.DOWN,true,this.clockDown_compAutoJiaoFenPass);
+					
+					//
+					if(GameGlobals.TEST_ROBOT_MODE)
+					{
+						this.JiaoFen(PaiRule.JIAO_FEN_MAXVALUE);
+					}
+					
+					
+				}else
+				{
+					//显示闹钟------------------------------------------------------
+					//rival - 对手
+					var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+					for(var i:int = 0;i<rival.length;i++)
+					{
+						var rivalChair:IChairModel = rival[i] as IChairModel;	
+						var rivalUser:IUserModel   = (rival[i] as IChairModel).getUser();	
+						
+						if(rivalUser.Id == matchInfo.turn)//注意这里要找的是turn
+						{
+							var isLeftOrRight:String = this.leftOrRight(chair,rivalChair,rivalUser);
+							
+							//test
+							//isLeftOrRight = PaiLayout.UNKNOW;
+							
+							if(PaiLayout.LEFT == isLeftOrRight)
+							{
+								JiaoFenClock(PaiLayout.LEFT);
+								
+							}else if(PaiLayout.RIGHT == isLeftOrRight)
+							{
+								JiaoFenClock(PaiLayout.RIGHT);
+							
+							}else if(PaiLayout.UNKNOW == isLeftOrRight)
+							{
+								Alert.show(QiPaiStr.getErrorMessage("faPaiComplete",
+								
+									"leftOrRight:UNKNOW",
+																		
+									"matchInfo.dizhu:" + matchInfo.dizhu + "\n" +
+									"matchInfo.nongming:" + matchInfo.nongming + "\n" +
+									"matchInfo.turn:" + matchInfo.turn + "\n" +
+									"matchInfo.win:" + matchInfo.win + "\n" +
+									"matchInfo.difen:" + matchInfo.difen + "\n" +
+									"matchInfo.bomb:" + matchInfo.bomb + "\n" +
+									
+									"chair.id:" + chair.Id + "\n" +
+									"rivalChair.id:" + rivalChair.Id + "\n" +
+									"rivalUser.id:" +  rivalUser.Id)
+								);
+								
+							}
+							
+							break;
+						}
+					
+					}//end for
+					
+					//-------------------------------------------------------------
+				}
+				
+				//按钮更改状态
+				
+			
+			}
+			
+			/**
+			 * 主要为转发的指令
+			 */ 
+			public function onRoomVariablesUpdate(qevt:QiPaiEvent):void
+			{
+				//try
+				//{
+					//tmp loop use
+					var i:int = 0;
+					var j:int = 0;
+					var rival:Array;
+					var rivalChair:IChairModel;
+					var rivalUser:IUserModel;				
+					var value:Array;
+					var rivalUserId:String;
+				
+					//room variables update
+					var vars:Array = GameGlobals.qpc.data.activeRoom.getVarsList();
+					var len:int = vars.length;
+					
+					//
+					var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+					var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+					var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+					var isLeftOrRight:String;
+					 				
+					//
+					for(i = 0;i<len;i++)
+					{
+						var val:VarModel = vars[i] as VarModel;
+						
+						//房间变量处理表
+						if("chairReady" == val.n)
+						{
+							rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+													
+							for(j = 0;i<rival.length;i++)
+							{
+								rivalChair = rival[i] as IChairModel;	
+								rivalUser   = (rival[i] as IChairModel).getUser();		
+								
+								if(rivalUser.Id == val.value)
+								{
+									rivalChair.setReady(true);	
+									
+									this.refreshRoomUser();
+									
+									break;
+								}
+								
+							}//end for					
+						}
+						else if("jiaoFen" == val.n)
+						{
+	            			
+	            			rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+							
+							var fen:int = parseInt(val.value.split(',')[1]);
+							
+							this.jiaoFenBar.disableByFen(fen);
+													
+	            			for(i = 0;i<rival.length;i++)
+							{
+								rivalChair = rival[i] as IChairModel;	
+								rivalUser  = (rival[i] as IChairModel).getUser();		
+								
+								if(rivalUser.Id == val.value.split(',')[0])
+								{
+									//record begin -------------------------------------------		
+									
+									
+									this.paiRule.getRecordIsFullAndSave(RoundTypeByDdz.JIAO_FEN);								
+									this.paiRule.getRecord().setFen(fen,rivalUser.Id);								
+									//record end -------------------------------------------
+									
+									isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+									
+									//显示叫分
+									if(PaiLayout.LEFT == isLeftOrRight)
+									{
+										this.JiaoFenIcon(PaiLayout.LEFT,true,fen);
+										
+									}else if(PaiLayout.RIGHT == isLeftOrRight)
+									{
+										this.JiaoFenIcon(PaiLayout.RIGHT,true,fen);
+									
+									}					
+									
+									//该哪方走
+									//NextAction
+									JiaoFenNextAction(isLeftOrRight,fen);	
+									
+									break;
+								}
+								
+							}//end for	       
+							     			
+						}else if("chuPai" == val.n)
+						{
+							if(val.value.indexOf(",") > -1)
+							{
+								value = val.value.split(',');
+								
+								rivalUserId = value[0];
+								
+								value.splice(0,1);
+								
+								//播出牌声音
+								var channel:SoundChannel;
+								var volume:Number = GameGlobals.audio.curVolume;			
+								var transform:SoundTransform = new SoundTransform(volume,0);
+								
+								channel = this.soundChuPai.play();
+											
+								if(null != channel)
+								{
+									channel.soundTransform = transform;
+								}
+								
+							}else
+							{
+								value = new Array();
+								
+								rivalUserId = val.value;
+								
+								//不出时不发声
+							}
+							
+							rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+							
+							for(j = 0;i<rival.length;i++)
+							{
+								rivalChair = rival[i] as IChairModel;	
+								rivalUser  = (rival[i] as IChairModel).getUser();		
+								
+								if(rivalUser.Id == rivalUserId)
+								{				
+									//record begin -------------------------------------------								
+									//记录已出炸弹个数
+									var pcArr:Array = this.paiRule.getPaiCodeByNameArr(value);
+									var checkPx:Array = PaiRuleCompare.validate(pcArr);
+									
+									if(PaiRule.BOMB == checkPx[0] ||
+									   PaiRule.HUOJIAN == checkPx[0])
+									{
+										(GameGlobals.qpc.data.activeRoom as RoomModelByDdz).setBombCount();
+										
+										refreshDiFenAndBombCount();
+									}
+									
+									this.ChuPaiRecord(rivalUser.Id,value);
+									//record end -------------------------------------------
+								
+									isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+									
+									//显示出牌
+									if(PaiLayout.LEFT == isLeftOrRight)
+									{
+										//减牌
+										this.ClearPaiAndRePos(PaiLayout.LEFT,value);
+										//加牌
+										this.AddPai(PaiLayout.LEFT2,value);
+										//
+										this.AddPaiEffect(PaiLayout.LEFT2,checkPx);
+										//next
+										this.ChuPaiNextAction(PaiLayout.LEFT,value);
+										
+									}else if(PaiLayout.RIGHT == isLeftOrRight)
+									{
+										//减牌
+										this.ClearPaiAndRePos(PaiLayout.RIGHT,value);
+										//加牌
+										this.AddPai(PaiLayout.RIGHT2,value);
+										//
+										this.AddPaiEffect(PaiLayout.RIGHT2,checkPx);
+										//next
+										this.ChuPaiNextAction(PaiLayout.RIGHT,value);
+									}
+									
+									break;
+								}
+								
+							}//end for						
+						
+						}else if("tuoGuan" == val.n)
+						{
+							rivalUserId = val.value;
+						
+							rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+							
+							for(j = 0;i<rival.length;i++)
+							{
+								rivalChair = rival[i] as IChairModel;	
+								rivalUser  = (rival[i] as IChairModel).getUser();		
+								
+								if(rivalUser.Id == rivalUserId)
+								{											
+									isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+									
+									//显示出牌
+									if(PaiLayout.LEFT == isLeftOrRight)
+									{
+										if(false == (this.board.mc_robot_left as MovieClip).visible)
+										{
+											this.RobotIcon(PaiLayout.LEFT,true);
+											
+										}else
+										{
+											this.RobotIcon(PaiLayout.LEFT,false);
+										}
+										
+									}else if(PaiLayout.RIGHT == isLeftOrRight)
+									{
+										if(false == (this.board.mc_robot_right as MovieClip).visible)
+										{
+											this.RobotIcon(PaiLayout.RIGHT,true);
+											
+										}else
+										{
+											this.RobotIcon(PaiLayout.RIGHT,false);
+										}
+									}
+									
+									break;
+								}
+							}
+						}//end if
+				
+					}//end for
+			
+				//}
+				//catch (exd:Error) 
+				//{            		
+				//   	Alert.show(QiPaiStr.getErrorMessage("onRoomVariablesUpdate",exd.message));
+				//}	
+			}
+			
+			//exitRoom只有1和2，锁定靠弹出的窗口
+			public function mc_btn_exitRoom_click(event:MouseEvent=null):void
+			{
+				//
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+								
+				if("" != matchInfo.turn)
+				{
+					//不可以直接退
+					showRoomExitWin();
+						
+					return;	
+				}
+				
+				GameGlobals.qpc.leaveRoom(GameGlobals.qpc.data.hero.activeRoomId);
+			
+			}
+			
+			public function mc_btn_exitRoom_rollOut(event:MouseEvent):void
+			{
+				this.board.mc_btn_exitRoom.gotoAndStop(1);
+			}
+			
+			public function mc_btn_exitRoom_rollOver(event:MouseEvent):void
+			{
+				this.board.mc_btn_exitRoom.gotoAndStop(2);
+			}
+			
+			
+			/**
+			 * 
+			 */
+			public function mc_btn_record_click(event:MouseEvent=null):void
+			{
+				//
+				var value:Boolean = !this.recordView.visible;
+				this.recordView.visible = value;
+				
+				//
+				if(value && this.board.mc_pailist_h_dipai.x == 336)
+				{
+					TweenLite.to(this.board.mc_pailist_h_dipai,0.2,{
+						
+						x:226
+					});					
+				}
+				
+				//
+				if(!value && this.board.mc_pailist_h_dipai.x != 336)
+				{
+					TweenLite.to(this.board.mc_pailist_h_dipai,0.2,{
+						
+						x:336
+					});		
+				
+				}
+				
+			}
+			
+			
+			
+			public function mc_btn_record_rollOut(event:MouseEvent):void
+			{
+				this.board.mc_btn_record.gotoAndStop(1);
+			}
+			
+			public function mc_btn_record_rollOver(event:MouseEvent):void
+			{
+				this.board.mc_btn_record.gotoAndStop(2);
+			}
+			
+			
+			
+			/**
+			 * 习惯设置
+			 */ 
+			public function mc_btn_habitConfig_click(event:MouseEvent):void
+			{
+				this.showHabitWin();		
+			}
+			
+			public function mc_btn_habitConfig_rollOut(event:MouseEvent):void
+			{
+				this.board.mc_btn_habitConfig.gotoAndStop(1);
+			}
+			
+			public function mc_btn_habitConfig_rollOver(event:MouseEvent):void
+			{
+				this.board.mc_btn_habitConfig.gotoAndStop(2);
+			}
+			
+			/**
+			 * 设置
+			 */ 
+			public function mc_btn_systemConfig_click(event:MouseEvent):void
+			{
+				this.showConfigWin();
+			
+			}
+			
+			public function mc_btn_systemConfig_rollOut(event:MouseEvent):void
+			{
+				this.board.mc_btn_systemConfig.gotoAndStop(1);
+			}
+			
+			public function mc_btn_systemConfig_rollOver(event:MouseEvent):void
+			{
+				this.board.mc_btn_systemConfig.gotoAndStop(2);
+			}
+			
+			public function mc_btn_mingPai_ready_click(event:MouseEvent=null):void
+			{			
+				Ready("chairMingReady");			
+			}
+			
+			/**
+		 	* 发出准备指令
+		 	*/ 
+			public function mc_btn_ready_click(event:MouseEvent=null):void
+			{
+				Ready("chairReady");
+			}
+			
+			public function onRoomLeft(qvet:QiPaiEvent):void
+			{
+				
+				//停止自动离开倒计时
+				GameGlobals.qpc.data.stopAutoLeaveRoomTimer();
+				
+				// go to Hall
+				GameGlobals.currentState = QiPaiState.HALL;
+					
+				(this.parentApplication as client_ddz).currentState = GameGlobals.currentState;
+			
+			}
+			
+			public function onRoomLeftAndGoHallAutoMatch(qvet:QiPaiEvent):void
+			{
+				
+				//停止自动离开倒计时
+				GameGlobals.qpc.data.stopAutoLeaveRoomTimer();
+				
+				// go to HALL_AUTO_MATCH
+				GameGlobals.currentState = QiPaiState.HALL_AUTO_MATCH;
+				
+				(this.parentApplication as client_ddz).currentState = GameGlobals.currentState;
+				
+			}
+			
+			private function refreshIdleList(event:TimerEvent=null):void
+			{						
+				GameGlobals.qpc.loadIdleList();
+					
+				GameGlobals.qpc.data.startIdleListTimer(this.listIdle);
+				
+			}	
+			
+			private function startAutoLeaveRoom():void
+			{
+				
+				//
+				loadAutoLeaveClock(PaiLayout.DOWN);
+				
+				GameGlobals.qpc.data.startAutoLeaveRoomTimer(this.leaveAuto_lbl_clock_sub,leaveAuto);
+				
+			
+			}
+			
+			
+			
+			private function loadAutoLeaveClock(dir:String,forStart:Boolean=true):void
+			{
+				if(PaiLayout.DOWN == dir)
+				{
+					if(forStart)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_DOWN.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_DOWN.y;
+						
+						//
+						var delay:uint = GameGlobals.qpc.data.getClientConfig().AutoLeaveRoomTimeDelay;
+						
+						//数字变动需显示
+						var delaySecondCount:uint = uint(delay / 1000);
+						
+						//delaySecondCount - 0
+						var second:int = delaySecondCount;
+						
+						(this.board.mc_clock.lbl_second as TextField).text = second.toString();
+					}
+					
+					if(!forStart)
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						
+					}
+					
+					
+				}	
+				
+			}	
+				
+			public function leaveAuto_lbl_clock_sub(event:TimerEvent):void
+			{
+				//trace("leaveAuto_lbl_clock_sub");
+				
+				//check
+				//有可能退出房间后，才收到游戏结束指令
+				if("RoomState" != GameGlobals.currentState)
+				{
+					GameGlobals.qpc.data.stopAutoLeaveRoomTimer();
+					return;
+				}
+				
+				
+				//
+				var delay:uint = GameGlobals.qpc.data.getClientConfig().AutoLeaveRoomTimeDelay;
+				
+				//数字变动需显示
+				var delaySecondCount:uint = uint(delay / 1000);
+				
+				//
+				var second:int = delaySecondCount - (event.target as Timer).currentCount;
+				
+				(this.board.mc_clock.lbl_second as TextField).text = second.toString();
+			
+			
+			}
+			
+			private function leaveAuto(event:TimerEvent=null):void
+			{
+				mc_btn_exitRoom_click();
+			}
+			
+			private function listIdle(event:TimerEvent=null):void
+			{
+				//
+				GameGlobals.qpc.loadIdleList();
+				
+			}
+			
+			
+		
+			
+			public function onUserEnterRoom(qevt:QiPaiEvent):void
+			{
+				var x:XML = qevt.params.x;
+				
+				//
+				var chairList:XMLList;
+				//var lookList:XMLList;
+				
+				if(null != x.body.chair)
+				{
+					chairList = x.body.chair;	
+					
+					//
+					for each(var chair:XML in chairList)
+					{
+						//--------------------------------------------------------------
+						
+						var cId:int = int(chair.@id);
+						var cR:Boolean = Boolean(parseInt(chair.@ready));
+						
+						var uId:String      = chair.u.@id;
+						var id_sql:String  = chair.u.@id_sql;
+						var n:String = chair.u.@n;
+						var uSex:String      = chair.u.@s;
+						var uG:String        = chair.u.@g;
+						var uBbs:String      = chair.u.@bbs;
+						var uHeadIco:String  = chair.u.@hico;
+						var uIsAdmin:Boolean = Boolean(parseInt(chair.u.@iam));
+						
+						var cModel:IChairModel = ChairModelFactory.Create(cId,cR);
+						
+						var uModel:IUserModel = UserModelFactory.Create(uId,uSex,n,uBbs,uIsAdmin,GameGlobals.qpc.data.rule);
+						uModel.setG(uG);
+						uModel.setId_SQL(id_sql);
+						uModel.setHeadIco(uHeadIco);
+						
+						cModel.setUser(uModel);
+						
+						//
+						GameGlobals.qpc.data.activeRoom.setChair(cModel);
+						
+						//					
+//						var line:String = "系统：<a href='event:look" + id_sql + "'><u>" + n + 
+//							"</u></a> 进入了房间";
+//						
+//						_chat.addChat(line);
+						
+						
+						
+						//--------------------------------------------------------------
+					}
+					
+				}
+				
+				refreshRoom();
+			
+			}
+			
+			/**
+			 * 
+			 */ 
+			public function onUserLeaveRoom(qevent:QiPaiEvent):void
+			{
+				var x:XML = qevent.params.x;
+				
+				var cId:int = int(x.body.chair.@id);
+				var cR:Boolean = Boolean(parseInt(x.body.chair.@ready));
+				
+				var uId:String = x.body.chair.u.@id;
+				var id_sql:String = x.body.chair.u.@id_sql;
+				var uG:String = x.body.chair.u.@g;
+				var n:String = x.body.chair.u.@n;
+				var uSex:String = x.body.chair.u.@s;
+				
+				//这里与其他不同，创建的是空椅		
+				var cModel:IChairModel = ChairModelFactory.CreateEmpty(cId);
+				
+				//这里与其他不同，创建的是空用户				
+				var uModel:IUserModel = UserModelFactory.CreateEmpty();
+				uModel.setG("0");
+				uModel.setId_SQL("0");					
+				
+				cModel.setUser(uModel);			
+				
+				//			
+				
+				GameGlobals.qpc.data.activeRoom.setChair(cModel);
+				
+				//				var line:String = "系统：<a href='event:look" + id_sql + "'><u>" + n + 
+				//					"</u></a> 离开了房间";
+				//				
+				//				//
+				//				_chat.addChat(line);//"系统:" + uNickName + " 离开了房间");
+				
+				refreshRoom();		
+			}
+			
+			public function leftOrRight(chair:IChairModel,rivalChair:IChairModel,rivalUser:IUserModel):String
+			{		
+				if(chair.Id > rivalChair.Id)
+				{
+					//-------------------------------------------------		
+					//大的间隔
+					if(Math.abs(chair.Id - rivalChair.Id) == 1)
+					{
+						return PaiLayout.LEFT;
+							
+					}else if(Math.abs(chair.Id - rivalChair.Id) == 2)
+					{
+						return PaiLayout.RIGHT;
+						
+					}else
+					{
+						return PaiLayout.UNKNOW;
+					}
+						
+					//--------------------------------------------------
+						
+				}
+				else if(chair.Id < rivalChair.Id)
+				{
+					//小的间隔
+					if(Math.abs(chair.Id - rivalChair.Id) == 1)
+					{
+						return PaiLayout.RIGHT;
+							
+					}else if(Math.abs(chair.Id - rivalChair.Id) == 2)
+					{
+						return PaiLayout.LEFT;
+						
+					}else
+					{
+						return PaiLayout.UNKNOW;
+					}
+						
+				}			
+				
+				return PaiLayout.UNKNOW;			
+			}
+			
+			private function refreshRoomUser():void
+			{
+				PersonNameAndImage(PaiLayout.LEFT);				
+				PersonNameAndImage(PaiLayout.RIGHT);		
+				PersonNameAndImage(PaiLayout.DOWN);		
+				
+				//
+				refreshRoomUserHead();
+				
+			}
+			
+			private function refreshRoomUserHead():void
+			{
+				LoadPersonImage(PaiLayout.LEFT);
+				LoadPersonImage(PaiLayout.RIGHT);
+				LoadPersonImage(PaiLayout.DOWN);
+				
+			}	
+				
+			
+			/**
+			 * 第一次进房间的清屏
+			 */ 
+			public function firstInRoom():void
+			{
+				try
+				{
+					chuPaiTimerPaused = false;
+					
+					this.recordView.visible = false;
+					firstInRoomByPos();
+					
+					//
+					this.paiRule.reset();
+					
+					//
+					this.jiaoFenBar.visible = false;
+					this.jiaoFenBar.reset();
+					
+					this.laseTipPx = null;
+					
+					//
+					this.chuPaiBar.visible = false;
+					
+					//
+					this.faPaiTimer.reset();
+					
+					//
+					chuPaiTimer_Reset();
+					
+					
+					//
+					(this.board.mc_btn_ready as MovieClip).visible = true;
+					(this.board.mc_btn_mingPai_ready as MovieClip).visible = true;
+					
+					//要求取消 明牌
+					//if("团购潮人" == GameGlobals.qpc.data.getClientConfig().payUserNickName)
+					//{
+					//(this.board.mc_btn_mingPai_ready as MovieClip).alpha = 0.0;
+					//}	
+					
+					(this.board.mc_clock as MovieClip).visible = false;
+					
+					//tip
+					(this.board.mc_tip_chupai_h_down as MovieClip).visible = false;	
+					
+					//
+					this.ClearPai(PaiLayout.TOP);
+					this.ClearPai(PaiLayout.DOWN);
+					this.ClearPai(PaiLayout.DOWN2);
+					this.ClearPai(PaiLayout.LEFT);
+					this.ClearPai(PaiLayout.LEFT2);
+					this.ClearPai(PaiLayout.RIGHT);
+					this.ClearPai(PaiLayout.RIGHT2);
+					
+					//
+					this.JiaoFenIcon(PaiLayout.LEFT,false);
+					this.JiaoFenIcon(PaiLayout.RIGHT,false);
+					this.JiaoFenIcon(PaiLayout.DOWN,false);
+					
+					//地主，农民图标
+					this.DzOrNongMingIcon(PaiLayout.LEFT,false);
+					this.DzOrNongMingIcon(PaiLayout.RIGHT,false);				
+					this.DzOrNongMingIcon(PaiLayout.DOWN,false);
+					
+					//托管机器人图标
+					this.RobotIcon(PaiLayout.LEFT,false);
+					this.RobotIcon(PaiLayout.RIGHT,false);				
+					this.RobotIcon(PaiLayout.DOWN,false);				
+					
+					//报警机器人图标
+					//注意这个是没有down的
+					this.RobotAlertIcon(PaiLayout.LEFT,false);
+					this.RobotAlertIcon(PaiLayout.RIGHT,false);	
+					
+					//
+					//this.btnTuoGuan.label = "托　管";
+					this.btnTuoGuan.label = lang_btnTuoGuan_label;
+					
+					//
+					this.textBox1.text = "";
+					
+					//
+					 this.mc_person_img_left.source = 
+						GameGlobals.rootUrl + "assets/photo/wait_head.jpg";
+					
+					this.mc_person_img_right.source = 
+						GameGlobals.rootUrl + "assets/photo/wait_head.jpg";
+					
+					//source = "" 为置空
+					//this.mc_person_img_down.source = ""; 
+					this.onLoadHeadPhoto();
+					
+					//
+					startAutoLeaveRoom();
+					
+					//
+					(this.board.mcBomb as MovieClip).visible = false;
+					
+					
+					//
+					if(GameGlobals.TEST_ROBOT_MODE)
+					{
+						this.mc_btn_ready_click();
+						
+					}
+					
+					//if("清扬" == GameGlobals.qpc.data.getClientConfig().payUserNickName ||
+					//   "团购潮人" == GameGlobals.qpc.data.getClientConfig().payUserNickName )
+					if(GameGlobals.qpc.data.isTabAutoMatchMode)
+					{
+						if(!GameGlobals.qpc.data.isAutoMatchMingPai){
+						this.mc_btn_ready_click();
+						}else
+						{
+							this.mc_btn_mingPai_ready_click();
+						}
+						
+					}
+					
+					//在本人名字下方，显示金钱数
+					this.checkG();
+					
+				}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("firstInRoom",exd.message));
+				}	
+							
+			}
+			
+			/**
+			 * 
+			 * 
+			 */ 
+			private function firstInRoomByPos():void
+			{
+				if(this.recordView.visible)
+				{
+					this.board.mc_pailist_h_dipai.x = 226;//336 - 120;
+					
+				}else{
+					
+					this.board.mc_pailist_h_dipai.x = 336;
+					
+				}
+			}
+			
+			/**			
+			 * 刷新房间，参数为是否刷新棋盘，
+			 * 如不刷新，则刷新棋盘函数由其它函数代替，为效果准备
+			 * 注意刷新棋盘的时间点，
+			 * 时间点1:决出地主
+			 */ 
+			public function refreshRoom(isUpdateBoard:Boolean=false):void
+			{
+				try
+				{
+					//
+					//this.board.lbl_room.text = GameGlobals.qpc.data.activeRoom.Name();
+								
+					this.board.lbl_room.text = GameGlobals.qpc.data.activeRoom.Name(this.lang_RoomName);
+					
+					//
+					refreshRoomUser();				
+					
+					//启动邀请
+					var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);			
+					
+					var isUpdateIdleList:Boolean = false;
+					
+					for(var i:int =0;i<rival.length;i++)
+					{
+						var rivalUser:IUserModel = (rival[i] as IChairModel).getUser();
+						var rivalChair:IChairModel = rival[i] as IChairModel;
+						
+						if(EUserSex.Boy == rivalUser.Sex ||
+						   EUserSex.Boy0 == parseInt(rivalUser.Sex))
+						{
+							//nothing
+							
+						}else if(EUserSex.Girl == rivalUser.Sex ||
+							EUserSex.Girl1 == parseInt(rivalUser.Sex))
+						{
+							//nothing
+							
+						}else
+						{
+							//差人启动邀请							
+							//refreshIdleList();
+							isUpdateIdleList = true;
+							break;
+						}
+					
+					}	
+					
+					//棋盘
+					if(isUpdateBoard)
+					{
+						updateBoard();	
+					}
+					
+					if(isUpdateIdleList)
+					{
+						if(!GameGlobals.qpc.data.isTabAutoMatchMode)
+						{
+							refreshIdleList();						
+						}
+					}
+					
+										
+					//自动准备
+					//由于有明牌模式，需要用户自行选择
+					//自动准备功能不可用
+					
+					//防作弊场 应隐藏用户名称
+					//不稳藏自已的
+					if(GameGlobals.qpc.data.isTabAutoMatchMode)
+					{
+						this.board.lbl_name_left.visible = false;
+						this.board.lbl_name_right.visible = false;
+						
+						this.idleUserList.enabled = false;
+						this.btnAskIdleUser.enabled = false;
+						
+					}else
+					{
+						this.board.lbl_name_left.visible = true;
+						this.board.lbl_name_right.visible = true;
+						
+						this.idleUserList.enabled = true;
+						this.btnAskIdleUser.enabled = true;
+					}
+					
+					
+					
+				}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("refreshRoom",exd.message));
+				}	
+			
+			}
+			
+			
+			
+			/**
+			 * 报警机器人
+			 */ 
+			public function RobotAlertIcon(dir:String,vis:Boolean=true):void
+			{
+				if(PaiLayout.LEFT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_robotAlert_left as MovieClip).gotoAndPlay(1);
+						(this.board.mc_robotAlert_left as MovieClip).visible = true;					
+					
+					}else
+					{
+						(this.board.mc_robotAlert_left as MovieClip).stop();
+						(this.board.mc_robotAlert_left as MovieClip).visible = false;
+					}
+				
+				}
+				
+				if(PaiLayout.RIGHT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_robotAlert_right as MovieClip).gotoAndPlay(1);
+						(this.board.mc_robotAlert_right as MovieClip).visible = true;
+					
+					}else
+					{
+						(this.board.mc_robotAlert_right as MovieClip).stop();
+						(this.board.mc_robotAlert_right as MovieClip).visible = false;
+					}
+				
+				
+				}
+				
+				//播报警声音，一局中只播一次，免得吵人
+				if(vis && 0 == soundRobotAlertPlayCount)
+				{				
+					soundRobotAlertPlayCount++;
+					
+					//
+					var channel:SoundChannel;
+					var volume:Number = GameGlobals.audio.curVolume;			
+					var transform:SoundTransform = new SoundTransform(volume,0);
+					
+					channel = this.soundRobotAlert.play();
+					
+					if(null != channel)
+					{
+						channel.soundTransform = transform;
+					}
+				
+				}
+			
+			
+			}
+			
+			/**
+			 * 托管图标
+			 */ 
+			public function RobotIcon(dir:String,vis:Boolean=true):void
+			{
+				if(PaiLayout.LEFT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_robot_left as MovieClip).gotoAndPlay(1);
+						(this.board.mc_robot_left as MovieClip).visible = true;					
+					
+					}else
+					{
+						(this.board.mc_robot_left as MovieClip).stop();
+						(this.board.mc_robot_left as MovieClip).visible = false;
+					}
+				
+				}
+				
+				if(PaiLayout.RIGHT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_robot_right as MovieClip).gotoAndPlay(1);
+						(this.board.mc_robot_right as MovieClip).visible = true;
+					
+					}else
+					{
+						(this.board.mc_robot_right as MovieClip).stop();
+						(this.board.mc_robot_right as MovieClip).visible = false;
+					}
+				
+				}
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_robot_down as MovieClip).gotoAndPlay(1);
+						(this.board.mc_robot_down as MovieClip).visible = true;
+						
+					}else
+					{
+						(this.board.mc_robot_down as MovieClip).stop();
+						(this.board.mc_robot_down as MovieClip).visible = false;
+						
+					}
+				
+				}
+			}
+			
+			public function DzOrNongMingIcon(dir:String,vis:Boolean=true,isDizhu:Boolean=false):void
+			{
+				if(PaiLayout.LEFT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_person_icon_left as MovieClip).visible = true;
+						
+						if(isDizhu)
+						{
+							(this.board.mc_person_icon_left as MovieClip).gotoAndStop(1);
+						}else
+						{
+							(this.board.mc_person_icon_left as MovieClip).gotoAndStop(2);
+						}//end if
+					
+					}else
+					{
+						(this.board.mc_person_icon_left as MovieClip).visible = false;
+					}
+				
+				}
+				
+				if(PaiLayout.RIGHT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_person_icon_right as MovieClip).visible = true;
+						
+						if(isDizhu)
+						{
+							(this.board.mc_person_icon_right as MovieClip).gotoAndStop(1);
+						}else
+						{
+							(this.board.mc_person_icon_right as MovieClip).gotoAndStop(2);
+						}//end if
+					
+					}else
+					{
+						(this.board.mc_person_icon_right as MovieClip).visible = false;
+					}
+				
+				
+				}
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_person_icon_down as MovieClip).visible = true;
+						
+						if(isDizhu)
+						{
+							(this.board.mc_person_icon_down as MovieClip).gotoAndStop(1);
+						}else
+						{
+							(this.board.mc_person_icon_down as MovieClip).gotoAndStop(2);
+						}//end if
+					
+					}else
+					{
+						(this.board.mc_person_icon_down as MovieClip).visible = false;
+					}
+				
+				}
+			
+			}
+			
+			private function paiMcClick(event:MouseEvent):void
+			{
+				var paiMc:MovieClip = event.currentTarget as MovieClip;
+				
+				if(0 == paiMc.y)
+				{
+					paiMc.y = paiMc.y - PaiLayout.PAI_CLICK_V_PADDING;
+					//new codes modified by lab 2013-07-16
+					//paiMc.data.selected = true;
+				}else
+				{
+					paiMc.y = 0;
+					//new codes modified by lab 2013-07-16
+				}
+					paiMc.data.selected = false;
+			
+			}
+			
+			/**
+			 * 
+			 * 
+			 */ 
+			public function ClearPaiAndRePos(dir:String,value:Array):void
+			{
+			
+				ClearPai(dir,value);
+				
+				RePosPai(dir);
+			
+			}
+			
+			/**
+			 * value参数为删除指定的牌
+			 * 数组里存放的是字符串
+			 * 
+			 */ 
+			public function ClearPai(dir:String,value:Array=null):void
+			{
+				//loop use
+				var i:int = 0;
+				var j:int = 0;
+				var numChild:int;
+				var dj:DisplayObject;
+				var valueMc:Array;
+				var items:Array;
+				
+				if(PaiLayout.TOP == dir)
+				{
+					numChild = (this.board.mc_pailist_h_dipai.mc_container as MovieClip).numChildren;
+				
+					//clear				
+					for(i=0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_h_dipai.mc_container as MovieClip).removeChildAt(0);	
+						
+						//重置坐标
+						(dj as MovieClip).x = 0;
+						(dj as MovieClip).y = 0;		
+					}
+				}
+				
+				if(PaiLayout.LEFT2 == dir)
+				{
+					numChild = (this.board.mc_pailist_h_left.mc_container as MovieClip).numChildren;
+				
+					//clear				
+					for(i=0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_h_left.mc_container as MovieClip).removeChildAt(0);				
+						
+						//重置坐标
+						(dj as MovieClip).x = 0;
+						(dj as MovieClip).y = 0;
+					}		
+					
+					(this.board.mc_tip_chupai_v_left as MovieClip).visible = false;
+				}	
+				
+				if(PaiLayout.RIGHT2 == dir)
+				{
+					numChild = (this.board.mc_pailist_h_right.mc_container as MovieClip).numChildren;
+				
+					//clear				
+					for(i=0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_h_right.mc_container as MovieClip).removeChildAt(0);				
+						
+						//重置坐标
+						(dj as MovieClip).x = 0;
+						(dj as MovieClip).y = 0;
+					}
+					
+					(this.board.mc_tip_chupai_v_right as MovieClip).visible = false;				
+				}				
+				
+				if(PaiLayout.LEFT == dir)
+				{
+					//
+					numChild = (this.board.mc_pailist_v_left.mc_container as MovieClip).numChildren;
+					
+					if(null != value)
+					{
+						//
+						for(i=0;i<value.length;i++)
+						{							
+							for(j=0;j<numChild;j++)
+							{						
+								dj = (this.board.mc_pailist_v_left.mc_container as MovieClip).getChildAt(j);
+								
+								//
+								var className:String = getQualifiedClassName((dj as MovieClip));
+									
+								if(PokerName.BG_DIZHU == className || 
+								   PokerName.BG_NONGMING == className)
+								{
+									(this.board.mc_pailist_v_left.mc_container as MovieClip).removeChildAt(j);	
+									//重置坐标
+									(dj as MovieClip).x = 0;
+									(dj as MovieClip).y = 0;
+									
+									numChild = (this.board.mc_pailist_v_left.mc_container as MovieClip).numChildren;
+									break;							
+								}else
+								{
+									if(value[i] == this.paiRule.getFrontPaiByMcName((dj as MovieClip).name).instanceName)
+									{
+										(this.board.mc_pailist_v_left.mc_container as MovieClip).removeChildAt(j);	
+										//重置坐标
+										(dj as MovieClip).x = 0;
+										(dj as MovieClip).y = 0;
+										
+										numChild = (this.board.mc_pailist_v_left.mc_container as MovieClip).numChildren;
+										break;
+									}								
+								}
+							}
+										
+						}
+					
+					}else
+					{
+						//clear				
+						for(i=0;i<numChild;i++)
+						{
+							dj = (this.board.mc_pailist_v_left.mc_container as MovieClip).removeChildAt(0);				
+							
+							//重置坐标
+							(dj as MovieClip).x = 0;
+							(dj as MovieClip).y = 0;
+						}		
+					}			
+				}
+				
+				if(PaiLayout.RIGHT == dir)
+				{
+					//
+					numChild = (this.board.mc_pailist_v_right.mc_container as MovieClip).numChildren;
+					
+					if(null != value)
+					{	
+						for(i=0;i<value.length;i++)
+						{							
+							for(j=0;j<numChild;j++)
+							{						
+								dj = (this.board.mc_pailist_v_right.mc_container as MovieClip).getChildAt(j);
+									
+								if(PokerName.BG_DIZHU == getQualifiedClassName((dj as MovieClip)) ||
+								   PokerName.BG_NONGMING == getQualifiedClassName((dj as MovieClip))
+								  )
+								{
+									(this.board.mc_pailist_v_right.mc_container as MovieClip).removeChildAt(j);	
+									//重置坐标
+									(dj as MovieClip).x = 0;
+									(dj as MovieClip).y = 0;
+									
+									numChild = (this.board.mc_pailist_v_right.mc_container as MovieClip).numChildren;
+									break;							
+								}else
+								{
+									if(value[i] == this.paiRule.getFrontPaiByMcName((dj as MovieClip).name).instanceName)
+									{
+										(this.board.mc_pailist_v_right.mc_container as MovieClip).removeChildAt(j);	
+										//重置坐标
+										(dj as MovieClip).x = 0;
+										(dj as MovieClip).y = 0;
+										
+										numChild = (this.board.mc_pailist_v_right.mc_container as MovieClip).numChildren;
+										break;
+									}								
+								}
+							}
+										
+						}
+							
+					}else
+					{
+						//clear				
+						for(i=0;i<numChild;i++)
+						{
+							dj = (this.board.mc_pailist_v_right.mc_container as MovieClip).removeChildAt(0);				
+						
+							//重置坐标
+							(dj as MovieClip).x = 0;
+							(dj as MovieClip).y = 0;
+						}
+					
+					}			
+				}				
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					if(null != value)
+					{
+						valueMc = this.paiRule.getFrontPaiMcByNameArr(value);						
+						
+						for(i=0;i<valueMc.length;i++)
+						{
+							for(j=0;j<(this.board.mc_pailist_h_down.mc_container as MovieClip).numChildren;j++)
+							{
+								dj = (this.board.mc_pailist_h_down.mc_container as MovieClip).getChildAt(j);
+								
+								if((dj as MovieClip).name == (valueMc[i] as MovieClip).name)
+								{
+									(this.board.mc_pailist_h_down.mc_container as MovieClip).removeChildAt(j);
+									//重置坐标
+									(dj as MovieClip).x = 0;
+									(dj as MovieClip).y = 0;
+									
+									if(
+									(dj as MovieClip).hasEventListener(MouseEvent.MOUSE_UP)
+									)
+									{
+										(dj as MovieClip).removeEventListener(MouseEvent.MOUSE_UP,paiMcClick);				
+									}
+									
+									break;
+								}
+							}						
+						}						
+						
+					
+					}else
+					{
+						numChild = (this.board.mc_pailist_h_down.mc_container as MovieClip).numChildren;
+						
+						//clear				
+						for(i=0;i<numChild;i++)
+						{					
+							dj = (this.board.mc_pailist_h_down.mc_container as MovieClip).removeChildAt(0);				
+							
+							//重置坐标
+							(dj as MovieClip).x = 0;
+							(dj as MovieClip).y = 0;
+									
+							if(
+							(dj as MovieClip).hasEventListener(MouseEvent.MOUSE_UP)
+							)
+							{
+								(dj as MovieClip).removeEventListener(MouseEvent.MOUSE_UP,paiMcClick);				
+							}
+						
+						}
+					}						
+				
+				}//end if
+				
+				if(PaiLayout.DOWN2 == dir)
+				{
+					numChild = (this.board.mc_pailist_h_down2.mc_container as MovieClip).numChildren;
+				
+					//clear				
+					for(i=0;i<numChild;i++)
+					{					
+						dj = (this.board.mc_pailist_h_down2.mc_container as MovieClip).removeChildAt(0);				
+						
+						//重置坐标
+						(dj as MovieClip).x = 0;
+						(dj as MovieClip).y = 0;				
+					}
+					
+					(this.board.mc_tip_chupai_h_down as MovieClip).visible = false;
+				}
+			
+			
+			}
+			
+		   /**
+		   * 得到一个偏移地址，和startX意思同
+		   */ 	
+		   public function RePosPaiBySingle(dir:String,futureNumChild:int):int
+		   {
+		   		var offset:int;
+		   		
+		   		if(PaiLayout.LEFT == dir)
+		   		{		   		
+		   			offset = PaiLayout.LIST_V_HEIGHT/2 - ((futureNumChild-1) * PaiLayout.LIST_V_PADDING + PaiLayout.PAI_HEIGHT)/2;
+				
+		   		}		
+		   		
+		   		if(PaiLayout.RIGHT == dir) 
+		   		{
+		   		
+		   			offset = PaiLayout.LIST_V_HEIGHT/2 - ((futureNumChild-1) * PaiLayout.LIST_V_PADDING + PaiLayout.PAI_HEIGHT)/2;
+				
+		   		} 		
+		   		
+		   		if(PaiLayout.DOWN == dir)
+				{					
+					offset = PaiLayout.LIST_H_WIDTH/2 - ((futureNumChild-1) * PaiLayout.LIST_H_PADDING + PaiLayout.PAI_WIDTH)/2;
+				
+				}//end if		   
+		   
+		   		return offset;
+		   }
+			
+			/**
+			 * 出牌后用该函数刷新
+			 */ 
+			public function RePosPai(dir:String):void
+			{
+				var i:int;
+				var numChild:int;
+				var centerX:int;
+				var offset:int;
+				var dj:DisplayObject;
+				
+				if(PaiLayout.TOP == dir)
+				{
+					numChild = (this.board.mc_pailist_h_dipai.mc_container as MovieClip).numChildren;
+				
+					//不需要
+				}
+				
+				if(PaiLayout.LEFT2 == dir)
+				{
+					numChild = (this.board.mc_pailist_h_left.mc_container as MovieClip).numChildren;
+				
+					//不需要
+				}	
+				
+				if(PaiLayout.RIGHT2 == dir)
+				{
+					numChild = (this.board.mc_pailist_h_right.mc_container as MovieClip).numChildren;
+				
+					//不需要		
+				}				
+				
+				if(PaiLayout.LEFT == dir)
+				{
+					//
+					numChild = (this.board.mc_pailist_v_left.mc_container as MovieClip).numChildren;
+					
+					//startX
+					offset = PaiLayout.LIST_V_HEIGHT/2 - ((numChild-1) * PaiLayout.LIST_V_PADDING + PaiLayout.PAI_HEIGHT)/2;
+					
+					for(i =0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_v_left.mc_container as MovieClip).getChildAt(i);
+						
+						(dj as MovieClip).y = offset + (i * PaiLayout.LIST_V_PADDING);					
+										
+					}		
+				}
+				
+				if(PaiLayout.RIGHT == dir)
+				{
+					//
+					numChild = (this.board.mc_pailist_v_right.mc_container as MovieClip).numChildren;
+					
+					//startX
+					offset = PaiLayout.LIST_V_HEIGHT/2 - ((numChild-1) * PaiLayout.LIST_V_PADDING + PaiLayout.PAI_HEIGHT)/2;
+					
+					for(i =0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_v_right.mc_container as MovieClip).getChildAt(i);
+						
+						(dj as MovieClip).y = offset + (i * PaiLayout.LIST_V_PADDING);					
+										
+					}
+							
+				}				
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					numChild = (this.board.mc_pailist_h_down.mc_container as MovieClip).numChildren;
+								
+					//centerX = PaiLayout.LIST_H_WIDTH/2;
+					//startX
+					offset = PaiLayout.LIST_H_WIDTH/2 - ((numChild-1) * PaiLayout.LIST_H_PADDING + PaiLayout.PAI_WIDTH)/2;
+					
+					for(i =0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_h_down.mc_container as MovieClip).getChildAt(i);
+						
+						(dj as MovieClip).x = offset + (i * PaiLayout.LIST_H_PADDING);						
+										
+					}
+							
+					//trace(startX);				
+				
+				}//end if
+				
+				if(PaiLayout.DOWN2 == dir)
+				{
+					numChild = (this.board.mc_pailist_h_down2.mc_container as MovieClip).numChildren;
+				
+					//startX
+					offset = PaiLayout.LIST_H_WIDTH/2 - ((numChild-1) * PaiLayout.LIST_H_PADDING + PaiLayout.PAI_WIDTH)/2;
+					
+					for(i =0;i<numChild;i++)
+					{
+						dj = (this.board.mc_pailist_h_down2.mc_container as MovieClip).getChildAt(i);
+						
+						(dj as MovieClip).x = offset + (i * PaiLayout.LIST_H_PADDING);						
+										
+					}
+				}
+			
+			
+			}
+			
+			/**
+			 * 成为地主后，点出地主拥有的三张底牌
+			 * 只能是Down专用，所以不用dir
+			 */ 
+			public function DianPai(value:Array):void
+			{
+				//先reset
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);				
+				
+				//棋子
+				var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();	
+				var len:int = items.length;
+				//
+				var h:int = chair.Id - 1;
+				var heroPai:Array = new Array();
+						
+				for(i =0;i<len;i++)
+				{
+					if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+					{
+						heroPai.push((items[i] as ItemModelByDdz).name);							
+					}
+				}
+				
+				var heroPaiMc:Array = this.paiRule.getFrontPaiMcByNameArr(heroPai);
+				
+				len = heroPaiMc.length;
+				
+				for(i=0;i<len;i++)
+				{
+					if(0 == (heroPaiMc[i] as MovieClip).y)
+					{
+						
+					}else
+					{
+						(heroPaiMc[i] as MovieClip).y = 0;
+					}				
+					//new codes modified by lab 2013-07-16
+					//(heroPaiMc[i] as MovieClip).data.selected = false;					
+				}				
+				
+				//点牌
+				var mcArr:Array = this.paiRule.getFrontPaiMcByNameArr(value);
+				
+				for(var i:int=0;i<mcArr.length;i++)
+				{
+					(mcArr[i] as MovieClip).dispatchEvent(new MouseEvent(MouseEvent.MOUSE_UP));
+				
+				}
+			
+			}			
+			
+			public function AddPaiEffect(dir:String,checkPx:Array):void
+			{
+				if(PaiRule.BOMB == checkPx[0] ||
+					PaiRule.HUOJIAN == checkPx[0])
+				{
+					(this.board.mcBomb as MovieClip).visible = true;
+					
+					if(PaiLayout.DOWN2 == dir)
+					{
+						(this.board.mcBomb as MovieClip).x = PaiLayout.BOMB_DOWN.x;
+						(this.board.mcBomb as MovieClip).y = PaiLayout.BOMB_DOWN.y;
+						
+					}//end if
+					
+					
+					if(PaiLayout.LEFT2 == dir)
+					{
+						(this.board.mcBomb as MovieClip).x = PaiLayout.BOMB_LEFT.x;
+						(this.board.mcBomb as MovieClip).y = PaiLayout.BOMB_LEFT.y;
+						
+					}//end if
+					
+					
+					if(PaiLayout.RIGHT2 == dir)
+					{
+						(this.board.mcBomb as MovieClip).x = PaiLayout.BOMB_RIGHT.x;
+						(this.board.mcBomb as MovieClip).y = PaiLayout.BOMB_RIGHT.y;
+						
+					}//end if
+					
+					(this.board.mcBomb as MovieClip).gotoAndPlay(PaiLayout.MC_BOMB_BEGIN);
+					(this.board.mcBomb as MovieClip).removeEventListener(Event.ENTER_FRAME,bombFrameHandler);
+					(this.board.mcBomb as MovieClip).addEventListener(Event.ENTER_FRAME,bombFrameHandler);
+					
+				}//end if
+			}
+			
+			public function bombFrameHandler(e:Event):void
+			{
+				if(PaiLayout.MC_BOMB_END == (this.board.mcBomb as MovieClip).currentFrame)
+				{
+					(this.board.mcBomb as MovieClip).visible = false;
+					
+					//
+					(this.board.mcBomb as MovieClip).stop();					
+					(this.board.mcBomb as MovieClip).gotoAndStop(1);
+					(this.board.mcBomb as MovieClip).removeEventListener(Event.ENTER_FRAME,bombFrameHandler);
+				}
+			
+			}
+			
+			/**
+			 * 加牌是一次全删全加
+			 * 删牌则是删去指定的牌后移动位置
+			 */ 
+			public function AddPai(dir:String,value:Array=null):void
+			{
+				//loop use
+				var i:int = 0;
+				var j:int = 0;
+				var h:int;
+				var numChild:int;
+				var chairId:int;				
+				
+				//棋子
+				var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();
+				var len:int = items.length;
+				var paiMc:MovieClip;
+				var iM:ItemModelByDdz;				
+				var paiMcArr:Array;
+				
+				//rival - 对手
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+				
+				var rivalChair:IChairModel;
+				var rivalUser:IUserModel;
+				var isLeftOrRight:String;			
+				
+				if(PaiLayout.RIGHT2 == dir)
+				{
+					ChuPaiClock(PaiLayout.RIGHT,false);
+					ClearPai(PaiLayout.RIGHT2);
+					
+					if(value.length > 0)
+					{
+						for(i=value.length-1;i>=0;i--)
+						{
+							paiMc = this.paiRule.getFrontPaiMcByName(value[i]);
+							
+							paiMc.x = (PaiLayout.LIST_H_WIDTH - PaiLayout.PAI_WIDTH)- i * PaiLayout.LIST_H_PADDING;						
+										
+							(this.board.mc_pailist_h_right.mc_container as MovieClip).addChild(paiMc);	
+												
+						}
+						
+						/*
+						for(i=0;i<value.length;i++)
+						{
+							paiMc = this.paiRule.getFrontPaiMcByName(value[i]);
+							
+							paiMc.x = (PaiLayout.LIST_H_WIDTH - PaiLayout.PAI_WIDTH)- i * PaiLayout.LIST_H_PADDING;						
+										
+							(this.board.mc_pailist_h_right.mc_container as MovieClip).addChild(paiMc);					
+						}
+						*/
+						
+					}else
+					{
+						(this.board.mc_tip_chupai_v_right as MovieClip).visible = true;
+					
+					}
+					
+					//不需要RePos					
+				}
+				
+				if(PaiLayout.LEFT2 == dir)
+				{
+					ChuPaiClock(PaiLayout.LEFT,false);
+					ClearPai(PaiLayout.LEFT2);
+					
+					if(value.length > 0)
+					{					
+						for(i=0;i<value.length;i++)
+						{
+							paiMc = this.paiRule.getFrontPaiMcByName(value[i]);
+							
+							paiMc.x = i * PaiLayout.LIST_H_PADDING;						
+										
+							(this.board.mc_pailist_h_left.mc_container as MovieClip).addChild(paiMc);					
+						}
+						
+					}else
+					{
+						(this.board.mc_tip_chupai_v_left as MovieClip).visible = true;
+					
+					}
+				
+					//不需要RePos	
+				}
+				
+				if(PaiLayout.RIGHT == dir)
+				{
+					ClearPai(PaiLayout.RIGHT);
+				
+					for(i=0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser  = (rival[i] as IChairModel).getUser();	
+							
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.RIGHT == isLeftOrRight)
+						{
+							this.paiRule.sort(items,rivalChair.Id);
+							
+							for(j =0;j<len;j++)
+							{
+								h = rivalChair.Id-1;
+								
+								iM = items[j] as ItemModelByDdz;
+								
+								if(h == iM.h)//这是你的牌
+								{										
+									if(PokerName.BG_NORMAL == iM.name)
+									{
+										paiMc = this.bgPaiList_normal[iM.v + 17] as MovieClip;
+									
+									}else if(PokerName.BG_DIZHU == iM.name)
+									{
+										paiMc = this.bgPaiList_diZhu[iM.v] as MovieClip;//地主只有一家
+																
+									}else if(PokerName.BG_NONGMING == iM.name)
+									{
+										paiMc = this.bgPaiList_nongMing[iM.v + 17] as MovieClip;
+									}else
+									{
+										//明牌
+										paiMc = this.paiRule.getFrontPaiMcByName(iM.name);
+									}						
+									
+									//
+									paiMc.y = iM.v * PaiLayout.LIST_V_PADDING;						
+									
+									(this.board.mc_pailist_v_right.mc_container as MovieClip).addChild(paiMc);
+								
+								}//end if				
+							}//end for
+						
+							break;
+						}						
+						
+					}//end for
+					
+					//因是整体全部删除，因此可使用RePosPai方法
+					this.RePosPai(dir);	
+				
+				}
+				
+				if(PaiLayout.LEFT == dir)
+				{
+					ClearPai(PaiLayout.LEFT);
+					
+					for(i=0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser  = (rival[i] as IChairModel).getUser();	
+							
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{
+							this.paiRule.sort(items,rivalChair.Id);
+							
+							for(j =0;j<len;j++)
+							{
+								h = rivalChair.Id-1;
+								
+								iM = items[j] as ItemModelByDdz;
+								
+								if(h == iM.h)//这是你的牌
+								{										
+									if(PokerName.BG_NORMAL == iM.name)
+									{
+										paiMc = this.bgPaiList_normal[iM.v] as MovieClip;//这里不加17，和right不同
+									
+									}else if(PokerName.BG_DIZHU == iM.name)
+									{
+										paiMc = this.bgPaiList_diZhu[iM.v] as MovieClip;//地主只有一家
+																
+									}else if(PokerName.BG_NONGMING == iM.name)
+									{
+										paiMc = this.bgPaiList_nongMing[iM.v] as MovieClip;//这里不加17，和right不同
+									}else
+									{
+										//明牌
+										paiMc = this.paiRule.getFrontPaiMcByName(iM.name);
+									}						
+									
+									//
+									paiMc.y = iM.v * PaiLayout.LIST_V_PADDING;						
+									
+									(this.board.mc_pailist_v_left.mc_container as MovieClip).addChild(paiMc);
+								
+								}//end if				
+							}//end for
+						
+							break;
+						}						
+						
+					}//end for
+					
+					//因是整体全部删除，因此可使用RePosPai方法
+					this.RePosPai(dir);	
+				
+				}
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					ClearPai(PaiLayout.DOWN);	
+					
+					this.paiRule.sort(items,chair.Id);
+				
+					for(i=0;i<len;i++)
+					{
+						h = chair.Id-1;
+						
+						if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+						{
+							//自已的牌不会是背面牌
+							//因此这里去掉背面牌的逻辑							
+							//
+							// 获取正面牌的MC
+							// 参数value 为 牌的名称
+							//
+							paiMc = this.paiRule.getFrontPaiMcByName((items[i] as ItemModelByDdz).name);
+												
+							//间隔为横向20
+							paiMc.x = (items[i] as ItemModelByDdz).v * PaiLayout.LIST_H_PADDING;	
+							
+							//事件侦听
+							if(!paiMc.hasEventListener(MouseEvent.MOUSE_UP))
+							{
+								paiMc.addEventListener(MouseEvent.MOUSE_UP,paiMcClick);
+							}						
+							
+							(this.board.mc_pailist_h_down.mc_container as MovieClip).addChild(paiMc);
+						
+						}//end if				
+					}//end for		
+					
+					//因是整体全部删除，因此可使用RePosPai方法
+					this.RePosPai(dir);				
+				}
+				
+				if(PaiLayout.DOWN2 == dir)
+				{
+					ClearPai(PaiLayout.DOWN2);					
+					
+					if(null != value)
+					{
+						if(0 == value.length)
+						{
+							//不出
+							(this.board.mc_tip_chupai_h_down as MovieClip).visible = true;
+							(this.board.mc_tip_chupai_h_down as MovieClip).gotoAndPlay(PaiLayout.MC_TIP_CHIPAI_BUCHU);
+							
+						}else
+						{
+							paiMcArr = this.paiRule.getFrontPaiMcByNameArr(value);
+						
+							for(i=0;i<paiMcArr.length;i++)
+							{	
+								(paiMcArr[i] as MovieClip).y = 0;
+								//间隔为横向20
+								(paiMcArr[i] as MovieClip).x = i * PaiLayout.LIST_H_PADDING;
+								
+								(this.board.mc_pailist_h_down2.mc_container as MovieClip).addChild((paiMcArr[i] as MovieClip));
+							
+							}
+							
+							//因是整体全部删除，因此可使用RePosPai方法
+							this.RePosPai(dir);	
+						}
+					
+					}
+				
+				}//end if
+				
+				if(PaiLayout.TOP == dir)
+				{
+					ClearPai(PaiLayout.TOP);
+					
+					//特殊
+					chairId = 4;//固定为4 //chair.Id);	
+					
+					this.paiRule.sort(items,chairId);			
+					
+					for(i =0;i<len;i++)
+					{
+						h = chairId -1;//chair.Id-1;
+						
+						if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+						{							
+							//牌不会是背面牌
+							//因此这里去掉背面牌的逻辑
+							paiMc = this.paiRule.getFrontDiPaiMcByName((items[i] as ItemModelByDdz).name);
+												
+							//间隔为横向20
+							paiMc.x = (items[i] as ItemModelByDdz).v * (PaiLayout.PAI_WIDTH + PaiLayout.LIST_H_PADDING/2);						
+							
+							(this.board.mc_pailist_h_dipai.mc_container as MovieClip).addChild(paiMc);
+						
+						}//end if				
+					}//end for	
+					
+					//不需要RePos	
+				}
+							
+			}
+		
+		   /**
+		   * timer专用
+		   * 如果要一次增加所有牌，请使用AddPaiByRemovePaiBg
+		   */ 	
+		   public function AddPaiByTimer(dir:String,curInd:int,rivalUser:IUserModel=null,rivalChair:IChairModel=null):void
+		   {
+		   		//loop use
+		   		var i:int = 0;
+		   		var h:int = 0;
+		   	
+		   		var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+			
+				//棋子
+				var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();	
+			 	var len:int = items.length;
+			 	
+			 	this.paiRule.sort(items,chair.Id);	
+				
+				if(PaiLayout.DOWN == dir)
+			 	{
+			 		h = chair.Id-1;
+			 		
+			   		for(i=0;i<len;i++)
+					{						
+						if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+						{
+							//查找对应的索引,这里v变成索引了
+							if(curInd != (items[i] as ItemModelByDdz).v)
+							{
+									continue;
+							}
+							
+							var paiMc:MovieClip;
+							
+							//自已的牌不会是背面牌
+							//因此这里去掉背面牌的逻辑							
+							//
+							// 获取正面牌的MC
+							// 参数value 为 牌的名称
+							//
+							paiMc = this.paiRule.getFrontPaiMcByName((items[i] as ItemModelByDdz).name);
+												
+							//间隔为偏移+横向20
+							paiMc.x = this.RePosPaiBySingle(dir,this.faPaiTimer.repeatCount) + (items[i] as ItemModelByDdz).v * PaiLayout.LIST_H_PADDING;	
+							
+							//事件侦听
+							if(!paiMc.hasEventListener(MouseEvent.CLICK))
+							{
+								//paiMc.addEventListener(MouseEvent.CLICK,paiMcClick);
+							}						
+							
+							(this.board.mc_pailist_h_down.mc_container as MovieClip).addChild(paiMc);
+						
+						}//end if				
+					}//end for				   	
+			 	}
+			 	
+			 	if(PaiLayout.LEFT == dir)
+			 	{
+			 		h = rivalChair.Id-1;
+			 		
+			 		for(i =0;i<len;i++)
+					{						
+						
+						if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+						{
+							if(curInd != (items[i] as ItemModelByDdz).v)
+							{
+								continue;
+							}
+														
+							if(PokerName.BG_NORMAL == (items[i] as ItemModelByDdz).name)
+							{
+								paiMc = this.bgPaiList_normal[ (items[i] as ItemModelByDdz).v ] as MovieClip;
+							
+							}else if(PokerName.BG_DIZHU == (items[i] as ItemModelByDdz).name)
+							{
+								paiMc = this.bgPaiList_diZhu[ (items[i] as ItemModelByDdz).v ] as MovieClip;
+														
+							}else if(PokerName.BG_NONGMING == (items[i] as ItemModelByDdz).name)
+							{
+								paiMc = this.bgPaiList_nongMing[ (items[i] as ItemModelByDdz).v ] as MovieClip;
+							
+							}else
+							{
+								//明牌
+								paiMc = this.paiRule.getFrontPaiMcByName((items[i] as ItemModelByDdz).name);
+							
+							}						
+							
+							//
+							paiMc.y = this.RePosPaiBySingle(dir,this.faPaiTimer.repeatCount) + (items[i] as ItemModelByDdz).v * PaiLayout.LIST_V_PADDING;						
+							
+							(this.board.mc_pailist_v_left.mc_container as MovieClip).addChild(paiMc);
+						
+						}//end if				
+					}//end for
+			 	}
+			 	
+			 	if(PaiLayout.RIGHT == dir)
+			 	{
+			 		h = rivalChair.Id-1;
+			 		
+			 		for(i=0;i<len;i++)
+					{						
+						if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+						{
+							if(curInd != (items[i] as ItemModelByDdz).v)
+							{
+								continue;
+							}
+														
+							if(PokerName.BG_NORMAL == (items[i] as ItemModelByDdz).name)
+							{
+								paiMc = this.bgPaiList_normal[ (items[i] as ItemModelByDdz).v + 17 ] as MovieClip;
+							
+							}else if(PokerName.BG_DIZHU == (items[i] as ItemModelByDdz).name)
+							{
+								paiMc = this.bgPaiList_diZhu[ (items[i] as ItemModelByDdz).v ] as MovieClip;//地主只有一家
+														
+							}else if(PokerName.BG_NONGMING == (items[i] as ItemModelByDdz).name)
+							{
+								paiMc = this.bgPaiList_nongMing[ (items[i] as ItemModelByDdz).v + 17 ] as MovieClip;
+							}else
+							{
+								//明牌
+								paiMc = this.paiRule.getFrontPaiMcByName((items[i] as ItemModelByDdz).name);
+							}						
+							
+							//
+							paiMc.y = this.RePosPaiBySingle(dir,this.faPaiTimer.repeatCount) + (items[i] as ItemModelByDdz).v * PaiLayout.LIST_V_PADDING;						
+							
+							(this.board.mc_pailist_v_right.mc_container as MovieClip).addChild(paiMc);
+						
+						}//end if				
+					}//end for
+			 	
+			 	}
+		   
+		   
+		   }
+			
+			/**
+			 * 更新牌局
+			 */ 
+			public function updateBoard():void
+			{	
+				//底牌				
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				
+				if("" != matchInfo.dizhu)
+				{
+					this.AddPai(PaiLayout.TOP);
+				}
+				
+				//自已				
+				this.AddPai(PaiLayout.DOWN);				
+				this.AddPai(PaiLayout.LEFT);
+				this.AddPai(PaiLayout.RIGHT);
+			
+			}
+						
+			public function LoadPersonImage(dir:String):void
+			{
+				//loop use
+				var i:int = 0;
+				var rivalChair:IChairModel;	
+				var rivalUser:IUserModel;	
+				var isLeftOrRight:String;
+				
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				
+				//rival - 对手
+				var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					
+				}//end if
+				
+				if(PaiLayout.LEFT == dir)
+				{					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser  = (rival[i] as IChairModel).getUser();			
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{	
+							//left区
+							/* this.mc_person_img_left.source = this.createHeadPhotoPath(
+								rivalUser.getId_SQL()
+							); */
+							
+							var img_left_url:String = rivalUser.getHeadIco(
+								GameGlobals.qpc.data.selectDB.mode,
+								GameGlobals.rootUrl,
+								GameGlobals.qpc.data.getClientConfig().InstallDir,
+								GameGlobals.GAMENAME);
+							
+							this.mc_person_img_left.source = img_left_url;
+							
+							break;
+						}
+						
+					}//end for
+					
+				}//end if
+				
+				if(PaiLayout.RIGHT == dir)
+				{					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser  = (rival[i] as IChairModel).getUser();			
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.RIGHT == isLeftOrRight)
+						{				
+							
+							//
+							//right区
+							/* this.mc_person_img_right.source = this.createHeadPhotoPath(
+								rivalUser.getId_SQL()
+							); */
+							
+							var img_right_url:String = rivalUser.getHeadIco(
+								GameGlobals.qpc.data.selectDB.mode,
+								GameGlobals.rootUrl,
+								GameGlobals.qpc.data.getClientConfig().InstallDir,
+								GameGlobals.GAMENAME);
+							
+							this.mc_person_img_right.source = img_right_url;
+							
+							break;
+						}	
+						
+					}//end for				
+				}//end if
+				
+			
+			
+			}
+			
+			public function refreshDiFenAndBombCount():void
+			{
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				
+				//(this.board.lbl_bomb_down as TextField).text = "底分:" + matchInfo.difen +
+				 //"分 炸弹 x " + matchInfo.bomb;//多一条
+				
+				(this.board.lbl_bomb_down as TextField).text = GetLang_bomb_down_str(matchInfo.difen,matchInfo.bomb);
+				
+			}			
+			public function PersonNameAndImage(dir:String):void
+			{
+				//loop use
+				var i:int = 0;
+				var rivalChair:IChairModel;	
+				var rivalUser:IUserModel;	
+				var isLeftOrRight:String;
+				
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				
+				//rival - 对手
+				var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+														
+				if(PaiLayout.DOWN == dir)
+				{
+					(this.board.lbl_name_down as TextField).text = hero.NickName;
+					
+					refreshDiFenAndBombCount();
+					//(this.board.lbl_bomb_down as TextField).text = "底分:" + matchInfo.difen +
+					// "分 炸弹 x " + matchInfo.bomb;//多一条
+					
+					//肯定有，没有在qpc里会报错					
+					if(EUserSex.Boy == hero.Sex ||
+					   EUserSex.Boy0 == parseInt(hero.Sex))
+					{
+						if(chair.getReady())
+						{
+							(this.board.mc_person_down as MovieClip).visible = false;
+							this.board.mc_person_down.gotoAndStop(4);
+							
+							mc_person_ico_down.gotoAndStop(4);
+							
+						}else{
+						
+							(this.board.mc_person_down as MovieClip).visible = false;
+							this.board.mc_person_down.gotoAndStop(2);	
+							
+							mc_person_ico_down.gotoAndStop(2);
+						}
+											
+					}
+					else
+					{
+						if(chair.getReady())
+						{
+							(this.board.mc_person_down as MovieClip).visible = false;
+							this.board.mc_person_down.gotoAndStop(5);
+							
+							mc_person_ico_down.gotoAndStop(5);
+						}else
+						{
+							(this.board.mc_person_down as MovieClip).visible = false;
+							this.board.mc_person_down.gotoAndStop(3);
+							
+							mc_person_ico_down.gotoAndStop(3);
+						}
+						
+					}	
+								
+				}//end if
+				
+				if(PaiLayout.LEFT == dir)
+				{					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser  = (rival[i] as IChairModel).getUser();			
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{				
+							this.board.lbl_name_left.text = rivalUser.NickName;
+										
+							//left区
+							if(EUserSex.Boy == rivalUser.Sex ||
+							   EUserSex.Boy0 == parseInt(rivalUser.Sex))
+							{
+								if(rivalChair.getReady())
+								{
+									(this.board.mc_person_left as MovieClip).visible = false;
+									this.board.mc_person_left.gotoAndStop(4);
+									
+									mc_person_ico_left.gotoAndStop(4);
+								}else
+								{				
+									(this.board.mc_person_left as MovieClip).visible = false;
+									this.board.mc_person_left.gotoAndStop(2);
+									
+									mc_person_ico_left.gotoAndStop(2);
+								}
+							}
+							else if(EUserSex.Girl == rivalUser.Sex || 
+								 	EUserSex.Girl1 == parseInt(rivalUser.Sex))
+							{
+								if(rivalChair.getReady())
+								{
+									(this.board.mc_person_left as MovieClip).visible = false;
+									this.board.mc_person_left.gotoAndStop(5);
+									
+									mc_person_ico_left.gotoAndStop(5);
+									
+								}else
+								{
+									(this.board.mc_person_left as MovieClip).visible = false;
+									this.board.mc_person_left.gotoAndStop(3);
+									
+									mc_person_ico_left.gotoAndStop(3);
+								}
+							}
+							else
+							{
+								//无人
+								(this.board.mc_person_left as MovieClip).visible = false;
+								this.board.mc_person_left.gotoAndStop(1);
+								
+								mc_person_ico_left.gotoAndStop(1);
+							}
+							
+							break;
+						}
+					
+					}//end for
+				
+				}//end if
+				
+				if(PaiLayout.RIGHT == dir)
+				{					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser  = (rival[i] as IChairModel).getUser();			
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.RIGHT == isLeftOrRight)
+						{				
+							this.board.lbl_name_right.text = rivalUser.NickName;
+										
+							//
+							//right区
+							if(EUserSex.Boy == rivalUser.Sex ||
+							   EUserSex.Boy0 == parseInt(rivalUser.Sex))
+							{
+								if(rivalChair.getReady())
+								{
+									(this.board.mc_person_right as MovieClip).visible = false;
+									this.board.mc_person_right.gotoAndStop(4);
+									
+									mc_person_ico_right.gotoAndStop(4);
+									
+								}else
+								{			
+									(this.board.mc_person_right as MovieClip).visible = false;
+									this.board.mc_person_right.gotoAndStop(2);
+									
+									mc_person_ico_right.gotoAndStop(2);
+								}
+							}
+							else if(EUserSex.Girl == rivalUser.Sex ||
+									EUserSex.Girl1 == parseInt(rivalUser.Sex))
+							{
+								if(rivalChair.getReady())
+								{
+									(this.board.mc_person_right as MovieClip).visible = false;
+									this.board.mc_person_right.gotoAndStop(5);
+									
+									mc_person_ico_right.gotoAndStop(5);
+								}else
+								{
+									(this.board.mc_person_right as MovieClip).visible = false;
+									this.board.mc_person_right.gotoAndStop(3);
+									
+									mc_person_ico_right.gotoAndStop(3);
+								}
+							}
+							else
+							{
+								//无人
+								(this.board.mc_person_right as MovieClip).visible = false;
+								this.board.mc_person_right.gotoAndStop(1);
+								
+								mc_person_ico_right.gotoAndStop(1);
+							}
+							
+							break;
+						}	
+										
+					}//end for				
+				}//end if
+			
+			}
+			
+			/**
+			 * 此函数不可直接外部调用
+			 * readyAction = chairReady , chairMingReady
+			 * 
+			 */ 
+			public function Ready(readyAction:String):void
+			{
+				//发牌扣一分的逻辑
+//				if("团购潮人" == GameGlobals.qpc.data.getClientConfig().payUserNickName)
+//				{
+//					
+//					var g:String = GameGlobals.qpc.data.hero.G;
+//					
+//					//只要携带够，就能进入房间，而退出房间按底分来，
+//					var difen:int = (GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel).getDiFen();
+//					
+//					if(Number(g) < (difen+1))
+//					{	
+//					
+//						Alert.show(GetLang_CanNotReady_G_NotEnough((difen+1)),
+//							QiPaiStr.ALERT_TITLE,4);
+//					
+//						return;
+//					}
+//				
+//					
+//				
+//				}
+			
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 
+							
+				var var_qizi:Object = {
+				
+					name:readyAction,
+					val:GameGlobals.qpc.data.hero.Id
+				}
+				
+				varsList.push(var_qizi);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId);
+				
+				//data
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				chair.setReady(true);
+				
+				//view
+				if(EUserSex.Boy == GameGlobals.qpc.data.hero.Sex ||
+				   EUserSex.Boy0 == parseInt(GameGlobals.qpc.data.hero.Sex))
+				{
+					(this.board.mc_person_down as MovieClip).visible = false;
+					this.board.mc_person_down.gotoAndStop(4);
+				}
+				else
+				{
+					(this.board.mc_person_down as MovieClip).visible = false;
+					this.board.mc_person_down.gotoAndStop(5);
+				}
+				
+				//按钮bar不需要变灰
+				//但要变隐藏
+				(this.board.mc_btn_ready as MovieClip).visible = false;
+				(this.board.mc_btn_mingPai_ready as MovieClip).visible = false;
+				
+				//停止自动离开房间倒计时				
+				GameGlobals.qpc.data.stopAutoLeaveRoomTimer();
+				loadAutoLeaveClock(PaiLayout.DOWN,false);
+			}
+			
+			
+			public function JiaoFen(value:int):void
+			{
+				//
+				this.chuPaiTimer_Reset();
+				
+				//
+				(this.board.mc_clock as MovieClip).visible = false;
+				this.jiaoFenBar.visible = false;
+				this.jiaoFenBar.disableByFen(value);
+				
+				//
+				this.JiaoFenIcon(PaiLayout.DOWN,true,value);
+				
+				(this.board.lbl_bomb_down as TextField).text = "";
+				
+				//record begin -------------------------------------------								
+				this.paiRule.getRecordIsFullAndSave(RoundTypeByDdz.JIAO_FEN);								
+				this.paiRule.getRecord().setFen(value,GameGlobals.qpc.data.hero.Id);
+				//record end -------------------------------------------
+				
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 
+							
+				var var_qizi:Object = {
+				
+					name:"jiaoFen",
+					val:GameGlobals.qpc.data.hero.Id + "," + value
+				}
+				
+				varsList.push(var_qizi);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId);
+				
+				//								
+				JiaoFenNextAction(PaiLayout.DOWN,value);
+			
+			}
+			
+			
+			/**
+			 * 主动叫分后的下一个动作
+			 * 主要指下一家
+			 */ 
+			public function JiaoFenNextAction(oldDir:String,value:int):void
+			{										
+				
+				if(PaiRule.JIAO_FEN_MAXVALUE == value)
+				{
+					//3分即决出地主，闹钟不用移到下一家
+				}
+				else
+				{
+					//
+					if(this.paiRule.getRecord().isEmpty())
+					{
+							if(this.paiRule.getRoundLastGroupIsHasFen())
+							{
+								//如果此圈已完，则判断是否有叫分，有叫分则闹钟不用移到下一家
+																				
+							}else
+							{
+								//下一家出现clock，同时去掉下一家的叫分
+								if(PaiLayout.RIGHT == oldDir)
+								{
+									this.JiaoFenIcon(PaiLayout.LEFT,false);	
+									this.JiaoFenClock(PaiLayout.LEFT,true);
+									
+								}else if(PaiLayout.LEFT == oldDir)
+								{
+									this.JiaoFenIcon(PaiLayout.DOWN,false);	
+									this.JiaoFenClock(PaiLayout.DOWN,true,this.clockDown_compAutoJiaoFenPass);
+									this.jiaoFenBar.visible = true;
+									
+									//
+									if(GameGlobals.TEST_ROBOT_MODE)
+									{
+										this.JiaoFen(PaiRule.JIAO_FEN_MAXVALUE);
+									}
+									
+								}else if(PaiLayout.DOWN == oldDir)
+								{
+									this.JiaoFenIcon(PaiLayout.RIGHT,false);	
+									this.JiaoFenClock(PaiLayout.RIGHT,true);
+									
+								}
+								
+							}
+									
+					}
+					else
+					{
+						//下一家出现clock，同时去掉下一家的叫分
+						if(PaiLayout.RIGHT == oldDir)
+						{
+							this.JiaoFenIcon(PaiLayout.LEFT,false);	
+							this.JiaoFenClock(PaiLayout.LEFT,true);
+									
+						}
+						else if(PaiLayout.LEFT == oldDir)
+						{
+							this.JiaoFenIcon(PaiLayout.DOWN,false);	
+							this.JiaoFenClock(PaiLayout.DOWN,true,this.clockDown_compAutoJiaoFenPass);
+							this.jiaoFenBar.visible = true;
+							
+							//
+							if(GameGlobals.TEST_ROBOT_MODE)
+							{
+								this.JiaoFen(PaiRule.JIAO_FEN_MAXVALUE);
+							}
+									
+						}else if(PaiLayout.DOWN == oldDir)
+						{
+							this.JiaoFenIcon(PaiLayout.RIGHT,false);	
+							this.JiaoFenClock(PaiLayout.RIGHT,true);
+							
+						}
+										
+					}//end if
+					
+					
+					
+					
+				}//end if	
+			
+			}
+			
+			
+			
+			public function JiaoFenIcon(dir:String,vis:Boolean=true,value:int=0):void
+			{
+				if(PaiLayout.LEFT == dir)
+				{
+					if(vis)
+					{
+						this.JiaoFenClock(PaiLayout.LEFT,false);
+						
+						(this.board.mc_jiaoFen_left as MovieClip).visible = true;
+						
+						if(0 == value)
+						{
+							(this.board.mc_jiaoFen_left as MovieClip).gotoAndStop(4);
+							
+						}else
+						{
+							(this.board.mc_jiaoFen_left as MovieClip).gotoAndStop(value);
+						}
+					}
+					else
+					{
+						(this.board.mc_jiaoFen_left as MovieClip).visible = false;
+					}
+				
+				}//end if
+			
+				if(PaiLayout.RIGHT == dir)
+				{
+					if(vis)
+					{
+						this.JiaoFenClock(PaiLayout.RIGHT,false);
+						
+						(this.board.mc_jiaoFen_right as MovieClip).visible = true;				
+						
+						if(0 == value)
+						{
+							(this.board.mc_jiaoFen_right as MovieClip).gotoAndStop(4);
+							
+						}else
+						{
+							(this.board.mc_jiaoFen_right as MovieClip).gotoAndStop(value);
+						}
+						
+					}else
+					{
+						(this.board.mc_jiaoFen_right as MovieClip).visible = false;	
+					}
+				
+				}//end if
+			
+				if(PaiLayout.DOWN == dir)
+				{
+					if(vis)
+					{
+						this.JiaoFenClock(PaiLayout.DOWN,false);
+						
+						(this.board.mc_jiaoFen_down as MovieClip).visible = true;
+						
+						if(0 == value)
+						{
+							//如果用gotoAndPlay,二次后会跳到下一帧
+							(this.board.mc_jiaoFen_down as MovieClip).gotoAndStop(4);					
+							
+						}
+						else
+						{
+							//1分对应第1帧
+							(this.board.mc_jiaoFen_down as MovieClip).gotoAndStop(value);	
+											
+						}
+					}
+					else
+					{
+						(this.board.mc_jiaoFen_down as MovieClip).visible = false;
+					
+					}
+				
+				}
+			
+			
+			
+			}
+			
+			/**
+			 * dir为down时，注册TimeComplete自动不叫的函数
+			 */ 
+			public function JiaoFenClock(dir:String,vis:Boolean = true,compFunc:Function=null):void
+			{
+				if(PaiLayout.LEFT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_LEFT.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_LEFT.y;
+						
+						setClockSub();
+						
+					}else
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						setClockSub(false);
+					}
+				
+				}
+								
+				if(PaiLayout.RIGHT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_RIGHT.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_RIGHT.y;			
+					
+						setClockSub();					
+						
+					}else
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						setClockSub(false);
+					}
+				
+				}
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_DOWN.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_DOWN.y;
+					
+						setClockSub(true,compFunc);
+						
+					}else
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						setClockSub(false);
+					}
+				}
+							
+			}		
+			
+			public function lbl_clock_sub(event:TimerEvent):void
+			{
+				var second:int;// = PaiRule.CLOCK_DAOJISHI - (event.target as Timer).currentCount;
+				
+				if(GameGlobals.qpc.data.activeRoom.isQuick){
+					
+					second = PaiRule.CLOCK_QUICK_DAOJISHI - (event.target as Timer).currentCount;
+					
+				}else
+				{
+					second = PaiRule.CLOCK_DAOJISHI - (event.target as Timer).currentCount;
+					
+				}
+				
+				(this.board.mc_clock.lbl_second as TextField).text = second.toString();
+			}
+			
+			private var compFunc:Function;			
+			private function setClockSub(run:Boolean = true,compFunc:Function=null):void
+			{
+				if(run)
+				{
+					if(this.chuPaiTimer.running)
+					{
+						this.chuPaiTimer.stop();
+					}
+					
+					//
+					chuPaiTimer_Reset();
+					
+					//------------------------------
+					if(this.chuPaiTimer.hasEventListener(TimerEvent.TIMER))
+					{					
+						this.chuPaiTimer.removeEventListener(TimerEvent.TIMER,lbl_clock_sub);
+					}					
+					
+					this.chuPaiTimer.addEventListener(TimerEvent.TIMER,lbl_clock_sub);
+					//------------------------------
+					
+					//------------------------------
+					if(this.chuPaiTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					{
+						this.chuPaiTimer.removeEventListener(TimerEvent.TIMER_COMPLETE,this.compFunc);
+					}
+						
+					//			
+					if(null != compFunc)
+					{
+						this.compFunc = compFunc;
+						this.chuPaiTimer.addEventListener(TimerEvent.TIMER_COMPLETE,this.compFunc);
+					}	
+					//------------------------------			
+					
+					this.chuPaiTimer.start();
+					
+				}else
+				{
+					this.chuPaiTimer.stop();
+				}
+				
+			}	
+			
+			public var laseTipPx:Array;			
+			
+			/**
+			 * 上家牌不为null
+			 * 则要大过上家牌
+			 * 否则自动pass
+			 * 
+			 * 返回值Array提供给自动出牌托管函数
+			 * 
+			 */ 
+			public function TipPai():Array
+			{
+				//try
+				//{
+					//loop use
+					var i:int = 0;				
+					
+					//获取可以比较的上家牌
+					var sjPai:Array = this.paiRule.getSjPai();				
+					
+					var sjPaiCode:Array = this.paiRule.getPaiCodeByNameArr(sjPai);				
+					
+					//我拥有的牌				
+					var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+					var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);				
+					var h:int = chair.Id - 1;
+					
+					//
+					var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();	
+					var len:int = items.length;
+					
+					//
+					var heroPai:Array = new Array();
+					
+					for(i =0;i<len;i++)
+					{
+						if(h == (items[i] as ItemModelByDdz).h)//这是你的牌
+						{
+							heroPai.push((items[i] as ItemModelByDdz).name);							
+						}
+					}
+					
+					var heroPaiCode:Array = this.paiRule.getPaiCodeByNameArr(heroPai);
+					
+					//对双方的牌进行排序，并对我方牌进行摘要
+					PaiCode.sort(sjPaiCode);	
+					PaiCode.sort(heroPaiCode);
+					
+					PaiRuleTip.pick(copyArr(heroPaiCode));
+					
+					//
+					var sjPx:Array = PaiRuleCompare.validate(sjPaiCode);
+					
+					laseTipPx = PaiRuleTip.list(sjPx,laseTipPx);
+					
+					//点牌操作,如无大过上家牌则自动pass
+					var dianPx:Array = this.copyArr(laseTipPx);
+					
+					if(PaiRule.PASS == dianPx[0])
+					{
+						this.PassPai();
+						
+						return null;
+					
+					}else
+					{
+						dianPx.splice(0,1);
+					
+						var value:Array = this.paiRule.getPaiNameByCodeArr(dianPx);
+						
+						this.DianPai(value);		
+						
+						return value;			
+					}	
+				//}
+				//catch (exd:Error) 
+				//{            		
+				//   	Alert.show(QiPaiStr.getErrorMessage("TipPai",exd.message));
+				//}	
+				
+				return null;		
+			}
+			
+			public function SortPai():void
+			{
+				//var matchInfo:Array = GameGlobals.qpc.data.activeRoom.getItemList();
+				
+				//if("" != matchInfo.dizhu && "" != matchInfo.turn)
+				//{
+					//之所以有地主的判断，主要是不和faPaiTimer冲突
+					
+					
+				
+				//}
+				
+				
+				if(this.faPaiTimer.running)
+				{
+					return;
+				}
+				
+				this.paiRule.setSortOrder();
+				
+				updateBoard();
+			
+			}
+			
+			public function TuoGuan():void
+			{
+				try
+				{
+					//if("托　管" == this.btnTuoGuan.label)
+					if(lang_btnTuoGuan_label == this.btnTuoGuan.label)
+					{				
+						//this.btnTuoGuan.label = "取消托管";
+						this.btnTuoGuan.label = lang_btnTuoGuan_cancel_str;
+						this.RobotIcon(PaiLayout.DOWN,true);
+						
+					}//else if("取消托管" == this.btnTuoGuan.label)
+					else if(lang_btnTuoGuan_cancel_str == this.btnTuoGuan.label)
+					{
+						//this.btnTuoGuan.label = "托　管";
+						this.btnTuoGuan.label = lang_btnTuoGuan_label;
+						this.RobotIcon(PaiLayout.DOWN,false);
+					}
+					
+					//room vars
+					var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+														
+					var varsList:Array = new Array(); 
+								
+					var var_qizi:Object = {
+					
+						name:"tuoGuan",
+						val:GameGlobals.qpc.data.hero.Id
+					}
+					
+					varsList.push(var_qizi);			
+					
+					GameGlobals.qpc.setRoomVariables(varsList,roomId);
+					
+					//即时接管
+					var  matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+					
+					if("" != matchInfo.dizhu && GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+					{
+						this.clockDown_compSystemAutoChuPai();				
+					}
+				
+				}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("TuoGuan",exd.message));
+				}	
+			
+			}
+			
+			/**
+			 * 注意有可能是点了牌，再点pass，因此用搜索的方法不行
+			 */ 
+			public function PassPai():void
+			{
+				//
+				var value:Array = new Array();
+				
+				//
+				this.chuPaiBar.visible = false;				
+				this.ChuPaiClock(PaiLayout.DOWN,false);
+				
+				//record begin -------------------------------------------
+				this.ChuPaiRecord(GameGlobals.qpc.data.hero.Id,value);
+				
+				//如发生出牌动作则重置提示
+				laseTipPx = null;
+					
+				//record end -------------------------------------------
+				
+				//				
+				this.AddPai(PaiLayout.DOWN2,value);	
+				
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 				
+							
+				var var_pai:Object = {
+				
+					name:"chuPai",
+					val: GameGlobals.qpc.data.hero.Id
+				}
+				
+				varsList.push(var_pai);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId);
+				
+				//					
+				ChuPaiNextAction(PaiLayout.DOWN,value);
+			
+			}
+			
+			/**
+			 * AndUpdateItemList
+			 */ 
+			public function ChuPaiRecord(userId:String,value:Array):void
+			{
+				//loop use
+				var i:int;
+				var j:int;
+				var h:int;
+				
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);								
+				var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();
+			    							
+				if(GameGlobals.qpc.data.hero.Id == userId)
+				{
+					//update item list					
+					this.paiRule.sort(items,chair.Id);		
+					
+					h = chair.Id-1;
+					
+					for(i=0;i<value.length;i++)
+					{					
+						for(j=0;j<items.length;j++)
+						{
+							if(h == (items[j] as ItemModelByDdz).h)//这是你的牌
+							{	
+								if((items[j] as ItemModelByDdz).name == value[i] ||
+								   (items[j] as ItemModelByDdz).name == PokerName.BG_DIZHU ||
+								   (items[j] as ItemModelByDdz).name == PokerName.BG_NONGMING)
+								{
+									items.splice(j,1);
+									break;
+								}	
+							}					
+						}					
+					}//end for
+				
+				}else
+				{
+					//update item list
+					for(i = 0;i<rival.length;i++)
+					{
+						var rivalChair:IChairModel = rival[i] as IChairModel;	
+						var rivalUser:IUserModel  = (rival[i] as IChairModel).getUser();		
+							
+						if(rivalUser.Id == userId)
+						{
+							h = rivalChair.Id -1;
+							break;
+						}
+					}
+					
+					this.paiRule.sort(items,rivalChair.Id);		
+							
+					for(i=0;i<value.length;i++)
+					{					
+						for(j=0;j<items.length;j++)
+						{
+							if(h == (items[j] as ItemModelByDdz).h)//这是你的牌
+							{	
+								if((items[j] as ItemModelByDdz).name == value[i] ||
+								   (items[j] as ItemModelByDdz).name == PokerName.BG_DIZHU ||
+								   (items[j] as ItemModelByDdz).name == PokerName.BG_NONGMING)
+								{
+									items.splice(j,1);
+									break;
+								}	
+							}					
+						}					
+					}//end for	
+				} 
+				
+				//record begin -------------------------------------------
+				this.paiRule.getRecordIsFullAndSave(RoundTypeByDdz.CHU_PAI);
+				this.paiRule.getRecord().setPai(value.toString(),userId);
+				//record end -------------------------------------------
+			
+			}
+			
+			public function ChuPai():void
+			{
+				//1.获取选择的牌
+				//2.验证牌是否符合出牌规则
+				//3.removeChild
+				
+				//loop use
+				var i:int = 0;
+				var j:int = 0;
+				var h:int = 0;
+				var m:int = 0;
+				var paiMc:MovieClip;
+				var numChild:int = (this.board.mc_pailist_h_down.mc_container as MovieClip).numChildren;
+				//
+				var value:Array = new Array();
+												
+				//find				
+				for(i=0;i<numChild;i++)
+				{					
+					paiMc = (this.board.mc_pailist_h_down.mc_container as MovieClip).getChildAt(i) as MovieClip;				
+					
+					if(0 == paiMc.y)
+					{
+						
+					}else
+					{	
+						value.push(this.paiRule.getFrontPaiByMcName(paiMc.name).instanceName);						
+					}				
+				}
+				
+				//check
+				if(0 == value.length)
+				{
+					//提示,请选择牌
+					(this.board.mc_tip_chupai_h_down as MovieClip).visible = true;
+					(this.board.mc_tip_chupai_h_down as MovieClip).gotoAndPlay(PaiLayout.MC_TIP_CHIPAI_NOSELECT);
+					
+					return;
+				}
+				
+				var pcArr:Array = this.paiRule.getPaiCodeByNameArr(value);
+				var checkPx:Array = PaiRuleCompare.validate(pcArr);
+				
+				if(PaiRule.MISS == checkPx[0])
+				{
+					//提示,牌不符合规则
+					(this.board.mc_tip_chupai_h_down as MovieClip).visible = true;
+					(this.board.mc_tip_chupai_h_down as MovieClip).gotoAndPlay(PaiLayout.MC_TIP_CHIPAI_RULE);
+					
+					return;
+				}
+				
+				var sjPai:Array = this.paiRule.getSjPai();								
+				var sjArr:Array = this.paiRule.getPaiCodeByNameArr(sjPai);
+				var checkSjPx:Array = PaiRuleCompare.validate(sjArr);
+					
+				var compare:Boolean = PaiRuleCompare.compare(pcArr,sjArr);
+				
+				if(!compare)
+				{
+					//牌没能大过上一家
+					(this.board.mc_tip_chupai_h_down as MovieClip).visible = true;
+					(this.board.mc_tip_chupai_h_down as MovieClip).gotoAndPlay(PaiLayout.MC_TIP_CHIPAI_XIAO);
+					
+					return;
+				}				
+				
+				//				
+				this.chuPaiBar.visible = false;
+				this.ChuPaiClock(PaiLayout.DOWN,false);				
+				
+				//record
+				//记录已出炸弹个数
+				if(PaiRule.BOMB == checkPx[0] ||
+				   PaiRule.HUOJIAN == checkPx[0])
+				{
+					(GameGlobals.qpc.data.activeRoom as RoomModelByDdz).setBombCount();
+					
+					refreshDiFenAndBombCount();
+				}
+				
+				this.ChuPaiRecord(GameGlobals.qpc.data.hero.Id,value);
+				//如发生出牌动作则重置提示
+				laseTipPx = null;
+				
+				//clear
+				this.ClearPaiAndRePos(PaiLayout.DOWN,value);
+				this.AddPai(PaiLayout.DOWN2,value);	
+				
+				//播出牌声音
+				var channel:SoundChannel;
+				var volume:Number = GameGlobals.audio.curVolume;			
+				var transform:SoundTransform = new SoundTransform(volume,0);
+				
+				channel = this.soundChuPai.play();
+							
+				if(null != channel)
+				{
+					channel.soundTransform = transform;
+				}
+				
+				//效果
+				this.AddPaiEffect(PaiLayout.DOWN2,checkPx);
+				
+				
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 
+				
+				var valStr:String = GameGlobals.qpc.data.hero.Id + ",";
+				
+				valStr += value.toString();
+							
+				var var_pai:Object = {
+				
+					name:"chuPai",
+					val: valStr
+				}
+				
+				varsList.push(var_pai);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId);
+				
+				//								
+				ChuPaiNextAction(PaiLayout.DOWN,value);
+							
+			}
+			
+			/**
+			 * 出牌后的下一个动作
+			 * 主要指下一家
+			 */
+			public function ChuPaiNextAction(oldDir:String,value:Array):void
+			{
+				var items:Array = GameGlobals.qpc.data.activeRoom.getItemList();
+				var len:int = items.length;
+				var rival:Array;
+				var rivalChair:IChairModel;
+				var rivalUser:IUserModel;
+				var i:int = 0;
+				var h:int = 0;
+				var isLeftOrRight:String;
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);				
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				var num:int = 0;
+				var sjPai:Array;
+				
+				if(PaiLayout.RIGHT == oldDir)
+				{
+					//如果对方牌出完，闹钟不用移到下一家					
+					//rival - 对手
+					rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser   = (rival[i] as IChairModel).getUser();	
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.RIGHT == isLeftOrRight)
+						{
+							h = rivalChair.Id - 1;
+							break;
+						}
+					
+					}//end for
+					
+					//设置turn
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser   = (rival[i] as IChairModel).getUser();	
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{
+						    GameGlobals.qpc.data.activeRoom.setTurn(rivalChair.getUser().Id);
+							break;
+						}
+					
+					}//end for
+					
+					num = 0;
+					for(i=0;i<len;i++)
+					{
+						if(h == (items[i] as ItemModelByDdz).h)
+						{
+							num++;
+						}
+					
+					}
+				
+					if(num > 0)
+					{
+						//游戏未结束，闹钟到一家
+						//显示闹钟前先清屏，注意是出牌位置
+						this.ClearPai(PaiLayout.LEFT2);
+						this.ChuPaiClock(PaiLayout.LEFT,true);	
+						
+						//报警
+						if(num <= GameGlobals.habit.alertPaiNum)
+						{
+							this.RobotAlertIcon(oldDir,true);
+						}						
+					}		
+						
+				}
+				
+				
+				if(PaiLayout.LEFT == oldDir)
+				{
+					//如果对方牌出完，闹钟不用移到下一家					
+					//rival - 对手
+					rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser   = (rival[i] as IChairModel).getUser();	
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{
+							h = rivalChair.Id - 1;
+							break;
+						}
+					
+					}//end for
+										
+					//设置turn
+					GameGlobals.qpc.data.activeRoom.setTurn(GameGlobals.qpc.data.hero.Id);						
+					
+					num = 0;
+					for(i=0;i<len;i++)
+					{
+						if(h == (items[i] as ItemModelByDdz).h)
+						{
+							num++;
+						}
+					
+					}
+				
+					if(num > 0)
+					{
+						this.ClearPai(PaiLayout.DOWN2);
+						
+						//注册函数
+						//上家pass，(上家指的是上二家出的最大的牌)则注册自动出最小的单牌
+						//否则自动pass
+						sjPai = this.paiRule.getSjPai();
+						if(0 == sjPai.length)
+						{
+							this.chuPaiBar.visible = true;
+							this.chuPaiBar.currentState = PaiRule.CHUPAI_BAR_STATE_MUSTCHUPAI;
+							this.ChuPaiClock(PaiLayout.DOWN,true,clockDown_compSystemAutoChuPai);		
+							
+							//查询是否处于托管状态，注册函数不同
+							if("" != matchInfo.dizhu && "" != matchInfo.turn)
+							{
+								if((this.board.mc_robot_down as MovieClip).visible)
+								{
+									this.laseTipPx = null;
+									this.clockDown_compSystemAutoChuPai();
+								}
+							}					
+							
+						}else{							
+						
+							this.chuPaiBar.visible = true;
+							this.chuPaiBar.currentState = PaiRule.CHUPAI_BAR_STATE_CHUPAI;
+							this.ChuPaiClock(PaiLayout.DOWN,true,clockDown_compAutoChuPaiPass);	
+							
+							//查询是否处于托管状态
+							if("" != matchInfo.dizhu && "" != matchInfo.turn)
+							{
+								if((this.board.mc_robot_down as MovieClip).visible)
+								{
+									this.clockDown_compSystemAutoChuPai();
+								}
+							}
+						}
+						
+						//报警
+						if(num <= GameGlobals.habit.alertPaiNum)
+						{
+							this.RobotAlertIcon(oldDir,true);
+						}		
+						
+						
+					}//end if	
+				
+				}
+				
+				
+				if(PaiLayout.DOWN == oldDir)
+				{			
+					//rival - 对手
+					rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+													
+					h = chair.Id - 1;
+					
+					//设置turn
+					for(i = 0;i<rival.length;i++)
+					{
+						rivalChair = rival[i] as IChairModel;	
+						rivalUser   = (rival[i] as IChairModel).getUser();	
+						
+						isLeftOrRight = this.leftOrRight(chair,rivalChair,rivalUser);
+						
+						if(PaiLayout.RIGHT == isLeftOrRight)
+						{
+						    GameGlobals.qpc.data.activeRoom.setTurn(rivalChair.getUser().Id);
+							break;
+						}
+					
+					}//end for
+					
+					num = 0;
+					for(i=0;i<len;i++)
+					{
+						if(h == (items[i] as ItemModelByDdz).h)
+						{
+							num++;
+						}
+					
+					}
+					
+					if(num > 0)
+					{
+						//游戏未结束，闹钟到一家
+						//显示闹钟前先清屏，注意是出牌位置
+						this.ClearPai(PaiLayout.RIGHT2);
+						this.ChuPaiClock(PaiLayout.RIGHT,true);			
+						
+						//报警
+						if(num <= GameGlobals.habit.alertPaiNum)
+						{
+							this.RobotAlertIcon(oldDir,true);
+						}						
+					}						
+				}
+					
+			
+			
+			}	
+			
+			public function stopFaPaiTimer():void
+			{
+				if(this.faPaiTimer.running)
+				{
+					this.faPaiTimer.stop();
+				}		
+					
+			}			
+			
+			public function stopChuPaiTimer():void
+			{
+				if(this.chuPaiTimer.running)
+				{
+					this.chuPaiTimer.stop();
+				}	
+						
+			}	
+			
+			/**
+			 */ 
+			public function ChuPaiClock(dir:String,vis:Boolean = true,compFunc:Function=null):void
+			{
+				if(PaiLayout.LEFT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_LEFT.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_LEFT.y;
+						
+						setClockSub();
+						
+					}else
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						setClockSub(false);
+					}
+				
+				}
+								
+				if(PaiLayout.RIGHT == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_RIGHT.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_RIGHT.y;			
+					
+						setClockSub();					
+						
+					}else
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						setClockSub(false);
+					}
+				
+				}
+				
+				if(PaiLayout.DOWN == dir)
+				{
+					if(vis)
+					{
+						(this.board.mc_clock as MovieClip).visible = true;
+						
+						this.board.mc_clock.x = PaiLayout.CLOCK_DOWN.x;
+						this.board.mc_clock.y = PaiLayout.CLOCK_DOWN.y;
+					
+						setClockSub(true,compFunc);
+						
+					}else
+					{
+						(this.board.mc_clock as MovieClip).visible = false;
+						setClockSub(false);
+					}
+				}
+				
+				
+			
+			
+			}	
+			
+			//AutoChuPaiPass
+			//SystemAutoChuPai
+			public function clockDown_compAutoJiaoFenPass(event:TimerEvent):void
+			{
+				JiaoFen(0);//-1是服务器初始值
+			
+			}
+			
+			public function clockDown_compAutoChuPaiPass(event:TimerEvent):void
+			{
+				PassPai();
+				
+				//如果30秒不出，加一个自动托管，现在很多游戏都这样做的
+				this.TuoGuan();
+			}
+			
+			public function clockDown_compSystemAutoChuPai(event:TimerEvent=null):void
+			{
+				var value:Array = TipPai();
+				
+				if(null != value)
+				{
+					ChuPai();
+				}
+			
+			}	
+			
+			/**
+			 * 
+			 * 
+			 */ 
+			public function showRoomExitWin():void
+			{
+				try
+				{				
+					/**
+					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+					 */ 
+				 	PopUpManager.addPopUp(_roomExitWin,this,false); 
+	            	PopUpManager.centerPopUp(_roomExitWin); 
+	            	
+	            	//启动关闭窗口倒计时器
+	            	_roomExitWin.startCloseTimeCount();
+	        	
+	        	}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("showRoomExitWin",exd.message ,exd.getStackTrace()));
+				}			
+			}
+			
+			public function showHabitWin():void
+			{
+				try
+				{				
+					/**
+					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+					 * 这个是modal透明的窗口
+					 */ 
+				 	PopUpManager.addPopUp(this._habitWin,this,true); 
+	            	PopUpManager.centerPopUp(_habitWin); 
+	            	
+	            	if(2 == GameGlobals.habit.alertPaiNum)
+	            	{
+	            		_habitWin.chk1.selected = true;
+	            		_habitWin.chk2.selected = false;
+	            	
+	            	}else if(4 == GameGlobals.habit.alertPaiNum)
+	            	{
+	            		_habitWin.chk1.selected = false;
+	            		_habitWin.chk2.selected = true;
+	            	
+	            	}
+	        	
+	        	}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("showHabitWin",exd.message ,exd.getStackTrace()));
+				}			
+			}
+			
+			public function showConfigWin():void
+			{
+				try
+				{				
+					/**
+					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+					 * 这个是modal透明的窗口
+					 */ 
+				 	PopUpManager.addPopUp(this._configWin,this,true); 
+	            	PopUpManager.centerPopUp(_configWin); 
+	            	
+	            	_configWin.soundSlide.value = GameGlobals.audio.curVolume;
+	        	
+	        	}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("showSystemConfigWin",exd.message ,exd.getStackTrace()));
+				}			
+			}
+			
+			/**
+			 * 游戏结束窗口
+			 * 
+			 * 带有金点变化值
+			 * 
+			 */ 
+			public function showGameOverWin2():void
+			{
+				try
+				{				
+					/**
+					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+					 */ 
+				 	
+					
+					if("清扬" == GameGlobals.qpc.data.getClientConfig().payUserNickName)
+					{
+						PopUpManager.addPopUp(_gameOverWin2,this,true);
+						
+					}else
+					{
+						PopUpManager.addPopUp(_gameOverWin2,this,false);	
+					
+					}
+					
+				 	//因board的x,y均为0，因此略过x,y的计算
+				 	//经截图，board的游戏区宽度是700像素，高度不变
+				 	
+				 	//var newX:Number = Math.round(700/2) - Math.round(_gameOverWin2.width/2); 
+					//粉色为900
+					var newX:Number = Math.round(900/2) - Math.round(_gameOverWin2.width/2); 
+				 	var newY:Number = Math.round(this.board.height/2) - Math.round(_gameOverWin2.height/2);
+				 	
+				 	_gameOverWin2.move(newX,newY);
+					
+				 	
+	            	
+	            	//棋盘
+					var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+					var matchGInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchGInfo();
+					
+					var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+					var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+					var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+					
+					
+					//win不用id，是为了节约网络带宽
+	            	if("dizhu" == matchInfo.win)
+	            	{
+	            		//_gameOverWin2.title = "地主胜利!";
+						_gameOverWin2.imgLostOrWin.gotoAndStop(1);
+	            		
+	            	}else if("nongming" == matchInfo.win)
+	            	{
+	            		//_gameOverWin2.title = "农民胜利!";	  
+						_gameOverWin2.imgLostOrWin.gotoAndStop(2);
+	            	}
+					
+					//
+					var leftWin:Boolean = false;
+					var downWin:Boolean = false;
+					var rightWin:Boolean = false;
+	            	
+	            	//昵称
+					_gameOverWin2.lbl_down.text = GameGlobals.qpc.data.hero.NickName;	
+					_gameOverWin2.lbl_downID.text = GameGlobals.qpc.data.hero.Id;
+	            	
+	            	//
+	            	if("dizhu" == matchInfo.win)
+	            	{	            		
+	            		if(GameGlobals.qpc.data.hero.Id == matchInfo.dizhu)
+	            		{	            			
+	            			(_gameOverWin2.imgDown.source as MovieClip).gotoAndStop(1); 		
+	            			_gameOverWin2.lbl_downG.text = (matchGInfo.dizhuG as MatchGModelByDdz).G();
+							downWin = true;
+							
+	            		
+	            		}else
+	            		{
+	            			(_gameOverWin2.imgDown.source as MovieClip).gotoAndStop(2); 
+	            			_gameOverWin2.lbl_downG.text = (matchGInfo.nongmingG as MatchGModelByDdz).G(GameGlobals.qpc.data.hero.Id);
+							downWin = false;
+							
+						}
+	            		
+	            	}else if("nongming" == matchInfo.win)
+	            	{	            		
+	            		if(String(matchInfo.nongming).indexOf(GameGlobals.qpc.data.hero.Id) > -1)
+	            		{	            			
+	            			(_gameOverWin2.imgDown.source as MovieClip).gotoAndStop(1); 		
+	            			_gameOverWin2.lbl_downG.text =(matchGInfo.nongmingG as MatchGModelByDdz).G(GameGlobals.qpc.data.hero.Id);
+							downWin = true;
+							
+	            		}else
+	            		{
+	            			(_gameOverWin2.imgDown.source as MovieClip).gotoAndStop(2); 
+	            			_gameOverWin2.lbl_downG.text =(matchGInfo.dizhuG as MatchGModelByDdz).G();
+							downWin = false;
+							
+	            		}
+	            		
+	            	}
+														
+					//
+					for(var i:int = 0;i<rival.length;i++)
+					{
+						var rivalChair:IChairModel = rival[i] as IChairModel;	
+						var rivalUser:IUserModel   = (rival[i] as IChairModel).getUser();	
+							
+						var isLeftOrRight:String = this.leftOrRight(chair,rivalChair,rivalUser);
+								
+						if(PaiLayout.LEFT == isLeftOrRight)
+						{
+							//
+							_gameOverWin2.lbl_left.text = rivalUser.NickName;
+							_gameOverWin2.lbl_leftID.text = rivalUser.Id;
+							
+							//
+							if("dizhu" == matchInfo.win)
+			            	{	            		
+			            		if(rivalUser.Id == matchInfo.dizhu)
+			            		{	            			
+			            			(_gameOverWin2.imgLeft.source as MovieClip).gotoAndStop(1); 					            		
+			            			_gameOverWin2.lbl_leftG.text = (matchGInfo.dizhuG as MatchGModelByDdz).G();
+									leftWin = true;
+			            			
+			            		}else
+			            		{
+			            			(_gameOverWin2.imgLeft.source as MovieClip).gotoAndStop(2); 
+			            			_gameOverWin2.lbl_leftG.text = (matchGInfo.nongmingG as MatchGModelByDdz).G(rivalUser.Id);
+									leftWin = false;
+									
+								}
+			            		
+			            	}else if("nongming" == matchInfo.win)
+			            	{	            		
+			            		if(String(matchInfo.nongming).indexOf(rivalUser.Id) > -1)
+			            		{	            			
+			            			(_gameOverWin2.imgLeft.source as MovieClip).gotoAndStop(1); 	
+			            			_gameOverWin2.lbl_leftG.text = (matchGInfo.nongmingG as MatchGModelByDdz).G(rivalUser.Id);	
+									leftWin = true;
+									
+			            		}else
+			            		{
+			            			(_gameOverWin2.imgLeft.source as MovieClip).gotoAndStop(2); 
+			            			_gameOverWin2.lbl_leftG.text = (matchGInfo.dizhuG as MatchGModelByDdz).G();
+									leftWin = false;
+			            		}
+			            		
+			            	}
+									
+						}else if(PaiLayout.RIGHT == isLeftOrRight)
+						{
+							//
+							_gameOverWin2.lbl_right.text = rivalUser.NickName;
+							_gameOverWin2.lbl_rightID.text = rivalUser.Id;
+							
+							//
+							if("dizhu" == matchInfo.win)
+			            	{	            		
+			            		if(rivalUser.Id == matchInfo.dizhu)
+			            		{	            			
+			            			(_gameOverWin2.imgRight.source as MovieClip).gotoAndStop(1); 		
+			            			_gameOverWin2.lbl_rightG.text = (matchGInfo.dizhuG as MatchGModelByDdz).G();
+			            			rightWin = true;
+									
+			            		}else
+			            		{
+			            			(_gameOverWin2.imgRight.source as MovieClip).gotoAndStop(2); 
+			            			_gameOverWin2.lbl_rightG.text = (matchGInfo.nongmingG as MatchGModelByDdz).G(rivalUser.Id);
+									rightWin = false;
+									
+			            		}
+			            		
+			            	}else if("nongming" == matchInfo.win)
+			            	{	            		
+			            		if(String(matchInfo.nongming).indexOf(rivalUser.Id) > -1)
+			            		{	            			
+			            			(_gameOverWin2.imgRight.source as MovieClip).gotoAndStop(1); 	
+			            			_gameOverWin2.lbl_rightG.text = (matchGInfo.nongmingG as MatchGModelByDdz).G(rivalUser.Id);
+									rightWin = true;
+			            		
+			            		}else
+			            		{
+			            			(_gameOverWin2.imgRight.source as MovieClip).gotoAndStop(2); 
+			            			_gameOverWin2.lbl_rightG.text = (matchGInfo.dizhuG as MatchGModelByDdz).G();
+									rightWin = false;
+			            		}
+			            		
+			            	}
+						}							
+						
+					}//end for
+						            		            	
+	            	//启动关闭窗口倒计时器
+	            	_gameOverWin2.startCloseTimeCount();
+					
+					//播胜利或失败声音
+					//
+					var channel:SoundChannel;
+					var volume:Number = GameGlobals.audio.curVolume;			
+					var transform:SoundTransform = new SoundTransform(volume,0);
+					
+					if(downWin)
+					{
+						channel = this.soundWin.play();
+						
+						
+					}else
+					{
+						channel = this.soundLose.play();
+					}
+					
+					if(null != channel)
+					{
+						channel.soundTransform = transform;
+					}
+					
+					//得分记录
+					var recordDic:Dictionary = GameGlobals.qpc.data.gameRecordDic;
+					var recordKey:Array = DictionaryUtil.getKeys(recordDic);
+					
+					
+					//--
+					var leftID:String = _gameOverWin2.lbl_leftID.text;
+					var downID:String = _gameOverWin2.lbl_downID.text;
+					var rightID:String = _gameOverWin2.lbl_rightID.text;
+					
+					var left:String = _gameOverWin2.lbl_left.text;
+					var down:String = _gameOverWin2.lbl_down.text;
+					var right:String= _gameOverWin2.lbl_right.text;					
+					
+					var leftG:String = _gameOverWin2.lbl_leftG.text;
+					var downG:String = _gameOverWin2.lbl_downG.text;
+					var rightG:String =  _gameOverWin2.lbl_rightG.text;
+										
+					var idList:Array = [leftID,downID,rightID];
+					var list:Array = [left,down,right];
+					var gList:Array = [leftG,downG,rightG];					
+					var winList:Array = [leftWin,downWin,rightWin];
+					
+					for(var j:int=0;j<idList.length;j++){
+						if(recordKey.indexOf(idList[j]) > -1)
+						{
+							//
+							var winCount:int = recordDic[idList[j]]["winCount"];
+							var lostCount:int = recordDic[idList[j]]["lostCount"];
+							
+							if(winList[j]){
+								winCount++;
+								recordDic[idList[j]]["winCount"] = winCount;
+								recordDic[idList[j]]["winCountAndLostCount"] = winCount.toString() + "/" + lostCount.toString();
+							
+							}else{
+								lostCount++;
+								recordDic[idList[j]]["lostCount"] = lostCount;
+								recordDic[idList[j]]["winCountAndLostCount"] = winCount.toString() + "/" + lostCount.toString();
+							}
+							
+							//本局得分
+							recordDic[idList[j]]["g"] = gList[j];
+							
+						}else
+						{
+							//--
+							var ro:Object = {};
+							
+							if(winList[j]){
+								
+								ro["winCount"] = 1;
+								ro["lostCount"] = 0;
+								ro["winCountAndLostCount"] = "1/0";
+							
+							}else{
+							
+								ro["winCount"] = 0;
+								ro["lostCount"] = 1;
+								ro["winCountAndLostCount"] = "0/1";
+							}
+							
+							ro["g"] = gList[j];
+							ro["Id"] = idList[j];
+							ro["NickName"] = list[j];
+							
+							
+							recordDic[idList[j]] = ro;
+						
+							//--
+						
+						}
+					}
+					
+					//
+					GameGlobals.qpc.data.updateRecordList(idList);
+	        	
+	        	}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("showGameStartWin",exd.message ,exd.getStackTrace()));
+				}			
+			}
+			
+			/**
+			 * 游戏结束窗口
+			 * 
+			 */ 
+//			public function showGameOverWin():void
+//			{
+//				try
+//				{				
+//					/**
+//					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+//					 */ 
+//				 	PopUpManager.addPopUp(_gameOverWin,this,false);				 	
+//				 	//因board的x,y均为0，因此略过x,y的计算
+//				 	//经截图，board的游戏区宽度是700像素，高度不变
+//				 	var newX:Number = Math.round(700/2) - Math.round(_gameOverWin.width/2); 
+//				 	var newY:Number = Math.round(this.board.height/2) - Math.round(_gameOverWin.height/2);
+//				 	
+//				 	_gameOverWin.move(newX,newY);
+//				 	
+//	            	
+//	            	//棋盘
+//					var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+//					var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+//					var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+//					var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+//					
+//					//win不用id，是为了节约网络带宽
+//	            	if("dizhu" == matchInfo.win)
+//	            	{
+//	            		//_gameOverWin.title = "地主胜利!";
+//						_gameOverWin.title = lang_dizhu_win_title;
+//	            		
+//	            	}else if("nongming" == matchInfo.win)
+//	            	{
+//	            		//_gameOverWin.title = "农民胜利!";	          
+//						_gameOverWin.title = lang_nongming_win_title;	      
+//	            	}
+//	            	
+//	            	//昵称
+//					_gameOverWin.lblDown.text = GameGlobals.qpc.data.hero.NickName;	
+//	            	
+//	            	//
+//	            	if("dizhu" == matchInfo.win)
+//	            	{	            		
+//	            		if(GameGlobals.qpc.data.hero.Id == matchInfo.dizhu)
+//	            		{	            			
+//	            			(_gameOverWin.imgDown.source as MovieClip).gotoAndStop(1); 		
+//	            		
+//	            		}else
+//	            		{
+//	            			(_gameOverWin.imgDown.source as MovieClip).gotoAndStop(2); 
+//	            		}
+//	            		
+//	            	}else if("nongming" == matchInfo.win)
+//	            	{	            		
+//	            		if(String(matchInfo.nongming).indexOf(GameGlobals.qpc.data.hero.Id) > -1)
+//	            		{	            			
+//	            			(_gameOverWin.imgDown.source as MovieClip).gotoAndStop(1); 		
+//	            		
+//	            		}else
+//	            		{
+//	            			(_gameOverWin.imgDown.source as MovieClip).gotoAndStop(2); 
+//	            		}
+//	            		
+//	            	}
+//														
+//					//
+//					for(var i:int = 0;i<rival.length;i++)
+//					{
+//						var rivalChair:IChairModel = rival[i] as IChairModel;	
+//						var rivalUser:IUserModel   = (rival[i] as IChairModel).getUser();	
+//							
+//						var isLeftOrRight:String = this.leftOrRight(chair,rivalChair,rivalUser);
+//								
+//						if(PaiLayout.LEFT == isLeftOrRight)
+//						{
+//							//
+//							_gameOverWin.lblLeft.text = rivalUser.NickName;
+//							
+//							//
+//							if("dizhu" == matchInfo.win)
+//			            	{	            		
+//			            		if(rivalUser.Id == matchInfo.dizhu)
+//			            		{	            			
+//			            			(_gameOverWin.imgLeft.source as MovieClip).gotoAndStop(1); 		
+//			            		
+//			            		}else
+//			            		{
+//			            			(_gameOverWin.imgLeft.source as MovieClip).gotoAndStop(2); 
+//			            		}
+//			            		
+//			            	}else if("nongming" == matchInfo.win)
+//			            	{	            		
+//			            		if(String(matchInfo.nongming).indexOf(rivalUser.Id) > -1)
+//			            		{	            			
+//			            			(_gameOverWin.imgLeft.source as MovieClip).gotoAndStop(1); 		
+//			            		
+//			            		}else
+//			            		{
+//			            			(_gameOverWin.imgLeft.source as MovieClip).gotoAndStop(2); 
+//			            		}
+//			            		
+//			            	}
+//									
+//						}else if(PaiLayout.RIGHT == isLeftOrRight)
+//						{
+//							//
+//							_gameOverWin.lblRight.text = rivalUser.NickName;
+//							
+//							//
+//							if("dizhu" == matchInfo.win)
+//			            	{	            		
+//			            		if(rivalUser.Id == matchInfo.dizhu)
+//			            		{	            			
+//			            			(_gameOverWin.imgRight.source as MovieClip).gotoAndStop(1); 		
+//			            		
+//			            		}else
+//			            		{
+//			            			(_gameOverWin.imgRight.source as MovieClip).gotoAndStop(2); 
+//			            		}
+//			            		
+//			            	}else if("nongming" == matchInfo.win)
+//			            	{	            		
+//			            		if(String(matchInfo.nongming).indexOf(rivalUser.Id) > -1)
+//			            		{	            			
+//			            			(_gameOverWin.imgRight.source as MovieClip).gotoAndStop(1); 		
+//			            		
+//			            		}else
+//			            		{
+//			            			(_gameOverWin.imgRight.source as MovieClip).gotoAndStop(2); 
+//			            		}
+//			            		
+//			            	}
+//						}							
+//						
+//					}//end for
+//						            		            	
+//	            	//启动关闭窗口倒计时器
+//	            	_gameOverWin.startCloseTimeCount();
+//	        	
+//	        	}
+//				catch (exd:Error) 
+//				{            		
+//				   	Alert.show(QiPaiStr.getErrorMessage("showGameStartWin",exd.message ,exd.getStackTrace()));
+//				}			
+//			}
+			
+			/**
+			 * 声音聊天
+			 * 
+			 */ 
+			private function closeHandler(event:Event):void
+			{
+				//Alert.show(ComboBox(event.target).text); 
+				var line:String = GameGlobals.qpc.data.hero.NickName + ":" + cb1.text;
+				this._chat.addChat(line);	 
+				
+				playAudioChat(line);
+	
+				GameGlobals.qpc.sendPublicAudioMessage(line);
+			
+			}
+			
+			/**
+			 * 声音大了太刺耳，所以音量强制调为60%
+			 * 
+			 * 不大不小很清晰，也不会吓人一跳
+			 * 
+			 */ 
+			private function playAudioChat(line:String):void
+			{
+				var len:int = this.talk.length;
+				var channel:SoundChannel;
+				
+				//
+				var volume:Number = GameGlobals.audio.curVolume;			
+				var transform:SoundTransform = new SoundTransform(volume,0);
+				
+				for(var i:int =0;i<len;i++)
+				{
+					var find:int = line.indexOf(this.talk[i].toString(),0);
+					
+					if(-1 != find)
+					{
+						if(0 == i)
+						{
+							channel = this.talk0.play();
+							
+							if(null != channel)
+							{
+								channel.soundTransform = transform;
+							}
+						}
+						
+						if(1 == i)
+						{
+							channel = this.talk1.play();
+							
+							if(null != channel)
+							{
+								channel.soundTransform = transform;
+							}
+						}
+											
+						if(2 == i)
+						{
+							channel = this.talk2.play();
+							
+							if(null != channel)
+							{
+								channel.soundTransform = transform;
+							}
+						}
+						
+						if(3 == i)
+						{
+							channel = this.talk3.play();
+							
+							if(null != channel)
+							{
+								channel.soundTransform = transform;
+							}
+						}
+						
+						if(4 == i)
+						{
+							/*
+							channel = this.talk4.play();
+							
+							if(null != channel)
+							{
+								channel.soundTransform = transform;
+							}
+							*/
+						}
+						
+						if(5 == i)
+						{
+							/*
+							channel = this.talk5.play();
+							
+							if(null != channel)
+							{
+								channel.soundTransform = transform;
+							}
+							*/
+						}
+					
+						break;
+					}
+				
+				
+				}
+				
+			
+			}
+			
+			private function cb1_keyDown(event:KeyboardEvent):void
+			{
+				if(13 == event.keyCode)
+			    {
+			       //Alert.show("回车");
+			       this.btn_chatSend();
+			    }
+			}
+			
+			private function btn_chatSend():void
+			{
+				//避免发空字符串
+				if("" != cb1.text)
+				{
+					var line:String = GameGlobals.qpc.data.hero.NickName + ":" + cb1.text;
+					
+					this._chat.addChat(line);				
+					cb1.text = "";
+					
+					GameGlobals.qpc.sendPublicMessage(line);				
+				}
+				
+			}
+			
+			public function mc_btn_askIdleUser_click(event:MouseEvent):void
+			{				
+				if(null != this.idleUserList.selectedItem)
+				{
+					var idleModel:IdleModel = this.idleUserList.selectedItem as IdleModel;
+					
+					var roomId:int = GameGlobals.qpc.data.hero.activeRoomId;
+					
+					var varsList:Array = new Array(); 
+				
+					var var_mail:Object = {
+				
+						name:"askJoinRoom",
+						val:idleModel.data
+					}
+					
+					varsList.push(var_mail);
+				
+					GameGlobals.qpc.sendMail(varsList,roomId);
+				
+					//Alert.show("您对" + idleModel.label + "的邀请已发出");
+					Alert.show(GetLang_send_mail_str(idleModel.label));
+					
+					
+				}else
+				{
+					//Alert.show("请点击选择空闲用户列表中的用户名");
+					Alert.show(lang_please_click_idel_user_list_str);
+					
+				}			
+			
+			}
+			
+			public function onIdleList(qevt:QiPaiEvent):void
+			{			
+				var sourceArr:Array =GameGlobals.qpc.data.activeRoom.getIdleList();
+				var len:int = sourceArr.length;
+				
+				//
+				var list:ArrayCollection = new ArrayCollection();
+				
+				for(var i:int =0;i<len;i++)
+				{
+					list.addItem(sourceArr[i]);
+				}
+				
+				this.idleUserList.dataProvider = list;
+			
+			}
+			
+			private function onPublicMessage(qevt:QiPaiEvent):void
+			{		
+				var line:String = qevt.params.line;
+				this._chat.addChat(line);
+			}
+			
+			private function onPublicAudioMessage(qevt:QiPaiEvent):void
+			{		
+				var line:String = qevt.params.line;
+				this._chat.addChat(line);
+				
+				playAudioChat(line);
+			}
+
+
+			
+
+		]]>
+	</mx:Script>
+	
+	
+		
+	
+</mx:Canvas>

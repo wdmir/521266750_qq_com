@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="320" height="30" currentState="MustChuPai">
+	<mx:states>
+		<mx:State name="MustChuPai">
+			<mx:AddChild>
+				<mx:Button id="btnMust1" label="{lang_btnMust1_label}" x="91" y="0" click="chuPaiBtnClick(event)">		
+				</mx:Button>	
+			</mx:AddChild>	
+			<mx:AddChild>	
+				<mx:Button id="btnMust2" label="{lang_btnMust2_label}" x="181" y="0" click="tipPaiBtnClick(event)">		
+				</mx:Button>
+			</mx:AddChild>	
+		</mx:State>
+		<mx:State name="ChuPai">
+			<mx:AddChild>
+				<mx:Button id="btn1" label="{lang_btn1_label}" x="46" y="0" click="chuPaiBtnClick(event)">		
+				</mx:Button>
+			</mx:AddChild>
+			<mx:AddChild>
+				<mx:Button id="btn2" label="{lang_btn2_label}" x="136" y="0" click="passBtnClick(event)">		
+				</mx:Button>				
+			</mx:AddChild>
+			<mx:AddChild>
+				<mx:Button id="btn3" label="{lang_btn3_label}" x="226" y="0" click="tipPaiBtnClick(event)">		
+				</mx:Button>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+			   
+		   <mx:Script>
+		   	<![CDATA[
+		   		
+		   		import mx.events.ItemClickEvent;
+		   		import mx.controls.buttonBarClasses.*;
+												
+				
+				public function get lang_btnMust1_label():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.ChuPaiBarMXML_btnMust1_label;
+				}
+				
+				public function get lang_btnMust2_label():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.ChuPaiBarMXML_btnMust2_label;
+				}
+				
+				public function get lang_btn1_label():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.ChuPaiBarMXML_btn1_label;
+				}
+				
+				public function get lang_btn2_label():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.ChuPaiBarMXML_btn2_label;
+				}
+				
+				public function get lang_btn3_label():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.ChuPaiBarMXML_btn3_label;
+				}
+				
+				
+		   		
+				//
+		   		public function chuPaiBtnClick(event:MouseEvent):void
+		   		{
+		   			(this.parentApplication as client_ddz).roomViewBg.ChuPai();
+		   		
+		   		
+		   		}
+		   		
+		   		public function tipPaiBtnClick(event:MouseEvent):void
+		   		{
+		   			(this.parentApplication as client_ddz).roomViewBg.TipPai();
+		   			
+		   		}
+		   		
+		   		public function passBtnClick(event:MouseEvent):void
+		   		{
+		   			(this.parentApplication as client_ddz).roomViewBg.PassPai();
+		   		
+		   		}
+	            
+	            
+		   		
+		   	]]>
+		   </mx:Script>
+		   
+</mx:Canvas>

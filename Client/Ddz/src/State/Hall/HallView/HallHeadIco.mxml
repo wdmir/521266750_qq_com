@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   width="64" 
+		   height="64"
+		   creationComplete="canvas1_creationCompleteHandler(event)" xmlns:ns1="*">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</fx:Script>
+	
+	<mx:Image id="ico" width="52" height="52" horizontalCenter="0" verticalCenter="0"/>
+	<ns1:ui_circus_movement id="icoEffect" horizontalCenter="0" verticalCenter="0"/>
+	
+</mx:Canvas>

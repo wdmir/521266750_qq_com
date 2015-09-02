@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="192" 
+		   height="260" 
+		   xmlns:ns1="*" 
+		   cornerRadius="6" alpha="1.0" borderStyle="solid" 
+		   creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	<mx:TextArea id="textBox1" left="4" right="4" top="6" bottom="32" 
+				 backgroundAlpha="0.0"
+				 borderThickness="0" 
+				 fontSize="12" 
+				 color="0xffffff"
+				 horizontalCenter="0"/>
+	
+	
+	<mx:ComboBox id="cb1" bottom="6" width="185" close="closeHandler(event)" cornerRadius="6" 
+				 editable="true" fontSize="12" horizontalCenter="0" keyDown="cb1_keyDown(event)">
+	</mx:ComboBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiUser;
+			import net.wdqipai.core.model.FChat;
+			
+						
+			/**
+			 * 显示对话内容
+			 */ 
+			private var _chat:FChat;
+			
+			public function get cb_0_str():String{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallChatView_cb1_0_str;
+				
+			}
+			
+			public function get cb_1_str():String{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallChatView_cb1_1_str;
+				
+			}
+			
+			public function get cb_2_str():String{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallChatView_cb1_2_str;
+				
+			}
+			
+			public function get cb_3_str():String{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallChatView_cb1_3_str;
+				
+			}
+			
+			public function get cb_4_str():String{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallChatView_cb1_4_str;
+				
+			}
+			
+			public function get cb_5_str():String{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallChatView_cb1_5_str;
+				
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var cb1_source:Array = [];
+				
+				if("" != cb_0_str){
+					cb1_source.push(cb_0_str);
+				}
+				
+				if("" != cb_1_str){
+					cb1_source.push(cb_1_str);
+				}
+				
+				if("" != cb_2_str){
+					cb1_source.push(cb_2_str);
+				}
+				
+				if("" != cb_3_str){
+					cb1_source.push(cb_3_str);
+				}
+				
+				if("" != cb_4_str){
+					cb1_source.push(cb_4_str);
+				}
+				
+				if("" != cb_5_str){
+					cb1_source.push(cb_5_str);
+				}
+				
+				//
+				this.cb1.dataProvider = cb1_source;//[];
+				
+				//
+				_chat = new FChat(this.textBox1,50);//30);
+				
+				textBox1.addEventListener(TextEvent.LINK,outputBoxTextLinkHandler);
+				
+				//
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onPublicMessage,onPublicMessage);
+				
+				
+			}
+
+			private function onPublicMessage(qevt:QiPaiEvent):void
+			{		
+				var line:String = qevt.params.line;
+				var id_sql:String = qevt.params.user.@id_sql;
+				var n:String = qevt.params.user.@n;
+				
+				line = "<a href='event:look" + id_sql + "'><u>" + n + 
+					"</u></a>: " + line;
+				
+				this._chat.addChat(line);
+			}
+			
+			private function outputBoxTextLinkHandler(e:TextEvent):void
+			{
+				//trace(e);
+				
+				if(e.text.indexOf("look") == 0)
+				{
+					var uid:int = parseInt(e.text.replace("look",""));
+					
+					QiPaiUser.look(GameGlobals.qpc.data.selectDB.mode,
+						uid,
+						GameGlobals.rootUrl,
+						GameGlobals.GAMENAME);
+					
+					
+				}
+				
+			}
+			
+			/**
+			 * 声音聊天
+			 * 
+			 */ 
+			private function closeHandler(event:Event):void
+			{
+				
+				GameGlobals.qpc.sendPublicMessage(cb1.text);
+			}
+			
+			
+			
+			private function cb1_keyDown(event:KeyboardEvent):void
+			{
+				if(13 == event.keyCode)
+				{
+					//Alert.show("回车");
+					this.btn_chatSend();
+				}
+			}
+			
+			private function btn_chatSend():void
+			{
+				//避免发空字符串
+				if("" != cb1.text)
+				{
+					//GameGlobals.qpc.data.hero.NickName + ":" +
+					var line:String = cb1.text;
+					
+					//聊天这个需要过滤脏字
+					//this._chat.addChat(line);				
+					cb1.text = "";
+					
+					GameGlobals.qpc.sendPublicMessage(line);				
+				}
+				
+			}
+			
+
+			
+
+		]]>
+	</mx:Script>
+	
+		
+</mx:Canvas>

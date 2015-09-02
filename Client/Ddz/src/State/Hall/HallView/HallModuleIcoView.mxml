@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="400" 
+		   height="70" 
+		   xmlns:ns1="*" 
+		   cornerRadius="6" 
+		   alpha="1.0" 
+		   borderStyle="none" 		    
+		   creationComplete="creationCompleteHandler(event)" 
+		   xmlns:HallView="State.Hall.HallView.*">
+	
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import State.Hall.HallModel.IcoName;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.flash.UIMovieClip;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiEvent;
+
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;	
+			
+			
+			public var turnOver_a_Card_Visible:Boolean = false;
+			public const undeveloped_Ico_Visible:Boolean = false;
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				//GameGlobals.qpc.addEventListener(QiPaiEvent.onModuleList,onModuleList);
+				
+			}
+			
+			private function onModuleList(qe:QiPaiEvent):void
+			{
+				
+			
+			}
+			
+			
+			
+			public function refreshPos():void
+			{
+				
+				var turnOver_a_Card_Xml:XML = GameGlobals.qpc.data.moduleDic[IcoName.turnOver_a_Card_Name];
+				
+				turnOver_a_Card_Visible = false;
+				
+				if(null != turnOver_a_Card_Xml)
+				{
+				
+					if(1 == parseInt(turnOver_a_Card_Xml.@run))
+					{
+						turnOver_a_Card_Visible = true;
+					
+					}
+				}
+				
+				
+				//
+				var list:Array = [turnOver_a_Card_Visible,undeveloped_Ico_Visible];
+				var icoList:Array = [this.ico1,this.ico2];
+				var icoData:Array = [IcoName.turnOver_a_Card_Name,IcoName.undeveloped_Ico_Name];
+				
+				for(var j:int = 0;j<icoList.length;j++)
+				{
+					if(list[j])
+					{
+						icoList[j].data = icoData[j];
+						icoList[j].ico.source = "assets/" + icoData[j] + ".png";
+						
+						//
+						if(1 != icoList[j].icoEffect.currentFrame){							
+							icoList[j].icoEffect.gotoAndStop(1);
+						}
+						
+						icoList[j].visible = true;
+						icoList[j].mouseEnabled = true;
+					}else
+					{
+						icoList[j].data = icoData[j];
+						icoList[j].ico.source = null;
+						
+						icoList[j].icoEffect.gotoAndStop(2);
+						
+						icoList[j].visible = false;
+						icoList[j].mouseEnabled = false;
+					
+					}
+				
+				
+				}
+				
+				
+				
+			}
+			
+			
+
+			protected function ico1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(event.target.data == IcoName.turnOver_a_Card_Name)
+				{
+					PopUpManager.addPopUp(HallTurnOver_a_Card_Win.instance,
+						(this.parentApplication as client_ddz).hallViewBg);
+					PopUpManager.centerPopUp(HallTurnOver_a_Card_Win.instance);
+				
+					//
+					HallTurnOver_a_Card_Win.instance.initGame();
+				}
+			}
+
+
+			protected function ico2_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</mx:Script>
+	
+	
+	<HallView:HallHeadIco id="ico1" x="328" y="3"
+						  visible="false" 
+						  mouseEnabled="false" 
+						  mouseChildren="false" 
+						  click="ico1_clickHandler(event)">
+	
+	</HallView:HallHeadIco>
+	
+	<HallView:HallHeadIco id="ico2" x="247" y="3" 
+						  visible="false" 
+						  mouseEnabled="false" 
+						  mouseChildren="false" 
+						  click="ico2_clickHandler(event)">
+		
+	</HallView:HallHeadIco>
+	
+	
+</mx:Canvas>

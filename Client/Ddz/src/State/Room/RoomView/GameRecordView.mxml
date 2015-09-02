@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="230" 
+		   height="110" 
+		   xmlns:ns1="*" 
+		   cornerRadius="6" 
+		   alpha="1.0" 
+		   borderStyle="solid" 
+		   creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	<mx:DataGrid id="dg1" x="3" y="3" fontSize="12" width="222" height="100" backgroundAlpha="0.0">
+		<mx:columns>
+			<mx:DataGridColumn id="col1" width="112" headerText="{lang_Dg1_Col1_Str}" dataField="NickName">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Label text="{data.NickName}" textAlign="center"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			
+			<mx:DataGridColumn id="col2" width="90" headerText="{lang_Dg1_Col2_Str}" dataField="g">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Label text="{data.g}" textAlign="center"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			
+			<mx:DataGridColumn id="col3" width="60" headerText="{lang_Dg1_Col3_Str}" dataField="winCountAndLostCount">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Label text="{data.winCountAndLostCount}" textAlign="center"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.TabBar;
+			import mx.core.Application;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdqipai.core.model.FChat;
+
+			public function get lang_Dg1_Col1_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameRecordViewMXML_dg1_col1_str;
+				
+			}
+			
+			public function get lang_Dg1_Col2_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameRecordViewMXML_dg1_col2_str;
+				
+			}
+			
+			public function get lang_Dg1_Col3_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameRecordViewMXML_dg1_col3_str;
+				
+			}
+			
+			/**
+			 * 
+			 */ 
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				dg1.dataProvider = GameGlobals.qpc.data.gameRecordList;
+			}
+			
+			
+	
+		]]>
+	</mx:Script>
+	
+	
+	
+	
+</mx:Canvas>

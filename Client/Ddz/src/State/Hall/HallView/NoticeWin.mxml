@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+				layout="absolute" 
+				width="280" 
+				height="450" 
+				title="{lang_Title}"
+				clipContent="false"
+				showCloseButton="true" 
+				creationComplete="creationComplete()">
+	
+	<mx:Label id="lblMsg" fontSize="13" width="250" height="357" top="50" left="12"/>
+	<mx:Button label="{lang_BtnCancel_Label}" horizontalCenter="0" id="btnCancel"  click="btnCancel_clickHandler(event)" top="400"/>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdqipai.client.extfactory.ChairModelFactory;
+			import net.wdqipai.client.extmodel.ItemModelByDdz;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			public function get lang_Title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.NoticeWinMXML_title;
+				
+			}
+			
+			public function get lang_BtnCancel_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.NoticeWinMXML_btnCancel_label;
+				
+			}
+			
+			
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent=null):void
+			{
+				//
+				__close();	
+			}			
+			
+			public function look():void
+			{				
+				
+				lblMsg.htmlText = GameGlobals.qpc.data.getClientConfig().Notice;
+				
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Image x="240" width="268" height="421" id="imgAD0"
+			  smoothBitmapContent="true"
+			  source="assets/notice_girl.png" top="29"/>
+	
+	
+	
+	
+	
+</mx:TitleWindow>

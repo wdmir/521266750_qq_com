@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   xmlns:Wait="State.Wait.WaitView.*"
+			   width="900"
+			   height="680"
+			   minWidth="900" minHeight="680" 
+			   maxWidth="{GameGlobals.stageWidth}" maxHeight="{GameGlobals.stageHeight}"		   
+			   preloader="State.Preload.MainPreload"	
+			   currentState="" pageTitle="斗地主"
+			   xmlns:ns0="State.Login.LoginView.*"
+			   xmlns:ns1="State.Hall.HallView.*"
+			   xmlns:ns2="State.Room.RoomView.*"
+			   xmlns:ns3="State.HallAutoMatch.View.*"
+			   xmlns:debugger="com.demonsters.debugger.*" 
+			   applicationComplete="applicationCompleteHandler(event)"
+			   backgroundColor="0x333333" >	
+	
+	<!-- 海贝色	#fff5ee http://www.tool.la/StandardColor/ -->
+		
+	<!-- 连接服务器及初始化场景，这里和preload很像，加一个动画以过渡 -->
+	<Wait:WaitViewBg id="waitViewBg" x="0" y="0" includeIn="WaitState">					
+	</Wait:WaitViewBg>	
+	
+	<!-- 登陆场景 -->
+	<ns0:LoginViewBg id="loginViewBg" x="0" y="0" includeIn="LoginState">					
+	</ns0:LoginViewBg>
+	
+	
+	<!-- 大厅场景 -->		
+	<ns1:HallViewBg id="hallViewBg" x="0" y="0" includeIn="HallState">					
+	</ns1:HallViewBg>				
+	
+	<!-- 自动匹配大厅 -->
+	<ns3:HallAutoMatchViewBg id="hallAutoMatchViewBg" x="0" y="0" includeIn="HallAutoMatchState">					
+	</ns3:HallAutoMatchViewBg>	
+	
+	<!-- 房间场景 -->
+	<ns2:RoomViewBg id="roomViewBg" x="0" y="0" includeIn="RoomState">					
+	</ns2:RoomViewBg>
+	
+	<s:states>
+		<s:State name="WaitState" enterState="WaitEnter()"/>
+		<s:State name="LoginState" enterState="LoginEnter()"/>
+		<s:State name="HallState" enterState="HallEnter()"/>
+		<s:State name="HallAutoMatchState" enterState="HallMatchEnter()"/>
+		<s:State name="RoomState" enterState="RoomEnter()"/>
+	</s:states>
+	
+		
+	
+	<fx:Script>
+		<![CDATA[
+			import State.Com.DebugWin;
+			import State.Com.LoadingScr;
+			
+			import com.adobe.utils.DictionaryUtil;
+			import com.demonsters.debugger.MonsterDebugger;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			import net.wdmir.core.QiPaiAudio;
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiMenu;
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;
+			import net.wdmir.core.QiPaiUser;
+			import net.wdqipai.core.model.level2.ServerInfo;		
+			
+			/**
+			 * 
+			 *
+			 */ 
+			private var _loadingScr:LoadingScr;
+			
+			public function get loadingScr():LoadingScr
+			{
+				return _loadingScr;
+			}
+			
+			public function set loadingScr(value:LoadingScr):void
+			{
+				_loadingScr = value;
+			}
+			
+			
+			/**
+			 * 
+			 *
+			 */ 
+			private var _debugWin:DebugWin;				
+
+			public function get debugWin():DebugWin
+			{
+				return _debugWin;
+			}
+
+			public function set debugWin(value:DebugWin):void
+			{
+				_debugWin = value;
+			}
+			
+			
+
+			public function get lang_GoldPointName():String
+			{
+				return GameGlobals.qpc.data.lang_GoldPointName();
+			}
+			
+			public function get lang_confirm():String
+			{
+				return GameGlobals.qpc.data.configXML.langVari.confirm;
+			}
+			
+						
+			public function get lang_Refresh_press_retry_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MainPreloadAS_refresh_press_retry_str;
+			}
+			
+			public function get lang_Connect_server_success_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MainPreloadAS_connect_server_success_str;
+			}
+			
+			public function get lang_Connect_server_failed_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MainPreloadAS_connect_server_failed_str;
+				
+			}
+			
+			public function GetLang_Every_day_login_str(value:String):String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.Every_day_login_str;
+				
+				//
+				langStr = langStr.replace("#param1",value + lang_GoldPointName);
+				//langStr = langStr.replace("#param2",carry.toString());
+				
+				return langStr;
+			}
+			
+			public function get lang_Server_connection_lost_Str():String
+			{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MainPreloadAS_server_connection_lost_str;
+			}
+			
+			protected function applicationCompleteHandler(event:FlexEvent):void
+			{				
+				
+				//安全设置http,https
+				Security.allowDomain("*");	
+				Security.allowInsecureDomain("*");			
+				
+								
+				Alert.okLabel = lang_confirm;//"确定";
+				
+				//自定义右键菜单 
+				// 这里的this为Application对象 	
+				this.contextMenu = QiPaiMenu.getRightMenu(GameGlobals.qpc.majVersion,
+					GameGlobals.qpc.minVersion,
+					GameGlobals.qpc.subVersion,
+					"2015.7.9",//"2015.6.18",//"2014.3.28",//"2014.2.28",
+					GameGlobals.qpc.data.AUTHOR);
+				
+				//------------------ debug tools begin ---------------------
+						
+				// Monster Debugger trace message
+				if(GameGlobals.DEBUG){
+					
+					MonsterDebugger.initialize(this);
+					MonsterDebugger.trace(this, "monster debug run!");
+				
+					GameGlobals.qpc.addEventListener(QiPaiEvent.onDebugMessage,onDebugMessage);
+				}
+				
+				//------------------ debug tools end -----------------
+								
+				//------------------ 获取FlashVars begin -------------------
+				
+				GameGlobals.getFlashVars();
+				
+				//------------------ 获取FlashVars end -------------------
+				
+				
+				//------------------ 初始化键盘监听 begin ------------------------
+								
+				this.stage.addEventListener(KeyboardEvent.KEY_DOWN,onKeyDown);
+				this.stage.addEventListener(Event.RESIZE,onResize);
+				
+				//------------------ 初始化键盘监听 end ------------------------
+				
+				//------------------ 初始化监听 begin ------------------------
+				
+				//
+				
+				
+				//事件侦听
+				//
+				GameGlobals.qpc.addEventListener(SecurityErrorEvent.SECURITY_ERROR,onSecurityError);			
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onConnection,onConnection);			
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onConnectionLost,onConnectionLost);
+				
+				//在loginViewBg未初始化前,它负责login的接收处理
+				//自动登录
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onDBType,onDBType);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onReg,onReg); 
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onLogin,onLogin);
+				
+				//if(null != GameGlobals.pageVars["mode"])//自动登录
+				//{
+									
+				//}
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onLogout,onLogout);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onAlertMessage,onAlert);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onLoadG,onLoadG);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onJoinRoom,onJoinRoom);				
+				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onModuleList,onModuleList);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onEveryDayLoginVariablesUpdate,onEveryDayLoginVariablesUpdate);
+				//------------------ 初始化监听 end ------------------------	
+				
+				this.currentState = QiPaiState.WAIT;
+				
+				
+			}
+			
+			/**
+			 * 连接服务器
+			 */ 
+			private function connectServer():void
+			{
+				//this.downloadBar.lblMsg.htmlText += "<br />";
+				//this.downloadBar.lblMsg.htmlText += "游戏加载完成,连接游戏服务器中...";
+				
+				
+				
+				//connect
+				var svrInfo:ServerInfo = GameGlobals.qpc.data.getConnectServerInfo();
+				
+				var domain:String = GameGlobals.domain;
+				
+				//如果不是域名
+				if("" == domain){
+					
+					GameGlobals.qpc.connect(svrInfo.ip,svrInfo.port);		
+					
+				}else{
+					
+					GameGlobals.qpc.connect(domain,svrInfo.port);		
+				}
+				
+				
+						
+					
+								
+			}
+			
+			private function onConnection(evt:QiPaiEvent):void 
+			{
+				var success:Boolean = evt.params.success;
+				
+				if(success)
+				{
+					
+					//
+					//GameGlobals.log.WriteStr("connect server success!","onConnection");
+					
+					waitViewBg.lblMsg.htmlText = lang_Connect_server_success_Str;
+					
+					//为在线广告留足时间
+					//setTimeout(Start,3000);					
+					//连接成功，发送查询DB类型请求，
+					GameGlobals.qpc.loadDBType();
+					startHeart();
+					//this.dispatchEvent(new Event(Event.COMPLETE));	
+				}
+				else
+				{
+					//this.downloadBar.lblMsg.htmlText += "<br />";
+					waitViewBg.lblMsg.htmlText = lang_Connect_server_failed_Str;//"服务器连接无效,请<u><a href='event:refresh'>刷新重试</a></u>！";	
+										
+					//this.downloadBar.lblMsg.htmlText += "<br />";
+					//this.downloadBar.lblMsg.htmlText += "<a href='event:refresh'><font color='" + fontColorRefresh + "'>刷新重试</font></a>";
+					
+					waitViewBg.lblMsg.addEventListener(TextEvent.LINK, refreshPage);				
+					
+					//
+					//GameGlobals.log.WriteStr(evt.params.error,"onConnection");
+					
+					//Alert会被iframe盖住					
+					trace("服务器连接无效,请刷新重试！");
+					
+					setTimeout(this.refreshPage,30000);
+					
+				}//end if
+				
+			}
+			
+			public function onDBType(e:QiPaiEvent):void
+			{
+				if(GameGlobals.DEBUG)
+				{
+					Start();
+					
+				}else
+				{
+					
+					//为在线广告留足时间
+					setTimeout(Start,6000);				
+					
+				}
+			}			
+			
+			public function Start():void
+			{
+				
+				GameGlobals.currentState = QiPaiState.LOGIN;
+				
+			}				
+			
+			public function startHeart(event:TimerEvent=null):void
+			{
+				GameGlobals.qpc.data.startHeartBeatTimer(
+					
+					function():void{
+						
+						GameGlobals.qpc.heartBeat();
+					}
+					
+				);
+			}
+			
+			public function onKeyDown(event:KeyboardEvent):void
+			{
+				//trace(event);
+				
+				//ctrl + 0
+				if(true == event.ctrlKey && 48 == event.keyCode)
+				{
+					
+					PopUpManager.addPopUp(this.debugWin,this,false);
+					
+					this.debugWin.addEvent();
+					
+					PopUpManager.centerPopUp(this.debugWin);
+					
+					//this.debugWin.move(0,0);
+						
+				}	
+			
+			}
+			
+			private function onDebugMessage(event:QiPaiEvent):void
+			{
+				//event target	
+				MonsterDebugger.trace(this, event.params.message);
+				
+			}
+			
+			private function onConnectionLost(evt:QiPaiEvent):void
+			{
+				Alert.show(lang_Server_connection_lost_Str,QiPaiStr.ALERT_TITLE,4);		
+				
+			}
+			
+			
+			
+			public function onLogin(qevt:QiPaiEvent):void
+			{			
+				//loginViewBg中有监听
+				
+			}
+			
+			/**
+			 * Reg结果
+			 */  
+			private function onReg(qevt:QiPaiEvent):void
+			{		
+				
+				//LoginViewBg
+				
+			}
+			
+			public function onLogout(qevt:QiPaiEvent):void
+			{
+				Alert.show(qevt.params.info,QiPaiStr.ALERT_TITLE,4);
+				
+			}
+			
+			public function onAlert(qevt:QiPaiEvent):void
+			{
+				Alert.show(qevt.params.line,QiPaiStr.ALERT_TITLE,4);
+				
+			}
+			
+			public function onLoadG(qevt:QiPaiEvent):void
+			{			
+				//--------------- HALL ----------------------
+				if(QiPaiState.HALL == GameGlobals.currentState)
+				{
+					
+					hallViewBg.onLoadG(qevt);
+					
+					
+					//
+					if(GameGlobals.TEST_ROBOT_MODE)
+					{
+						hallViewBg.roomList1.btnTabAutoMatch_click();
+						
+					}
+					
+				}
+				
+				//--------------- HALL_AUTO_MATCH ----------------------
+				if(QiPaiState.HALL_AUTO_MATCH == GameGlobals.currentState)
+				{
+					
+					
+				}
+				
+				//--------------- ROOM ----------------------
+				if(QiPaiState.ROOM == GameGlobals.currentState)
+				{
+					
+					roomViewBg.checkG();
+					
+					
+				}
+				
+				
+				
+			}
+			
+			public function onModuleList(qevt:QiPaiEvent):void
+			{
+				
+				if(GameGlobals.currentState == QiPaiState.HALL)
+				{					
+					
+					hallViewBg.moduleIcoView.refreshPos();
+					
+				}
+				
+			
+			}
+			
+			public function onEveryDayLoginVariablesUpdate(qevt:QiPaiEvent):void
+			{
+				if(qevt.params.success)
+				{
+					var line:String = GetLang_Every_day_login_str(qevt.params.value);
+					
+					Alert.show(line,QiPaiStr.ALERT_TITLE,4);
+				}
+			}
+			
+			
+			public function onJoinRoom(qevt:QiPaiEvent):void
+			{	
+				//(this.parentApplication as client_ddz).hideLoadingScr();
+				
+				if(GameGlobals.currentState == QiPaiState.HALL)
+				{					
+					hallViewBg.roomList1.stopAutoMatchingTimer();
+					hallViewBg.roomList1.resetBarAutoMatch();
+				}
+				
+				if(GameGlobals.currentState == QiPaiState.HALL_AUTO_MATCH)
+				{
+					this.hallAutoMatchViewBg.stopAutoMatchingTimer();
+				
+				}
+				
+				//进房间
+				GameGlobals.currentState = QiPaiState.ROOM;
+				
+				
+				this.currentState = GameGlobals.currentState;
+				
+			}
+			
+			public function WaitEnter():void
+			{
+				
+				connectServer();
+				
+			}
+			
+			public function LoginEnter():void
+			{
+				//手动登录
+				//show 登陆窗口
+				
+				//查询是否已注册，
+				var mode:String = GameGlobals.qpc.data.selectDB.mode;
+				
+				if(mode == "dz" || mode == "x"){
+				
+					var id_sql:String = GameGlobals.pageVars["id_sql"];
+					GameGlobals.qpc.hasReg(id_sql);
+				
+				}else{
+				
+					loginViewBg.showLoginWin();
+					
+				}
+			}
+			
+			public function AutoLoginEnter():void
+			{
+				//显示调用
+				//autoLoginViewBg.showAutoLoginWin();
+				
+			}
+			
+			
+			public function HallEnter():void
+			{
+				//
+				//hallViewBg.refreshNickName();
+				
+				//
+				hallViewBg.refreshNotice();
+				
+				//刷新金币
+				hallViewBg.refreshGoldPoint();
+				
+				//刷新房间列表
+				hallViewBg.refreshRoomList();	
+				
+				hallViewBg.roomList1.chkAutoMatchMingPai_reset();
+				
+				//
+				hallViewBg.startHeart();
+				
+				//
+				hallViewBg.refreshModuleList();
+								
+			}
+			
+			public function HallMatchEnter():void
+			{
+				//
+				hallAutoMatchViewBg.firstIn();
+				
+			}
+			
+			public function RoomEnter():void
+			{
+				roomViewBg.firstInRoom();
+				roomViewBg.refreshRoom();
+				
+			}
+			
+			
+			public function showLoadingScr():void
+			{
+				PopUpManager.addPopUp(loadingScr,this,true);
+				PopUpManager.centerPopUp(loadingScr);
+			}
+			
+			public function hideLoadingScr():void
+			{
+				if(loadingScr.isPopUp){
+				PopUpManager.removePopUp(loadingScr);
+				}
+			}
+			
+			public function onResize(e:Event):void
+			{
+				
+				if(0 == stage.stageWidth || 0 == stage.stageHeight)
+				{
+					return;
+				}
+			
+				try
+				{
+					
+					//
+					//GameGlobals.stageWidth = stage.stageWidth;
+					//GameGlobals.stageHeight = stage.stageHeight;
+					
+					//
+					//onResizeByHALL(e);
+					
+					
+				}
+				catch(exd:Error)
+				{
+					trace("onResize:",exd.message);
+				}
+				
+			}			
+			
+			private function onSecurityError(evt:SecurityErrorEvent):void
+			{
+				
+				//this.downloadBar.lblMsg.htmlText += "服务器连接无效,请稍候访问！onSecurityError";
+//				this.downloadBar.lblMsg.htmlText += lang_Server_connection_security_error_Str;
+//				
+//				
+//				//这里报这个错，有可能不是连接的原因，需要刷新重试
+//				//this.downloadBar.lblMsg.htmlText += "<a href='event:refresh'><font color='" + fontColorRefresh + "'>刷新重试</font></a>";
+//				this.downloadBar.lblMsg.htmlText += "<a href='event:refresh'><font color='" + fontColorRefresh + "'>" + lang_Refresh_retry_Str + "</font></a>";
+//				
+//				
+//				this.downloadBar.lblMsg.addEventListener(TextEvent.LINK, refreshPage);
+//				
+//				//
+//				connectSecurityServerFailed = true;
+//				
+//				autoRefreshPage();
+			}
+			
+			public function refreshPageByPress(event:CloseEvent):void
+			{
+				
+				refreshPage();
+				
+			}
+			
+			
+			public function refreshPage(event:TextEvent=null):void
+			{		
+				ExternalInterface.call("function refresh(){window.location.reload();}");
+				
+			}
+			
+
+		]]>
+	</fx:Script>
+	
+	
+</s:Application>

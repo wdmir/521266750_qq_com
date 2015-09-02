@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				layout="absolute" 
+				width="700" 
+				height="450" 
+				title="Debug Window"
+				showCloseButton="true" 
+				creationComplete="creationCompleteHandler(event)" 
+				>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiEvent;
+			
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+			}
+						
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{	
+				//
+				removeEvent();
+				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			public function addEvent():void
+			{
+				//txtDebugMessage.text = "";
+				
+				//var list:Array = GameGlobals.qpc.debugMessageList;
+				
+				//var len:int = list.length;
+				
+				//for(var i:int =0;i < len;i++)
+				//{
+					//txtDebugMessage.text += list[i];
+					
+					
+				//}
+				
+				//txtDebugMessage.validateNow();
+				//txtDebugMessage.verticalScrollPosition = txtDebugMessage.maxVerticalScrollPosition;	
+								
+				GameGlobals.qpc.removeEventListener(QiPaiEvent.onDebugMessage,onDebugMessage);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onDebugMessage,onDebugMessage);
+				
+				treeDebugMessage.validateNow();
+				treeDebugMessage.verticalScrollPosition = treeDebugMessage.maxVerticalScrollPosition;	
+				
+				//
+				txtUrl.text = GameGlobals.loaderURL;
+				
+				this.btnCopy.label = "Copy";
+			}
+			
+			public function removeEvent():void
+			{
+				GameGlobals.qpc.removeEventListener(QiPaiEvent.onDebugMessage,onDebugMessage);
+				
+			}
+			
+			private function onDebugMessage(event:QiPaiEvent):void
+			{
+				//txtDebugMessage.text += event.params.message;
+				
+				//txtDebugMessage.verticalScrollPosition = txtDebugMessage.maxVerticalScrollPosition;	
+			
+				//treeDebugMessage.validateNow();
+				treeDebugMessage.verticalScrollPosition = treeDebugMessage.maxVerticalScrollPosition;	
+				
+			}
+			
+			
+			
+
+			protected function btnCopy_clickHandler(event:MouseEvent):void
+			{
+				//System.setClipboard(txtDebugMessage.text);
+				
+				this.btnCopy.label = "Copied";
+			}
+
+		]]>
+	</fx:Script>
+	<mx:TextArea id="txtUrl" fontSize="13" color="#000000" width="580" x="77" height="23" bottom="50" wordWrap="false"/>
+	<mx:Button label="Copy" horizontalCenter="0" bottom="4" id="btnCopy" click="btnCopy_clickHandler(event)"/>
+	<mx:Label x="7" text="LoaderURL:" bottom="50"/>
+	<mx:Tree 
+			 id="treeDebugMessage" 
+			 dataProvider="{GameGlobals.qpc.debugMessageList}"
+			  horizontalScrollPolicy="on" 
+			  verticalScrollPolicy="on"
+			  bottom="80" top="5" left="5" fontFamily="Arial" fontSize="12" right="5"></mx:Tree>
+	
+</mx:TitleWindow>

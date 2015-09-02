@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="absolute" 
+				width="400" 
+				height="380" 
+				title="{lang_HallTurnOver_a_Card_WinMXML_Title}"
+				showCloseButton="true" 
+				creationComplete="titlewindow1_creationCompleteHandler(event)">
+
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import State.Hall.HallModel.IcoName;
+			
+			import com.adobe.ac.mxeffects.DistortionConstants;
+			import com.adobe.ac.mxeffects.Flip;
+			import com.adobe.ac.mxeffects.effectClasses.DistortBaseInstance;
+			import com.greensock.TweenLite;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiStr;
+			import net.wdmir.core.util.RandomUtil;
+			
+			public function get lang_GoldPointName():String
+			{
+				return GameGlobals.qpc.data.lang_GoldPointName();
+			}
+			
+			public function GetLang_G_IsNotEnough():String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_Alert_G_isNotEnough_str;
+				
+				//
+				langStr = langStr.replace("#param1",lang_GoldPointName);
+				//langStr = langStr.replace("#param2",carry.toString());
+				
+				return langStr;
+				
+			}
+			
+			public function GetLang_showResult(timeout_:Boolean,win_:Boolean,second:int):String
+			{
+				
+				var langStr:String;
+				
+				if(timeout_)
+				{
+					langStr = GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str41;
+				
+				}else
+				{
+					if(win_){
+						langStr = GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str42;
+					}
+					else{
+					
+						langStr = GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str43;
+						
+					}
+				}				
+				
+				langStr = langStr.replace("#param1",second.toString());
+				
+				return langStr;
+			}
+						
+			public function GetLang_kaiPai(second:int):String
+			{
+				
+				var langStr:String = GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str3;
+				
+				langStr = langStr.replace("#param1",second.toString());
+				
+				return langStr;
+			}
+			
+			public function GetLang_WaitPlayerSelect(second:int):String
+			{
+				
+				var langStr:String = GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str2;
+				
+				langStr = langStr.replace("#param1",second.toString());
+				
+				return langStr;
+			}
+			
+			public function GetLang_PlayerSelected(second:int):String
+			{
+				
+				var langStr:String = GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str21;
+				
+				langStr = langStr.replace("#param1",second.toString());
+				
+				return langStr;
+			}
+			
+			public function get lang_HallTurnOver_a_Card_WinMXML_lblTitle_str1():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str1;
+				
+			}
+			
+			public function get lang_HallTurnOver_a_Card_WinMXML_lblTitle_str0():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTitle_str0;
+				
+			}			
+			
+			public function get lang_HallTurnOver_a_Card_WinMXMLBtn_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXMLBtn_str;
+				
+			}
+			
+			public function get lang_HallTurnOver_a_Card_WinMXML_lblLianSheng_label():String
+			{
+				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblLianSheng_label;
+			
+			}
+			
+			public function get lang_HallTurnOver_a_Card_WinMXML_lblTip1_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTip1_label;
+				
+			}
+			
+			public function get lang_HallTurnOver_a_Card_WinMXML_lblTip_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_lblTip_label;
+			
+			}
+			
+			public function get lang_HallTurnOver_a_Card_WinMXML_Title():String
+			{				
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallTurnOver_a_Card_WinMXML_Title;
+			
+			}
+			
+			
+			
+			public var creationComplete:Boolean = false;
+			
+			/**
+			 * 只用移动x坐标
+			 */ 
+			public const paiPointList:Array = [5,140,270];
+			
+			/**
+			 * 
+			 */ 
+			public var bgPaiList_normal:Array = new Array();
+			
+			/**
+			 * 
+			 */
+			public var pigPaiList:Array = new Array();
+			
+			/**
+			 * 
+			 */
+			public var girlPaiList:Array = new Array();			
+			public var girlMcPaiList:Array = new Array();
+			
+			/**
+			 * 
+			 */
+			public var showTimeCount:int;
+			
+			/**
+			 * 
+			 */
+			public var waitPlayerSelectTimer:Timer = new Timer(1000,12);
+			
+			/**
+			 * 
+			 */ 
+			public var kaiPaiTimer:Timer = new Timer(1000,6);
+			
+			/**
+			 * 
+			 */
+			public var showResultTimer:Timer = new Timer(1000,6);
+			
+			/**
+			 * 
+			 */ 
+			public var selectInd:int = -1;
+			
+			/**
+			 * 
+			 */ 
+			public var jiaoFen:int = -1;
+			
+			/**
+			 * 连胜
+			 */
+			[Bindable]
+			public var winCount:int = 0;
+			
+			/**
+			 * 
+			 */
+			public var timeout:Boolean = false;
+			
+			/**
+			 * 
+			 */
+			public var playerSelected:Boolean = false;
+			
+			/**
+			 * 
+			 */ 
+			private static var _instance:HallTurnOver_a_Card_Win = null;
+			
+			public static function get instance():HallTurnOver_a_Card_Win
+			{
+				if(null == _instance)
+				{
+					_instance = new HallTurnOver_a_Card_Win();
+				}
+				
+				return _instance;
+			
+			}
+
+			/**
+			 * 三张背牌，
+			 * 二张猪头，一张美女
+			 * 闪光特效1个
+			 */ 
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+				var j:int;
+				var c:Object;
+				var uc:UIComponent;
+				
+				for(j=0;j<3;j++)
+				{
+					c = GameGlobals.pokerAssets.contentLoaderInfo.applicationDomain.getDefinition("bg_normal");
+					//trace(c);
+					uc = new UIComponent();
+					bgPaiList_normal.push(uc);
+					uc.name = "bg_normal" + j.toString();
+					uc.addChild(new c());
+					//bgPaiList_normal.push(new bg_normal());
+				}
+				
+				//
+				for(j=0;j<2;j++)
+				{
+					c = GameGlobals.pokerAssets.contentLoaderInfo.applicationDomain.getDefinition("p_pig");
+					
+					uc = new UIComponent();
+					pigPaiList.push(uc);
+					uc.name = "p_pig" + j.toString();
+					uc.addChild(new c());
+					
+				}
+				
+				
+				for(j=0;j<1;j++){
+					
+					c = GameGlobals.pokerAssets.contentLoaderInfo.applicationDomain.getDefinition("p_girl");
+					
+					uc = new UIComponent();
+					girlPaiList.push(uc);
+					uc.name = "p_girl" + j.toString();
+					uc.addChild(new c());
+					
+					//
+					girlMcPaiList.push(uc.getChildAt(0));
+				}
+				
+				//
+				this.lblTip.text = this.lang_HallTurnOver_a_Card_WinMXML_lblTip_label;
+				this.lblTip1.text = this.lang_HallTurnOver_a_Card_WinMXML_lblTip1_label;
+				this.lblLianSheng.text = lang_HallTurnOver_a_Card_WinMXML_lblLianSheng_label;
+				
+				//
+				winCount = 0;
+				
+				//
+				creationComplete = true;
+				
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onModuleVariablesUpdate,onModuleVariablesUpdate);
+				
+				//
+				initGame();
+			}
+			
+			private function onModuleVariablesUpdate(evt:QiPaiEvent):void
+			{
+				//trace(evt);
+			
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{
+				//
+				waitPlayerSelectTimer.stop();
+				kaiPaiTimer.stop();
+				showResultTimer.stop();
+				
+				//
+				PopUpManager.removePopUp(this);
+			
+			}
+			
+			
+			public function initGame():void
+			{
+				if(!creationComplete)
+				{
+					return;
+				}
+				
+				while(this.canvas1.numChildren > 0)
+				{
+					this.canvas1.removeChildAt(0);
+				}
+				
+				//				
+				var j:int;
+				for(j=0;j<bgPaiList_normal.length;j++)
+				{
+					this.canvas1.addChild(bgPaiList_normal[j]);
+					
+					bgPaiList_normal[j].visible = true;
+					bgPaiList_normal[j].x = paiPointList[j];
+				}
+				
+				//reset				
+				for(j=0;j<this.girlMcPaiList.length;j++)
+				{					
+					girlMcPaiList[j].gotoAndStop(1);
+				}
+				
+				
+				//
+				var turnOver_a_Card_Xml:XML = GameGlobals.qpc.data.moduleDic[IcoName.turnOver_a_Card_Name];
+				
+				var gList:Array = [int(turnOver_a_Card_Xml.@g1),
+					int(turnOver_a_Card_Xml.@g2),
+					int(turnOver_a_Card_Xml.@g3)];
+				
+				//
+				var gListArr:ArrayCollection = new ArrayCollection();				
+				
+				for(j=0;j<gList.length;j++)
+				{
+					var glo:Object = {
+					
+						label: gList[j].toString() + lang_GoldPointName,
+						data: gList[j]
+					};
+				
+					gListArr.addItem(glo);
+					
+				}
+				
+				this.comboBox1.dataProvider = gListArr;
+				
+				//
+				btn1.enabled = false;
+				btn2.enabled = false;
+				btn3.enabled = false;
+				
+				this.comboBox1.enabled = false;
+				
+				//this.lblTitle.text = lang_HallTurnOver_a_Card_WinMXML_lblTitle_str0;
+				//
+				this.showTimeCount=0;
+				this.selectInd = -1;
+				this.jiaoFen = -1;
+				this.timeout = false;
+				playerSelected = false;
+				
+				//
+				waitPlayerSelectTimer.reset();
+				kaiPaiTimer.reset();
+				showResultTimer.reset();
+				
+				//
+				this.showTime1();
+			}			
+
+			
+			
+			protected function btnClick(index:int,jiaoFen:int):void
+			{
+				btn1.enabled = false;
+				btn2.enabled = false;
+				btn3.enabled = false;
+				
+				this.comboBox1.enabled = false;
+				
+				//发送数据
+				var varsList:Array = new Array(); 
+				
+				var var_qizi:Object = {
+					
+					name:IcoName.turnOver_a_Card_Name,
+					val:GameGlobals.qpc.data.hero.Id + "," + index + "," + jiaoFen
+				}
+				
+				varsList.push(var_qizi);
+				
+				GameGlobals.qpc.setModelVariables(varsList);
+				
+				
+			
+			
+			}
+
+			/**
+			 * 1.洗牌
+			 * 2.选牌
+			 * 3.开牌
+			 * 
+			 */ 
+			private function showTime1():void
+			{
+			
+				//如此二遍 ,三遍太多
+				//1次就够了
+				if(showTimeCount < 1)
+				{
+					showTimeCount++;
+					showTime_Sub_He();
+				}
+				else
+				{
+					
+					//选牌阶段
+					waitPlayerSelect2();
+					
+				}
+				
+			}
+			
+			private function waitPlayerSelect2():void
+			{
+				waitPlayerSelectTimer.reset();
+				
+				//
+				btn1.enabled = true;
+				btn2.enabled = true;
+				btn3.enabled = true;
+				
+				this.comboBox1.enabled = true;
+				
+				//
+				waitPlayerSelectTimer.removeEventListener(TimerEvent.TIMER,waitPlayerSelectTimerHandler);
+				waitPlayerSelectTimer.addEventListener(TimerEvent.TIMER,waitPlayerSelectTimerHandler);
+				waitPlayerSelectTimer.addEventListener(TimerEvent.TIMER_COMPLETE,waitPlayerSelectTimerCompleteHandler);
+				waitPlayerSelectTimer.start();
+				//
+				waitPlayerSelectTimerHandler();
+			
+			}
+			
+			private function waitPlayerSelectTimerHandler(event:TimerEvent=null):void
+			{
+				var second:int = waitPlayerSelectTimer.repeatCount - waitPlayerSelectTimer.currentCount;
+				
+				if(!playerSelected)
+				{
+					this.lblTitle.text = GetLang_WaitPlayerSelect(second);
+				}else{
+					this.lblTitle.text = GetLang_PlayerSelected(second);
+				}
+			}
+			
+			private function waitPlayerSelectTimerCompleteHandler(event:TimerEvent):void
+			{
+				//开牌阶段
+				kaiPai3();
+			}
+			
+			private function kaiPai3():void
+			{
+				//
+				kaiPaiTimer.removeEventListener(TimerEvent.TIMER,kaiPaiTimerHandler);
+				kaiPaiTimer.addEventListener(TimerEvent.TIMER,kaiPaiTimerHandler);
+				kaiPaiTimer.addEventListener(TimerEvent.TIMER_COMPLETE,kaiPaiTimerCompleteHandler);
+				kaiPaiTimer.start();
+				//
+				kaiPaiTimerHandler();
+				
+				//
+				this.btnClick(this.selectInd,this.jiaoFen);
+			
+			}
+			
+			private function kaiPaiTimerHandler(event:TimerEvent=null):void
+			{
+				var second:int = kaiPaiTimer.repeatCount - kaiPaiTimer.currentCount;
+				this.lblTitle.text = GetLang_kaiPai(second);
+				
+			
+			}
+			
+			private function kaiPaiTimerCompleteHandler(event:TimerEvent):void
+			{
+				if(-1 == this.selectInd || -1 == this.jiaoFen)
+				{
+					timeout = true;					
+				
+				}else{
+					
+					timeout = false;
+				}
+				
+				//
+				showResult();
+				
+			}
+			
+			private function showResult():void
+			{
+				//
+				showResultTimer.removeEventListener(TimerEvent.TIMER,showResultTimerHandler);
+				showResultTimer.addEventListener(TimerEvent.TIMER,showResultTimerHandler);
+				showResultTimer.addEventListener(TimerEvent.TIMER_COMPLETE,showResultTimerCompleteHandler);
+				showResultTimer.start();
+				//
+				showResultTimerHandler();
+				
+				//
+				if(!timeout)
+				{
+					
+					//-----------------------------------------------------------------------------
+					
+					var x:XML = GameGlobals.qpc.data.moduleVariDic[IcoName.turnOver_a_Card_Name];
+					
+					
+					var pickResult:Array = x.pickResult.split(',');
+					
+					//
+					var machine_pick:int = parseInt(pickResult[2]);
+					
+					//3d flip					
+					flipGirl(machine_pick);
+					flipPig(machine_pick);
+					
+					
+					//
+					if("1" == pickResult[0])
+					{
+						winCount++;
+						
+					}else
+					{
+						winCount = 0;
+					}
+					
+					
+					//refresh G
+					GameGlobals.qpc.loadGoldPoint();
+					
+					
+					//----------------------------------------------------------------------------
+					
+					
+					
+				
+				}else
+				{					
+					//-----------------------------------------------------
+					
+					var r_pick:int = RandomUtil.randRange(3) + 1;
+					
+					//3d flip					
+					flipGirl(r_pick);
+					flipPig(r_pick);					
+					
+					//
+					
+					
+					//--------------------------------------------------
+					
+				}			
+			
+				
+			}
+			
+			private function flipGirl(machine_pick:int):void
+			{
+				
+				this.flipCore(this.bgPaiList_normal[machine_pick-1],girlPaiList[0],machine_pick-1);
+			
+			}
+			
+			private function flipPig(machine_pick:int):void
+			{
+				var pigPaiListTmp:Array = new Array().concat(pigPaiList);
+				
+				//
+				for(var j:int=1;j<=3;j++)
+				{					
+					if(j != machine_pick)
+					{
+						var pig:DisplayObject = pigPaiListTmp.shift();
+					
+						this.flipCore(this.bgPaiList_normal[j-1],pig,j-1);
+					
+					}				
+				}
+			
+			}
+			
+			private function showResultTimerHandler(event:TimerEvent=null):void
+			{
+				var second:int = showResultTimer.repeatCount - showResultTimer.currentCount;
+				
+				//--------------------------------------------------------
+				var isWin:Boolean = false;
+				
+				if(!this.timeout){
+				var x:XML = GameGlobals.qpc.data.moduleVariDic[IcoName.turnOver_a_Card_Name];				
+				var pickResult:Array = x.pickResult.split(',');
+				
+				
+				//
+				if("1" == pickResult[0])
+				{
+					isWin = true;
+					
+				}
+				}
+				//------------------------------------------------------------------
+				
+				this.lblTitle.text = GetLang_showResult(this.timeout,isWin,second);
+				
+				
+			}
+			
+			private function showResultTimerCompleteHandler(event:TimerEvent):void
+			{
+			
+				this.initGame();
+			
+			}			
+			
+			
+			/**
+			 * 三张牌合一起
+			 */ 
+			private function showTime_Sub_He():void
+			{
+				this.lblTitle.text = this.lang_HallTurnOver_a_Card_WinMXML_lblTitle_str1;
+				
+				//
+				var duration:Number = 0.5;//0.3;
+				
+				//
+				TweenLite.to(bgPaiList_normal[0],duration,{
+				
+					x:paiPointList[1]
+					
+				});
+			
+				TweenLite.to(bgPaiList_normal[2],duration,{
+					
+					x:paiPointList[1]
+					
+				});
+				
+				
+				//定时
+				TweenLite.to(bgPaiList_normal[1],duration*2,{
+					
+					x:paiPointList[1],
+					onComplete:showTime_Sub_XiPai
+				
+				});
+			
+			}
+			
+			/**
+			 * 三张牌往两边分
+			 */ 
+			private function showTime_Sub_XiPai():void
+			{
+			
+				//trace("showTime_Sub_XiPai");
+				
+				var duration:Number = 0.3;
+				
+				//
+				TweenLite.to(bgPaiList_normal[0],duration,{
+					
+					x:paiPointList[0]
+					
+				});
+				
+				TweenLite.to(bgPaiList_normal[2],duration,{
+					
+					x:paiPointList[2]
+					
+				});
+				
+				//定时
+				TweenLite.to(bgPaiList_normal[1],duration*2,{
+					
+					x:paiPointList[1],
+					onComplete:showTime_Sub_End
+					
+				});
+			
+			}
+			
+			
+			private function showTime_Sub_End():void
+			{
+				showTime1();
+			
+			}
+			
+			private function flipCore(bg_normal:DisplayObject,girlOrPig:DisplayObject,pointIndex:int):void
+			{
+				var e : Flip = new Flip( bg_normal );
+				e.siblings = [ girlOrPig ];
+				e.direction = DistortionConstants.RIGHT;
+				
+				e.pointIndex = pointIndex;
+				
+				//e.horizontalLightingLocation = DistortionConstants.LEFT;
+				e.duration = 1500;//2000;
+				e.play();
+				e.addEventListener(EffectEvent.EFFECT_END,effectEndHandler);
+				
+			}
+			
+			private function effectEndHandler(event:EffectEvent):void
+			{
+				//trace(event);
+				(event.target as Flip).removeEventListener(EffectEvent.EFFECT_END,effectEndHandler);
+				var sibling:UIComponent = (event.target as Flip).siblings[0] as UIComponent;
+				this.canvas1.addChild(sibling);
+				
+				var pointIndex:int = (event.target as Flip).pointIndex;
+				
+				sibling.x = this.paiPointList[pointIndex];
+				
+				//light
+				if(sibling.name.indexOf("p_girl") >= 0)
+				{
+					var x:XML = GameGlobals.qpc.data.moduleVariDic[IcoName.turnOver_a_Card_Name];
+					
+					if(null != x)
+					{
+						var pickResult:Array = x.pickResult.split(',');
+						
+						//
+						var light:int = parseInt(pickResult[4]);
+						
+						if(1 == light)
+						{
+							this.girlMcPaiList[0].gotoAndStop(2);
+							
+							
+						}else{
+						
+							this.girlMcPaiList[0].gotoAndStop(1);
+						}
+					}
+				
+				}
+				
+				//
+				(event.target as Flip).target = null;
+				(event.target as Flip).siblings = null;
+				
+			}
+			
+			public function checkG(difen:Number):Boolean
+			{
+			
+				var g:String = GameGlobals.qpc.data.hero.G;
+				
+				
+				if(Number(g) < difen)
+				{
+					
+					Alert.show(GetLang_G_IsNotEnough(),QiPaiStr.ALERT_TITLE,4);
+					
+					return false;
+				}	
+				
+				return true;
+			
+			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				//负分无法发贴，现根据房间底分来改
+				var difen:Number = Number(comboBox1.selectedItem.data);
+				//check
+				if(!checkG(difen))
+				{
+					return;
+				}
+				
+				// TODO Auto-generated method stub
+				this.selectInd = 1;
+				this.jiaoFen = comboBox1.selectedItem.data;
+				
+				//
+				btn1.enabled = false;
+				btn2.enabled = false;
+				btn3.enabled = false;
+				
+				this.comboBox1.enabled = false;
+				
+				playerSelected = true;
+				
+				//this.btnClick(1,jiaoFen);
+			}
+			
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				//负分无法发贴，现根据房间底分来改
+				var difen:Number = Number(comboBox1.selectedItem.data);
+				//check
+				if(!checkG(difen))
+				{
+					return;
+				}
+				
+				// TODO Auto-generated method stub
+				this.selectInd = 2;
+				this.jiaoFen = comboBox1.selectedItem.data;
+				
+				//
+				btn1.enabled = false;
+				btn2.enabled = false;
+				btn3.enabled = false;
+				
+				this.comboBox1.enabled = false;
+				
+				playerSelected = true;
+				
+				//var jiaoFen:int = comboBox1.selectedItem.data;
+				//this.btnClick(2,jiaoFen);
+			}
+
+			protected function button3_clickHandler(event:MouseEvent):void
+			{
+				//负分无法发贴，现根据房间底分来改
+				var difen:Number = Number(comboBox1.selectedItem.data);
+				//check
+				if(!checkG(difen))
+				{
+					return;
+				}
+				
+				// TODO Auto-generated method stub
+				this.selectInd = 3;
+				this.jiaoFen = comboBox1.selectedItem.data;
+				
+				//
+				btn1.enabled = false;
+				btn2.enabled = false;
+				btn3.enabled = false;
+				
+				this.comboBox1.enabled = false;
+				
+				playerSelected = true;
+				
+				//var jiaoFen:int = comboBox1.selectedItem.data;
+				//this.btnClick(3,jiaoFen);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="canvas1" y="28" width="350" height="120" horizontalCenter="0" borderStyle="none">
+		
+	</mx:Canvas>
+	<mx:Button id="btn1" y="150" label="{lang_HallTurnOver_a_Card_WinMXMLBtn_Str}" click="button1_clickHandler(event)" horizontalCenter="-136"  fontSize="12"/>
+	<mx:Button id="btn2" y="150" label="{lang_HallTurnOver_a_Card_WinMXMLBtn_Str}" click="button2_clickHandler(event)" horizontalCenter="0"  fontSize="12"/>
+	<mx:Button id="btn3" y="150" label="{lang_HallTurnOver_a_Card_WinMXMLBtn_Str}" click="button3_clickHandler(event)" horizontalCenter="136" fontSize="12"/>
+	<mx:ComboBox id="comboBox1" y="200" editable="false" horizontalCenter="0" fontSize="11"></mx:ComboBox>
+	<mx:Label bottom="31" left="10" id="lblTip" width="360" fontSize="11"/>
+	<mx:Label bottom="10" left="10" id="lblTip1" width="360" fontSize="11"/>
+	<mx:Label id="lblTitle" y="0" text="" horizontalCenter="0" fontSize="12" width="322" textAlign="center"/>
+	<mx:Label text="连胜次数:" id="lblLianSheng" fontSize="12" left="10" bottom="75"/>
+	<mx:Label text="{winCount}" fontSize="18" color="#F16305" id="lblWinCount" left="66" bottom="72" textAlign="left"/>
+	
+	
+</mx:TitleWindow>

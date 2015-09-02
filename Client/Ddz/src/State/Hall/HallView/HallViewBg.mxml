@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+	width="900" 
+	height="680" 
+	xmlns:local="*" 
+	initialize="initializeComplete()" 	
+	xmlns:ns1="State.Hall.HallView.*"  
+	creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	<mx:Image id="b1" x="0" y="0" mouseEnabled="false"/>
+	
+	<!--
+	<ns1:HallRoomList id="roomList1" horizontalCenter="0" verticalCenter="0" alpha="0.8" backgroundAlpha="0.8">
+	</ns1:HallRoomList>
+	-->
+	
+	<!-- 两边灯笼高高挂 -->
+	<local:bg_cloud_container id="cloud1" x="0" y="0"/>
+	<local:bg_cloud_container id="cloud2" x="600" y="0"/>
+	
+	<ns1:HallRoomList2 id="roomList1" alpha="1.0" 
+					   backgroundAlpha="1.0" 
+					   horizontalCenter="-106" 
+					   width="660" height="400" bottom="100">
+	</ns1:HallRoomList2>
+	
+	<fx:Script>
+		<![CDATA[
+			import State.Login.LoginView.GameIntroWin;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.flash.UIMovieClip;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiFont;
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;		
+			
+			private var _mailWin:MailWin = new MailWin();
+			
+			private var _noticeWin:NoticeWin = new NoticeWin();
+			
+			private var _openedNoticeWin:Boolean = false;
+			
+			private var _introWin:GameIntroWin = new GameIntroWin();
+			
+			
+			public function get lang_btnIntro():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HallViewBg_btnIntro_label;
+				
+			}
+						
+			/**
+			 * initialize
+			 */ 
+			public function initializeComplete():void
+			{
+				_openedNoticeWin = false;
+				
+				//event listener				
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomListCreate,onRoomListCreate);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onJoinRoomError,onJoinRoomError);
+				GameGlobals.qpc.addEventListener(QiPaiEvent.onMailVariablesUpdate,onMailVariablesUpdate);
+									
+				//trace("getG:" + GameGlobals.qpc.data.hero.G);
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				b1.source = GameGlobals.rootUrl + "assets/" + GameGlobals.color + "_hall_bg.jpg";
+				
+			}
+			
+			/**
+			 * 在大厅可按受邀请
+			 */ 
+			public function onMailVariablesUpdate(qevt:QiPaiEvent):void
+			{
+				try
+				{
+					//判断一个元件是不是在显示列表中				
+					//[object _client_chchess_mx_managers_SystemManager]
+					//trace(_mailWin.parent);
+					
+					//只允许在大厅接收邮件消息，以免在房间中游戏被打扰
+					if(QiPaiState.HALL == (this.parentApplication as client_ddz).currentState)
+					{					
+						var added:Boolean = false;
+						
+						//以免前面的信息被冲掉
+						if(null != _mailWin.parent)
+						{
+							added = _mailWin.parent.contains(_mailWin);
+						}
+						
+						if(!added)
+						{
+							this.showMailWin();
+						}
+					}
+					
+				}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("onMailVariablesUpdate",exd.message));
+				}				
+							
+			}
+			
+			public function onRoomListCreate(qevt:QiPaiEvent):void
+			{
+				//trace("onRoomListCreate");
+				
+				//
+				if(GameGlobals.TEST_ROBOT_MODE)
+				{
+					this.roomList1.btnTabAutoMatch_click();
+					
+				}
+				
+			}	
+			
+			public function onLoadG(qevt:QiPaiEvent):void
+			{				
+				this.headGoldPointView.lblGoldPoint.text = qevt.params.g;
+			
+			}
+			
+			/**
+			 * 只在第一次进入时打开
+			 * 同时执行查询断线重连
+			 */ 
+			public function refreshNotice():void
+			{
+				try
+				{
+					if(_openedNoticeWin)
+					{
+						return;
+					}
+						
+					_openedNoticeWin = true;	
+						
+					//trace("Notice:" + GameGlobals.qpc.data.getClientConfig().Notice);
+						
+					//无内容不开启
+					if("" == GameGlobals.qpc.data.getClientConfig().Notice ||
+					   "关闭" == GameGlobals.qpc.data.getClientConfig().Notice ||
+					   "close" == GameGlobals.qpc.data.getClientConfig().Notice ||
+					   "CLOSE" == GameGlobals.qpc.data.getClientConfig().Notice)
+					{							
+						//执行查询断线重连
+						GameGlobals.qpc.joinReconnectionRoom();
+						
+						return;
+					}
+							
+					//500太少,1000太慢
+					setTimeout(showNoticeWin,750);
+					//this.showNoticeWin();
+						
+					
+					
+				}
+				catch (exd:Error) 
+				{            		
+					Alert.show(QiPaiStr.getErrorMessage("refreshNotice",exd.message));
+				}	
+			}
+			
+			/**
+			 * 切换到此场景时刷新一次即可
+			 */ 
+			public function refreshGoldPoint():void
+			{
+				GameGlobals.qpc.loadGoldPoint();
+			
+			}
+			
+//			public function refreshNickName():void
+//			{
+//				this.nickNameView.lblNickName.text = GameGlobals.qpc.data.hero.NickName;
+//			}
+			
+			public function startHeart(event:TimerEvent=null):void
+			{
+				GameGlobals.qpc.data.startHeartBeatTimer(this.heartBeat);
+			}
+			
+			public function refreshRoomList(event:TimerEvent=null):void
+			{				
+								
+				GameGlobals.qpc.listRoom();
+				
+				GameGlobals.qpc.data.startRefreshHallRoomListTimer(this.listRoom);
+			}			
+			
+			public function refreshModuleList(event:TimerEvent=null):void
+			{
+				
+				GameGlobals.qpc.listModule();
+			
+			}
+			
+			public function listRoom(event:TimerEvent=null):void
+			{
+				//
+				GameGlobals.qpc.listRoom();
+			
+			}
+			
+			public function heartBeat(event:TimerEvent=null):void
+			{
+				
+				//
+				GameGlobals.qpc.heartBeat();
+			}
+			
+			public function onJoinRoomError(qevt:QiPaiEvent):void
+			{				
+				//
+				//(this.parentApplication as client_ddz).hideLoadingScr();
+				
+				//
+				Alert.show(qevt.params.info,QiPaiStr.ALERT_TITLE,4);
+				
+			}
+			
+			
+			
+			/**
+			 * 局时设置窗口
+			 * 
+			 * 
+			 */ 
+			public function showMailWin():void
+			{
+				try
+				{				
+					/**
+					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+					 */ 
+				 	PopUpManager.addPopUp(_mailWin,this,false); 
+	            	PopUpManager.centerPopUp(_mailWin); 
+	            	
+	            	//看邮件
+	            	_mailWin.look();
+					
+	        	}
+				catch (exd:Error) 
+				{            		
+				   	Alert.show(QiPaiStr.getErrorMessage("showMailWin",exd.message));
+				}			
+			}
+			
+			/**
+			 * 
+			 * 左上角，像网页样，因为刚开始居中centerPop不起作用，延时1秒才行
+			 * 需要背景变暗
+			 * 
+			 */
+			public function showNoticeWin():void
+			{
+				try
+				{			
+										
+					/**
+					 * 只有Alert窗口有权利让背景变暗，明暗分主次
+					 */ 
+					//PopUpManager.addPopUp(_noticeWin,this,false); 
+					PopUpManager.addPopUp(_noticeWin,this,true); 
+					PopUpManager.centerPopUp(_noticeWin); 
+					
+					//读入最新公告信息
+					_noticeWin.look();
+					
+					//执行查询断线重连
+					GameGlobals.qpc.joinReconnectionRoom();
+					
+				}
+				catch (exd:Error) 
+				{            		
+					Alert.show(QiPaiStr.getErrorMessage("showNoticeWin",exd.message));
+				}			
+			}
+			
+			
+
+			protected function btnIntro_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				PopUpManager.addPopUp(_introWin,this,false); 
+				PopUpManager.centerPopUp(_introWin); 
+			}
+
+			
+			
+		]]>
+	</fx:Script>
+	<ns1:HallGoldPointView x="216" y="86" id="headGoldPointView">
+	</ns1:HallGoldPointView>
+	<ns1:HallChatView x="685" y="252" height="333" width="205">
+	</ns1:HallChatView>
+	<ns1:HallHeadIcoView x="155" y="76" id="headIcoView">
+	</ns1:HallHeadIcoView>
+	<ns1:HallModuleIcoView y="2" id="moduleIcoView" x="74">
+	</ns1:HallModuleIcoView>
+	
+	
+	<mx:ApplicationControlBar x="10" y="588" width="880" height="82">
+	</mx:ApplicationControlBar>
+	<!--
+	<mx:Button id="btnIntro" x="682" bottom="432" 
+			  width="208" height="40" 
+			  fontSize="14" 
+			  
+			  fontFamily="MicrosoftYaHei"
+			  label="{lang_btnIntro}" 				   
+			  click="btnIntro_clickHandler(event)"/>
+	-->
+	
+	<s:Button id="btnIntro" x="682" bottom="432" 
+			   width="208" height="40" 
+			   fontSize="14" 
+			    skinClass="State.Com.GreenBtnSkin"
+			   fontFamily="MicrosoftYaHei"
+			   label="{lang_btnIntro}" 				   
+			   click="btnIntro_clickHandler(event)"/>
+	
+	
+	
+	
+	
+</mx:Canvas>

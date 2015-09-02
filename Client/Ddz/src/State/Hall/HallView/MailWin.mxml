@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="400" 
+	height="230" 
+	title="{lang_Title}"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+		
+	<mx:ButtonBar id="btnBar1" y="102" itemClick="BtnBarClick(event);" x="113">
+		       <mx:dataProvider>
+		           <mx:Array>
+		               <mx:String>{lang_BtnBar1_0_Str}</mx:String>
+		               <mx:String>{lang_BtnBar1_1_Str}</mx:String>
+		               <mx:String>{lang_BtnBar1_2_Str}</mx:String>
+		           </mx:Array>
+		       </mx:dataProvider>
+	</mx:ButtonBar>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdqipai.client.extfactory.ChairModelFactory;
+			import net.wdqipai.client.extmodel.ItemModelByDdz;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			import net.wdqipai.core.model.level2.MailModel;
+						
+			public function get lang_BtnBar1_0_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MailWinMXML_btnBar1_0_str;
+				
+			}
+			
+			public function get lang_BtnBar1_1_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MailWinMXML_btnBar1_1_str;
+				
+			}
+			
+			public function get lang_BtnBar1_2_Str():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MailWinMXML_btnBar1_2_str;
+				
+			}
+			
+			public function get lang_Title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MailWinMXML_title;
+				
+			}
+			
+			public function get lang_NoMails_Str():String
+			{
+			
+				return GameGlobals.qpc.data.configXML.langVariByDdz.MailWinMXML_noMails_str;
+			}
+			
+			//
+			public function GetLang_InvitJoinGame_Str(fromUser_nickname:String,p_1:String,room_name:String):String
+			{
+				var langStr:String =  GameGlobals.qpc.data.configXML.langVariByDdz.MailWinMXML_invitJoinGame_str;
+				
+				//"抱歉，进入房间失败！您持有的" + lang_GoldPointName + "低于" + carry.toString() +"。"
+				//抱歉，进入房间失败！您持有的#param1低于#param2。
+				langStr = langStr.replace("#param1",fromUser_nickname);
+				langStr = langStr.replace("#param2",p_1);
+				langStr = langStr.replace("#param3",room_name);
+				
+				return langStr;
+				
+			}
+			
+			public function get lang_RoomName():String
+			{
+				return GameGlobals.qpc.data.lang_RoomName();
+			}
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+											
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			// Event handler function to print a message
+            // describing the selected Button control.
+            private function BtnBarClick(event:ItemClickEvent):void
+            {
+                //myTA.text="Selected button index: " + String(event.index) +
+                //    "\n" + "Selected button label: " + event.label;
+                
+                if(0 == event.index)
+                {                
+                	this.btnOk_clickHandler();
+                
+                }else if(1 == event.index)
+                {
+                	this.btnNext_clickHandler();
+                
+                }else if(2 == event.index)
+                {
+                	this.btnCancel_clickHandler();
+                	
+                }
+                
+            }
+			
+			/**
+			 * 设置音量并关闭窗口
+			 */ 
+			public function btnOk_clickHandler(event:MouseEvent=null):void
+			{				
+				//
+				if(null != m)
+				{
+					//join room
+					if("askJoinRoom" == m.n)
+					{
+						var p:Array = m.p.split(',');
+						
+						//不设置activeTab，局时那边会出bug
+						//在底层设
+						//GameGlobals.qpc.data.activeTab = parseInt(p[0]);
+						
+						var difen:int = parseInt(p[2]);
+						
+						var carry:int = parseInt(p[3]);
+						
+						//
+						(this.parentApplication as client_ddz).hallViewBg.roomList1.joinRoom(parseInt(p[1]),difen,carry);
+					
+					}//end if
+				}
+				
+				//
+				__close();			
+			}
+			
+			public function btnNext_clickHandler(event:MouseEvent=null):void
+			{
+				//
+				look();
+			
+			}
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent=null):void
+			{
+				//
+				__close();	
+			}			
+			
+			private var m:MailModel;
+			public function look():void
+			{				
+				//刷新标题
+				if(GameGlobals.qpc.data.mailList.length > 0)
+				{
+					//this.title = "邮件消息(" + GameGlobals.qpc.data.mailList.length.toString() + ")";
+				
+					this.title = lang_Title + "(" + GameGlobals.qpc.data.mailList.length.toString() + ")";
+					
+				}else
+				{
+					this.title = lang_Title;//"邮件消息";						
+				}				
+					
+				//
+				if(GameGlobals.qpc.data.mailList.length > 0)
+				{
+					m = GameGlobals.qpc.data.mailList.shift() as MailModel;
+					
+					if("askJoinRoom" == m.n)
+					{
+						var p:Array = m.p.split(',');
+						
+						/* this.lblMsg.text = m.fromUser.NickName + 
+						"邀请您到" + p[1] + "号" + lang_RoomName + "进行游戏!" */
+						
+						this.lblMsg.text = this.GetLang_InvitJoinGame_Str(
+						
+							m.fromUser.NickName,p[1],lang_RoomName
+							
+						);
+					
+					}//end if					
+					
+				}else
+				{
+					//点下一条时出现
+					//this.lblMsg.text = "没有任何邮件";
+					
+					this.lblMsg.text = lang_NoMails_Str;
+				}	
+				
+				
+							
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Text x="10" y="32" width="360" height="62" id="lblMsg" fontSize="14" textAlign="center"/>
+	
+	
+</mx:TitleWindow>

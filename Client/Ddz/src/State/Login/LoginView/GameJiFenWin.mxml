@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="630" 
+	height="466"
+	title="{lang_Title}"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+	
+	<mx:Label id="lbl1" y="102" text="{lang_Lbl1_Text}" horizontalCenter="0" fontSize="12"/>
+	<mx:Button id="btn1" y="350" label="{lang_Btn1_Label}" horizontalCenter="0" click="Close()"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.CursorManager;
+			import net.wdmir.core.QiPaiUser;
+			import mx.utils.StringUtil;
+		
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;	
+			
+			public function get lang_Btn1_Label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameJiFenWinMXML_btn1_label;
+				
+			}
+			
+			public function get lang_Lbl1_Text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameJiFenWinMXML_lbl1_text;
+				
+			}
+			
+			public function get lang_Title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameJiFenWinMXML_title;
+				
+			}
+						
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{					
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(evt:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(evt:CloseEvent=null):void
+			{
+				__close(evt);
+			}			
+			
+			
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>

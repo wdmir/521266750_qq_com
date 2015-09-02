@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="630" 
+	height="466"
+	title="{lang_Title}"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.CursorManager;
+			import net.wdmir.core.QiPaiUser;
+			import mx.utils.StringUtil;
+		
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;	
+			
+			public function get lang_Title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameIntroWinMXML_title;
+				
+			}
+						
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{					
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(evt:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(evt:CloseEvent=null):void
+			{
+				__close(evt);
+			}			
+			
+			[Bindable]
+			public var introStr:String = "    该游戏由三人玩一副牌，地主为一方，其余两家为另一方，双方\n" +
+										 "    对战，先出完的一方胜。出牌规则类似“争上游”。\n" +
+										 "    出牌规则：\n" + 
+										 "    １、火箭：\n即双王（双鬼牌），什么牌型都可打，是最大的牌。\n" + 
+										 "    ２、炸弹：\n四张同点牌。如四个５。除火箭和比自己大的炸弹外，什么牌型都可打。\n" + 
+										 "    ３、单牌：\n单个牌。\n" + 
+										 "    ４、对牌：\n两个点数相同的牌\n" + 										 
+										 "    ５、三张牌：\n三张点数相同的牌。\n" + 
+										 "    ６、三带一：\n三张同点牌 ＋ 一张单牌。例如：三张３＋单４\n" + 
+										 "    ７、三带二：\n三张同点牌 ＋ 一对牌。例如：三张３＋对４\n" + 
+										 "    ８、单顺：\n五张或更多连续的单牌。例如：单３＋单４＋单５＋单６＋单７。不包括２点和双王。\n" + 
+										 "    ９、双顺：\n三对或更多连续的对牌。例如：对３＋对４＋对５。不包括２点和双王。\n" + 
+										 "    １０、三顺：\n二个或更多连续的三张牌。例如：三张３＋三张４＋三张５。不包括２点和双王。也叫飞机不带翅膀。\n" + 
+										 "    １１、飞机带翅膀。\n三顺＋同数量的单牌（或同数量的对牌）。三顺＋同数量的单牌（或同数量的对牌）。或  三张３＋三张４＋三张５＋单６＋单７＋单８\n" + 
+										 "    １２、四带二：\n四张牌＋任意两张单牌（或任意两对牌）例如：四张５＋单３＋单８ 或  四张４＋对５＋对７\n" + 
+										 "    出牌顺序：\n" + 
+										 "   首先由地主开牌，然后按逆时针顺序依次出牌，论到你跟牌时，你可选择ＰＡＳＳ或按规则出牌。直至某一方牌出完就结束此局。\n" + 
+										 "\n";
+			
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Button bottom="18" width="100" label="确定" click="Close()" horizontalCenter="0"/>	
+	<mx:TextArea x="10.5" y="9" width="590" htmlText="{introStr}" height="356" fontSize="12" editable="false"/>
+	
+	
+</mx:TitleWindow>

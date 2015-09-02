@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   width="200" 
+		   height="40" 
+		   xmlns:ns1="*" 
+		   cornerRadius="6" alpha="1.0" borderStyle="solid" creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	<mx:Label id="goldPointName" x="8" text="{lang_GoldPointName}" fontSize="14" width="80"  verticalCenter="0"/>
+	
+	<mx:Label x="56" text="0" fontSize="14" width="110" textAlign="center" id="lblGoldPoint" verticalCenter="0"/>
+	
+	
+	<ns1:mc_goldPoint x="160.5" verticalCenter="0"/>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import mx.events.FlexEvent;
+			
+			public function get lang_GoldPointName():String
+			{
+				return GameGlobals.qpc.data.lang_GoldPointName() + ":";
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+			}
+
+		]]>
+	</mx:Script>
+	
+	
+</mx:Canvas>

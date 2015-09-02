@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ProgressBar xmlns:mx="http://www.adobe.com/2006/mxml" 
+	label="{loadingStr}"  
+	indeterminate="true"
+	fontSize="12">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			
+			public function get loadingStr():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.LoadingScrMXML_ProgressBar_label;
+			
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:ProgressBar>

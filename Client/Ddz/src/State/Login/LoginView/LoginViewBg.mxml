@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="{GameGlobals.stageWidth}" 
+	height="{GameGlobals.stageHeight}" 
+	xmlns:local="*" 
+	initialize="initializeComplete()" 
+	creationComplete="canvas1_creationCompleteHandler(event)">
+	
+	<mx:Image id="b1" left="0" right="0" top="0" bottom="0"/>	
+					
+<mx:Script>
+	<![CDATA[
+		import mx.containers.TitleWindow;
+		import mx.controls.Alert;
+		import mx.events.FlexEvent;
+		import mx.flash.UIMovieClip;
+		import mx.managers.CursorManager;
+		import mx.managers.PopUpManager;
+		import mx.managers.SystemManager;
+		
+		import net.wdmir.core.QiPaiEvent;
+		import net.wdmir.core.QiPaiState;
+		import net.wdmir.core.QiPaiStr;
+		
+		/**
+		 * 登陆窗口
+		 */ 
+		private var _regWin:RegWin = new RegWin();
+		
+		/**
+		 * 注册窗口
+		 */
+		private var _loginWin:LoginWin = new LoginWin();
+		
+		/**
+		 * 
+		 */
+		private var _gameIntroWin:GameIntroWin = new GameIntroWin();
+		private var _gameJiFenWin:GameJiFenWin = new GameJiFenWin();
+		private var _gameVideoWin:GameVideoWin = new GameVideoWin();
+		
+		
+		public function getMembershipCreateStatus(value:int):String
+		{
+			return GameGlobals.qpc.data.configXML.langVariByDdz["RegWinMXML_MembershipCreateStatus_" + value];
+		}
+		
+		public function getMembershipLoginStatus(value:int):String
+		{
+			return GameGlobals.qpc.data.configXML.langVariByDdz["LoginWinMXML_MembershipLoginStatus_" + value];
+		}
+			
+		 
+		public function initializeComplete():void
+		{	
+			//event listener
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onHasReg,onHasReg);
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onReg,onReg);
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onLogin,onLogin);
+		
+		}
+		
+		/**
+		 * creationComplete
+		 */
+		protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+		{
+			// TODO Auto-generated method stub
+			b1.source = GameGlobals.rootUrl + "assets/" + GameGlobals.color + "_login_bg.jpg";
+			
+		}
+		
+		
+		private function onHasReg(qevt:QiPaiEvent):void
+		{	
+			
+			//test
+			//qevt.params.success = false;
+			
+			if(qevt.params.success)
+			{
+				this.showLoginWin();
+			
+			}else{
+				
+				this.showLoginWin();
+				this.showRegWin();
+			
+			}
+		
+		
+		}
+		
+		
+		/**
+		 * Reg结果
+		 */  
+		private var pwdCreate:String;//创建用户成功后临时保存密码
+		private function onReg(qevt:QiPaiEvent):void
+		{					
+			//reset mouse
+			CursorManager.removeBusyCursor();
+			
+			if(!qevt.params.success)
+			{
+				var desc:String = getMembershipCreateStatus(qevt.params.status);
+								
+				//
+				if(12 == qevt.params.status)
+				{
+					desc = desc.replace("#param1",qevt.params.p);
+				
+				}
+					
+				Alert.show(desc,QiPaiStr.ALERT_TITLE,4,null,onRegFailed);
+				
+			}
+			else//注册成功
+			{
+				pwdCreate = qevt.params.info;
+				Alert.show(getMembershipCreateStatus(0),QiPaiStr.ALERT_TITLE,4,null,onRegSuccess);
+				
+								
+			}//end if
+				
+		}
+		
+		private function onRegFailed(event:Event):void
+		{
+			//恢复注册按钮
+			this._regWin.btn_reg.enabled = true;
+		}
+		
+		private function onRegSuccess(event:Event):void
+		{
+			//用户体验
+			//获取登录过的用户名
+//			var localShare:SharedObject = SharedObject.getLocal(GameGlobals.qpc.data.SONAME);
+//			
+//			var oNickNameArr:Array = localShare.data.oNickNameArr;
+//				
+//			oNickNameArr.push(_regWin.ti_username.text);
+//			
+//			//不用保存，登录后再保存
+//			oNickNameArr.reverse();
+//			
+//			//这里对个数没有限制，同登录后
+//			
+//			this._loginWin.combo1.dataProvider = oNickNameArr;			
+			
+			//恢复注册按钮
+			_regWin.Reset();
+		
+			//关闭窗口
+			_regWin.Close(null);	
+			
+			//
+			_loginWin.ti_userpwd.text = pwdCreate;
+			_loginWin.btn_login_click();
+			
+		}
+				
+		/**
+		 * onLogin成功后会自动获取房间列表
+		 */  
+		private function onLogin(qevt:QiPaiEvent):void
+		{					
+			//reset mouse
+			CursorManager.removeBusyCursor();
+			
+			if(!qevt.params.success)
+			{
+				
+				var desc:String = getMembershipLoginStatus(qevt.params.status);
+				
+				if("4" == qevt.params.status)
+				{
+					//弹出注册面板
+					Alert.show(desc,QiPaiStr.ALERT_TITLE,Alert.OK,null,onLoginFailedAndShowRegWin);
+				
+				}else{
+					
+					Alert.show(desc,QiPaiStr.ALERT_TITLE,Alert.OK,null,onLoginFailed);
+				}
+			}
+			else//登陆成功
+			{
+				//写入数据，方便下次登录
+				//不知道帐号名称，所以这里只能这样写，不能调用GameConsole
+				//setCookie(this._loginWin.combo1.text);
+				
+				//关闭窗口
+				_loginWin.Close(null);	
+				
+				// go to Hall
+				GameGlobals.currentState = QiPaiState.HALL;
+							
+			}//end if
+				
+		}
+		
+		private function setCookie(value:String):void
+		{
+//			var flashStatus:String = null;
+//			
+//			var oNickName:String = value;
+//				
+//			var lso:SharedObject = SharedObject.getLocal(GameGlobals.qpc.data.SONAME);
+//				
+//			var oNickNameArr:Array =  lso.data.oNickNameArr;
+//			
+//			var oRecordNickName:Boolean = this._loginWin.check1.selected;
+//			
+//			if(null == oNickNameArr)
+//			{
+//				oNickNameArr = new Array();
+//				oNickNameArr.push(oNickName);
+//			}
+//			else
+//			{
+//				//去掉重复的用户名
+//				//并且去掉为空的用户名
+//				
+//				var len:uint = oNickNameArr.length;
+//				
+//				for(var i:int =0;i<len;i++)
+//				{
+//					if(oNickName == oNickNameArr[i] ||
+//					   "" == oNickNameArr[i])
+//					{
+//						//
+//						oNickNameArr.splice(i,1);
+//						//
+//						i = 0;
+//						len = oNickNameArr.length;
+//						//
+//						continue;
+//					}					
+//				}
+//				
+//				oNickNameArr.push(oNickName);
+//				
+//				//只保存最近的五个
+//				while(len > 5)
+//				{
+//					oNickNameArr.shift();
+//					len = oNickNameArr.length;
+//				}
+//				
+//				//反转，最近使用的用户放在最前
+//				oNickNameArr = oNickNameArr.reverse();		
+//				
+//			}
+//			
+//				
+//			lso.data.oNickNameArr = oNickNameArr;
+//			lso.data.oRecordNickName = oRecordNickName;
+//			
+//			try
+//			{	
+//			  flashStatus = lso.flush(1000);
+//			}
+//			catch(error:Error)
+//			{
+//				
+//			}
+//			
+//			if(null != flashStatus)
+//			{
+//				switch(flashStatus)
+//				{
+//					case SharedObjectFlushStatus.PENDING:
+//						trace("request permission to save lso","setCookie");
+//						break;
+//						
+//					case SharedObjectFlushStatus.FLUSHED:
+//						trace("write cookie ok","setCookie");
+//						break;
+//				
+//				}
+//				
+//			}
+			
+		
+		}
+		
+		private function onLoginFailed(event:Event):void
+		{
+			//恢复登录按钮
+			this._loginWin.btn_login.enabled = true;
+		}		
+		
+		private function onLoginFailedAndShowRegWin(event:Event):void
+		{
+			onLoginFailed(event);
+			
+			this.showRegWin();
+		
+		}
+			
+		/**
+		 * show登陆窗口
+		 * 由外部调用 main.mxml applicationComplete
+		 */ 
+		public function showLoginWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 */ 
+			 	PopUpManager.addPopUp(_loginWin,this,false); 
+            	PopUpManager.centerPopUp(_loginWin); 
+        	
+        	}
+			catch (exd:Error) 
+			{            		
+			   	Alert.show(QiPaiStr.getErrorMessage("showLoginWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		/**
+		 * show注册窗口
+		 * 由外部调用 main.mxml applicationComplete
+		 */ 
+		public function showRegWin():void
+		{
+			try
+			{
+			 	PopUpManager.addPopUp(_regWin,this,false); 
+            	PopUpManager.centerPopUp(_regWin); 
+        	
+        	}
+			catch (exd:Error) 
+			{            		
+			   	Alert.show(QiPaiStr.getErrorMessage("showRegWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		//
+		public function showWin(_win:TitleWindow):void
+		{
+			try
+			{
+			 	PopUpManager.addPopUp(_win,this,true); 
+            	PopUpManager.centerPopUp(_win); 
+        	
+        	}
+			catch (exd:Error) 
+			{            		
+			   	Alert.show(QiPaiStr.getErrorMessage("showWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		
+		public function btn_gameIntro1_click():void
+		{
+			this.showWin(this._gameIntroWin);
+		}
+		
+		public function btn_gameIntro1_mouseMove():void
+		{
+			//this.btn_gameIntro1.gotoAndStop(2);
+		}
+		
+		public function btn_gameIntro1_mouseOut():void
+		{
+			//this.btn_gameIntro1.gotoAndStop(1);
+		}
+		
+		public function btn_gameVideo2_click():void
+		{
+			this.showWin(this._gameVideoWin);
+		
+		}
+		
+		public function btn_gameVideo2_mouseMove():void
+		{
+			//this.btn_gameVideo2.gotoAndStop(2);
+		}
+		
+		public function btn_gameVideo2_mouseOut():void
+		{
+			//this.btn_gameVideo2.gotoAndStop(1);
+		}
+		
+		public function btn_gameJiFen3_click():void
+		{
+			this.showWin(this._gameJiFenWin);
+		
+		}
+		
+		public function btn_gameJiFen3_mouseMove():void
+		{
+			//this.btn_gameJiFen3.gotoAndStop(2);
+		}
+		
+		public function btn_gameJiFen3_mouseOut():void
+		{
+			//this.btn_gameJiFen3.gotoAndStop(1);
+		}
+				
+						
+			
+		
+	]]>
+</mx:Script>
+	
+	<!--
+	<local:mc_btn_gameIntro x="675.1" y="450" id="btn_gameIntro1" buttonMode="true" click="{btn_gameIntro1_click()}" mouseMove="{btn_gameIntro1_mouseMove()}" mouseOut="btn_gameIntro1_mouseOut()" />
+	<local:mc_btn_gameJiFen x="675.1" y="394" id="btn_gameJiFen3" buttonMode="true" click="btn_gameJiFen3_click()" mouseMove="btn_gameJiFen3_mouseMove()" mouseOut="btn_gameJiFen3_mouseOut()"/>
+	<local:mc_btn_gameVideo x="675.1" y="498" id="btn_gameVideo2" buttonMode="true" click="btn_gameVideo2_click()" mouseMove="btn_gameVideo2_mouseMove()" mouseOut="btn_gameVideo2_mouseOut()"/>
+	-->
+	
+	
+</mx:Canvas>

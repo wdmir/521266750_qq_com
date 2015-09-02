@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="380" height="60">
+	
+	<mx:ButtonBar id="itemBar" itemClick="BtnBarClick(event);" x="91" y="19">
+		       <mx:dataProvider>
+		           <mx:Array>
+					   
+					   <mx:String>{lang_Fen1}</mx:String>
+					   <mx:String>{lang_Fen2}</mx:String>
+					   <mx:String>{lang_Fen3}</mx:String>
+					   
+		               <mx:String>{lang_Fen0}</mx:String>
+		           </mx:Array>
+		       </mx:dataProvider>
+	</mx:ButtonBar>
+		   
+		   <mx:Script>
+		   	<![CDATA[
+				
+				
+				
+				import mx.controls.buttonBarClasses.*;
+				import mx.events.ItemClickEvent;
+				
+				import net.wdmir.core.logic.ddz.PaiRule;
+		   		
+				public function get lang_Fen1():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.JiaoFenBarMXML_itemBar_1_str;
+					
+				}
+				
+				public function get lang_Fen2():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.JiaoFenBarMXML_itemBar_2_str;
+					
+				}
+				
+				public function get lang_Fen3():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.JiaoFenBarMXML_itemBar_3_str;
+					
+				}
+				
+				public function get lang_Fen0():String
+				{
+					return GameGlobals.qpc.data.configXML.langVariByDdz.JiaoFenBarMXML_itemBar_0_str;
+					
+				}
+								
+		   		private function BtnBarClick(event:ItemClickEvent):void
+	            {	              
+	            	
+	            	var fen:int = 0;
+	            	
+	            	if(0 == event.index)
+	                {
+	                	fen = 1;
+	                
+	                }else if(1 == event.index)
+	                {
+	                	fen = 2;
+	                
+	                }else if(2 == event.index)
+	                {
+	                	fen = 3;
+	                
+	                }else if(3 == event.index)
+	                {
+	                	fen = 0;
+	                
+	                }	            	
+	            	
+	            	(this.parentApplication as client_ddz).roomViewBg.JiaoFen(fen);
+	            }
+	            
+	            private function BtnBarDisableAll():void
+	            {
+	            	
+	            	var _loc_0:ButtonBarButton = itemBar.getChildAt(0) as ButtonBarButton;
+            		_loc_0.enabled = false;	            	
+            			
+	            	var _loc_3:ButtonBarButton = itemBar.getChildAt(3) as ButtonBarButton;
+            		_loc_3.enabled = false;	      
+            		      
+            		BtnBarDisable(1);
+            		BtnBarDisable(2);      
+            		      
+	            }	            
+	            
+	            private function BtnBarDisable(fen:int):void
+	            {
+	            	if(1 == fen)
+	            	{
+	            		var _loc_0:ButtonBarButton = itemBar.getChildAt(0) as ButtonBarButton;
+            			_loc_0.enabled = false;
+            			
+            		}else if(2 == fen)
+            		{
+            			var _loc_01:ButtonBarButton = itemBar.getChildAt(0) as ButtonBarButton;
+            			_loc_01.enabled = false;
+            			
+            			var _loc_1:ButtonBarButton = itemBar.getChildAt(1) as ButtonBarButton;
+            			_loc_1.enabled = false;
+            		}
+            		
+            		
+	            }
+	            
+	            public function disableByFen(fen:int):void
+	            {
+	            	if(PaiRule.JIAO_FEN_MAXVALUE == fen)
+	            	{
+	            		BtnBarDisableAll();
+            			
+	            	}else if(PaiRule.JIAO_FEN_MINVALUE == fen)
+	            	{
+	            		//nothing
+	            	}	            	
+	            	else if(1 == fen)
+	            	{
+	            		BtnBarDisable(fen);
+	            	
+	            	}else if(2 == fen)
+	            	{
+	            		BtnBarDisable(fen);
+	            	}
+	            
+	            }
+	            
+	            public function reset():void
+	            {
+	            	var _loc_01:ButtonBarButton = itemBar.getChildAt(0) as ButtonBarButton;
+            		_loc_01.enabled = true;
+            			
+            		var _loc_1:ButtonBarButton = itemBar.getChildAt(1) as ButtonBarButton;
+            		_loc_1.enabled = true;
+            		
+            		var _loc_2:ButtonBarButton = itemBar.getChildAt(2) as ButtonBarButton;
+            		_loc_2.enabled = true;	 
+            		
+            		var _loc_3:ButtonBarButton = itemBar.getChildAt(3) as ButtonBarButton;
+            		_loc_3.enabled = true;	            
+	            }
+	            
+	            
+		   		
+		   	]]>
+		   </mx:Script>
+		   
+</mx:Canvas>

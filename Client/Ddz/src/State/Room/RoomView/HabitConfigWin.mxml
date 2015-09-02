@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="400" 
+	height="230" 
+	title="{lang_Title}"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+	
+	<mx:Button id="btnOk" x="119" y="102" label="{lang_btnOk_label}" click="btnOk_clickHandler(event)"/>
+	<mx:Button id="btnCancel" x="207" y="102" label="{lang_btnCancel_label}" click="btnCancel_clickHandler(event)"/>
+	
+	<mx:Label id="lbl1" x="10" y="21" text="{lang_lbl1_text}" fontSize="18"/>
+	<mx:CheckBox x="207" y="25" label="{lang_chk1_label}" id="chk1" fontSize="12" click="chk1_click()"/>
+	<mx:CheckBox x="260" y="25" label="{lang_chk2_label}" id="chk2" fontSize="12" click="chk2_click()"/>
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			
+			public function get lang_chk2_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HabitConfigWinMXML_chk2_label;
+			}
+			
+			public function get lang_chk1_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HabitConfigWinMXML_chk1_label;
+			}
+			
+			public function get lang_lbl1_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HabitConfigWinMXML_lbl1_text;
+			}
+			
+			public function get lang_btnCancel_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HabitConfigWinMXML_btnCancel_label;
+			}
+			
+			public function get lang_btnOk_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HabitConfigWinMXML_btnOk_label;
+			}
+			
+			
+			public function get lang_Title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.HabitConfigWinMXML_title;
+			}
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				this.btnOk.addEventListener(MouseEvent.CLICK,btnOk_clickHandler);
+							
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+			/**
+			 * 设置音量并关闭窗口
+			 */ 
+			public function btnOk_clickHandler(event:MouseEvent):void
+			{				
+				
+				//
+				if(this.chk1.selected)
+				{
+					GameGlobals.habit.alertPaiNum = 2;
+					
+				}else if(this.chk2.selected)
+				{
+					GameGlobals.habit.alertPaiNum = 4;
+					
+				}else
+				{
+					GameGlobals.habit.alertPaiNum = 2;
+				}
+								
+				//
+				__close();			
+			}
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent):void
+			{
+				//
+				__close();	
+			}
+			
+			public function chk1_click():void
+			{
+				this.chk2.selected = false;
+			}
+			
+			public function chk2_click():void
+			{
+				this.chk1.selected = false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	
+</mx:TitleWindow>

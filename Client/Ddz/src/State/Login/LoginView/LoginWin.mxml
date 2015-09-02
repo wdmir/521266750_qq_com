@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+
+			   width="300" 
+			   height="200" 	
+			   title="{lang_LoginWinMXML_title}"
+			   
+			   creationComplete="creationComplete()">
+	
+	<!-- showCloseButton="false" -->
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			import net.wdmir.core.QiPaiStr;		
+			
+			public function get lang_AlertAS_TIP_TITLE():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.AlertAS_TIP_TITLE;
+			}
+			
+			public function get lang_LoginWinMXML_title():String
+			{
+				var s:String = GameGlobals.qpc.data.configXML.langVariByDdz.LoginWinMXML_title;
+				
+				return s;
+			}
+			
+			
+			public function get lang_LoginWinMXML_game_password():String
+			{
+				var s:String = GameGlobals.qpc.data.configXML.langVariByDdz.LoginWinMXML_game_password;
+				
+				return s;
+			}
+			
+			
+			public function get lang_LoginWinMXML_lbl1_text():String
+			{
+				var s:String = GameGlobals.qpc.data.configXML.langVariByDdz.LoginWinMXML_lbl1_text;
+				
+				return s;
+			}
+			
+			public function get lang_LoginWinMXML_lbl2_text():String
+			{
+				var s:String = GameGlobals.qpc.data.configXML.langVariByDdz.LoginWinMXML_lbl2_text;
+				
+				return s;
+			}
+			
+			
+			public function get lang_LoginWinMXML_btn_login_label():String
+			{
+				var s:String = GameGlobals.qpc.data.configXML.langVariByDdz.LoginWinMXML_btn_login_label;
+				
+				return s;
+			}
+			
+			
+			public function get lang_LoginWinMXML_btn_reg_label():String
+			{
+				var s:String = GameGlobals.qpc.data.configXML.langVariByDdz.LoginWinMXML_btn_reg_label;
+				
+				return s;
+			}
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				this.closeButton.visible = false;
+				
+				this.isPopUp = false;		
+				
+				//	
+				ti_userpwd.displayAsPassword = true;
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				//禁止拖动
+				
+				//按键事件，回车提交表单，增加用户体验
+				//输完密码后回车，因此密码框加此按键事件监听
+				ti_userpwd.addEventListener(KeyboardEvent.KEY_DOWN,onKeyDown);
+			
+				//
+				//获取登录过的用户名
+				//var localShare:SharedObject = SharedObject.getLocal(GameGlobals.qpc.data.SONAME);
+				
+				//this.combo1.dataProvider = localShare.data.oNickNameArr;
+				
+//				var oRecordNickName:Boolean = localShare.data.oRecordNickName;
+//				
+//				if(null != localShare.data.oRecordNickName)
+//				{
+//					this.check1.selected = oRecordNickName;
+//				
+//				}
+				
+				var mode:String = GameGlobals.qpc.data.selectDB.mode;
+				
+				if(mode == "dz" || mode == "x"){
+					
+					if(!GameGlobals.decodeURIErr){
+						//this.combo1.text = GameGlobals.pageVars["account"];
+						
+					}
+					
+					this.nLbl.visible = false;
+					this.combo1.visible = false;
+					this.check1.visible = false;
+					
+					btn_reg.visible = false;
+					btn_find_pwd.visible = true;
+					
+					btn_find_pwd.label = "忘记密码?";
+					
+					//					
+					this.pwdLbl.text = lang_LoginWinMXML_game_password;//"游戏密码:";
+					
+					pwdLbl.setFocus();
+					
+					//
+					if(GameGlobals.DEBUG)
+					{
+						ti_userpwd.text = "12345678";
+					}
+					
+				}
+//			
+			}
+			
+			public function onKeyDown(event:KeyboardEvent):void
+			{
+				if(13 == event.keyCode)
+		        {
+		            //Alert.show("回车");
+		            btn_login_click();
+		        }
+			
+			}			
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(evt:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(evt:CloseEvent):void
+			{
+				__close(null);
+			}			
+			
+			/**
+			 * 发送登陆指令
+			 * 
+			 */ 
+			public function btn_login_click():void
+			{
+				
+				if("" == StringUtil.trim(this.ti_userpwd.text))
+				{
+					Alert.show("请输入密码!",lang_AlertAS_TIP_TITLE);
+					return;
+				}
+				
+				//
+				btn_login.enabled = false;
+				
+				//改成鼠标忙
+				CursorManager.setBusyCursor();
+				
+				//login
+				GameGlobals.qpc.login(					
+					StringUtil.trim(this.combo1.text),//comboBox.text属性支持输入的文字
+					GameGlobals.pageVars["session"],
+					StringUtil.trim(this.ti_userpwd.text),
+					GameGlobals.qpc.data.selectDB.mode,//GameGlobals.pageVars["bbs"],
+					GameGlobals.pageVars["id_sql"],
+					GameGlobals.pageVars["hico"]
+				);	
+				
+				
+				
+			}
+						
+			/**
+			 * 展示注册窗口
+			 * 
+			 */ 
+			public function btn_reg_click():void
+			{				
+				
+				(FlexGlobals.topLevelApplication as client_ddz).loginViewBg.showRegWin();
+				
+			}
+			
+			
+			
+			protected function btn_find_pwd_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				Alert.show("请联系网站管理员.");
+			}
+			
+		]]>
+	</fx:Script>
+	<mx:Label id="nLbl" x="21" y="0" text="{lang_LoginWinMXML_lbl1_text}" fontSize="13"/>
+	<mx:Label id="pwdLbl" x="21" y="29" text="{lang_LoginWinMXML_lbl2_text}" fontSize="13"/>
+	<!--
+	<mx:ComboBox id="combo1" x="79" y="3" width="160" editable="true"></mx:ComboBox>	
+	-->
+	<mx:TextInput x="79" y="3" id="combo1"/>
+	<mx:TextInput x="79" y="30" id="ti_userpwd"/>	
+	<!-- 注意按tab键的focus顺序 -->
+	<mx:CheckBox id="check1" x="64" y="57" label="记住用户名" width="92" height="25"/>	
+	<mx:Button x="64" y="90" label="{lang_LoginWinMXML_btn_login_label}" id="btn_login" click="{btn_login_click()}"/>
+	<mx:Button x="150" y="90" label="{lang_LoginWinMXML_btn_reg_label}" id="btn_reg" click="{btn_reg_click()}"/>
+	
+	<mx:LinkButton id="btn_find_pwd" x="150" y="90" label="忘记密码?"
+				   click="btn_find_pwd_clickHandler(event)" textDecoration="underline"/>
+	
+</s:TitleWindow>

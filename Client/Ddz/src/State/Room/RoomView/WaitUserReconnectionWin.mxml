@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"  
+				layout="absolute" 
+				width="360" 
+				height="280"
+				showCloseButton="false"
+				title="{lang_title}"
+				creationComplete="creationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.graphics.codec.JPEGEncoder;
+			import mx.managers.PopUpManager;	
+			
+			
+			
+			public function get lang_btnKick_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.WaitUserReconnectionWinMXML_btnKick_label;
+				
+			}
+
+			public function get lang_title():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.WaitUserReconnectionWinMXML_title;
+				
+			}
+			
+			[Bindable]
+			public var waitUserNickName:String = "";
+			
+			/**
+			 * 
+			 */
+			private var _zeroTimer:Timer;
+			
+			/**
+			 * 
+			 */
+			public function get zeroTimer():Timer
+			{
+				if(null == _zeroTimer)
+				{
+					_zeroTimer = new Timer(1000);
+					_zeroTimer.addEventListener(TimerEvent.TIMER,zeroTimerHandler);
+					_zeroTimer.addEventListener(TimerEvent.TIMER_COMPLETE,zeroTimerCompleteHandler);
+				}
+				
+				return _zeroTimer;
+			}
+			
+			/**
+			 * 
+			 */
+			public function zeroTimerHandler(event:TimerEvent):void
+			{
+			
+				this.lblTime.text = (this.zeroTimer.repeatCount - this.zeroTimer.currentCount).toString();
+			
+			}
+			
+			/**
+			 * 
+			 *
+			 */
+			public function zeroTimerCompleteHandler(event:TimerEvent):void
+			{
+				this.lblTime.visible = false;
+				this.btnKick.visible = true;
+			
+			}
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				//this.btnOk.addEventListener(MouseEvent.CLICK,btnOk_clickHandler);
+				
+			}
+			
+			public function set waitUserTime(value:int):void
+			{
+				//
+				this.lblTime.visible = true;
+				this.btnKick.visible = false;
+				
+				//
+				this.zeroTimer.stop();
+				this.zeroTimer.reset();
+				this.zeroTimer.repeatCount = value;
+				this.zeroTimer.start();
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				this.zeroTimer.stop();
+				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}			
+			
+			
+
+			protected function btnKick_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				Close();
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label textAlign="center" 
+			  fontSize="14" 
+			  id="lblNickName" text="{waitUserNickName}" right="120" left="6" top="6"/>
+	<mx:Button label="{lang_btnKick_label}" fontSize="12" top="2" id="btnKick" click="btnKick_clickHandler(event)" right="5" width="100"/>
+	<mx:HRule left="2" right="2" top="32"/>
+	<mx:HRule left="2" right="2" top="64"/>
+	<mx:HRule left="2" right="2" top="96"/>
+	<mx:Label fontSize="18" id="lblTime" textAlign="center" fontWeight="bold" right="10" width="80" top="6"/>
+	
+	
+	
+</mx:TitleWindow>

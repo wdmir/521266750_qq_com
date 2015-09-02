@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="420" 
+	height="480" 
+	xmlns:local="*" 
+	title="" 
+	creationComplete="creationComplete()" 
+	showCloseButton="true" 
+	backgroundAlpha="0.6">
+	
+	
+	<mx:Button id="btnOk" y="358" horizontalCenter="0"/>
+	
+	<mx:Image x="10" y="10" width="380" height="340" source="{this.imgLostOrWin}" scaleContent="false"/>
+	
+	<mx:Canvas width="400" height="153" y="197" backgroundColor="#FFFFFF" backgroundAlpha="0.75">
+		
+		
+		<mx:Label id="lbl1" x="43" y="22" text="{lang_lbl1_text}" fontSize="14" color="#000000"/>
+		<mx:Label x="221" y="22" text="得分" fontSize="14" color="#000000"/>
+		<mx:Label x="43" y="53" id="lblLeft" fontSize="14" color="#000000"/>
+		<mx:Label x="43" y="84" id="lblDown" fontSize="14" color="#000000"/>
+		<mx:Label x="43" y="115" id="lblRight" fontSize="14" color="#040404"/>
+		<mx:Image id="imgLeft" source="{this.iconWin}" x="156" y="69" visible="false"/>
+		<mx:Image id="imgDown" source="{this.iconLostOrWin}" x="156" y="69" visible="false" />
+		<mx:Image id="imgRight" source="{this.iconLost}" x="156" y="69" visible="false" />
+		<mx:Label x="221" y="49" id="lblGLeft" fontSize="18" fontWeight="bold" color="#000000"/>
+		<mx:Label x="221" y="80" id="lblGDown" fontSize="18" fontWeight="bold" color="#000000"/>
+		<mx:Label x="221" y="110" id="lblGRight" fontSize="18" fontWeight="bold" color="#000000"/>
+	</mx:Canvas>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			
+			private var closeTimer:Timer;
+			//快些关闭窗口，但游戏结束要长一点，因此设为1500//
+			//现改为2000，倒计时Timer为倒计时3次，
+			private var closeTimerDealy:int = 2000;
+			
+			public function get lang_lbl1_text():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWin2MXML_lbl1_text;
+			}
+			
+			public function get lang_btnOk_label():String
+			{
+				return GameGlobals.qpc.data.configXML.langVariByDdz.GameOverWin2MXML_btnOk_label;
+			}
+			
+			//
+			[Bindable]
+			public var iconWin:MovieClip = new mc_win_winOrLostIcon();
+			
+			[Bindable]
+			public var iconLostOrWin:MovieClip = new mc_win_winOrLostIcon();
+			
+			[Bindable]
+			public var iconLost:MovieClip = new mc_win_winOrLostIcon();
+			
+			[Bindable]
+			public var imgLostOrWin:MovieClip = new mc_win_winOrLostBg();
+			
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				this.isPopUp = false;		
+				
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+							
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{
+				if(null != closeTimer)
+				{
+					if(closeTimer.running)
+					{
+						closeTimer.stop();
+					}
+				}
+				
+				//
+				PopUpManager.removePopUp(this);
+				
+				//示意图
+				
+				//游戏结束 弹窗 -> 主动退出房间 -> 到另一个Hall，
+				//负分自动离开房间
+				var g:String = GameGlobals.qpc.data.hero.G;
+				
+				//只要携带够，就能进入房间，而退出房间按底分来，
+				var difen:int = (GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel).getDiFen();
+				
+				
+				//负分无法发贴，现根据房间底分来改
+				if(Number(g) >= difen)
+				{	
+					//
+					if(GameGlobals.qpc.data.isTabAutoMatchMode)
+					{					
+						GameGlobals.qpc.leaveRoom2(GameGlobals.qpc.data.hero.activeRoomId);					
+					}
+					
+				}
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			/**
+			 * popup后调用该方法
+			 * 
+			 * 该方法3秒后会自动关闭窗口
+			 * 
+			 */ 
+			public function startCloseTimeCount():void
+			{
+				//
+				//this.btnOk.label = "确定(3)";
+				this.btnOk.label = lang_btnOk_label + "(3)";
+				this.btnOk.addEventListener(MouseEvent.CLICK,clickHandler);
+				
+				//
+				closeTimer = new Timer(closeTimerDealy,3);
+				
+				closeTimer.addEventListener(TimerEvent.TIMER,timeHandler);
+				closeTimer.addEventListener(TimerEvent.TIMER_COMPLETE,timeCompleteHandler);
+				
+				closeTimer.start();
+				
+				//游戏结束时调用
+				GameGlobals.qpc.loadGoldPoint();
+			
+			}
+			
+			public function clickHandler(event:MouseEvent=null):void
+			{
+				if(null != closeTimer)
+				{
+					if(closeTimer.hasEventListener(TimerEvent.TIMER))
+					{
+						closeTimer.removeEventListener(TimerEvent.TIMER,timeHandler);
+					}
+					
+					if(closeTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					{
+						closeTimer.removeEventListener(TimerEvent.TIMER_COMPLETE,timeCompleteHandler);
+					}
+					
+					closeTimer.stop();
+				
+				}//end if
+			
+				__close();
+			
+			}
+			
+			public function timeHandler(event:TimerEvent):void
+			{
+				//this.btnOk.label = "确定(" + (3-closeTimer.currentCount).toString() + ")";
+				this.btnOk.label = lang_btnOk_label + "(" + (3-closeTimer.currentCount).toString() + ")";
+				
+			}
+			
+			public function timeCompleteHandler(event:TimerEvent):void
+			{
+				__close();			
+				
+				
+			}
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+	
+	
+</mx:TitleWindow>
