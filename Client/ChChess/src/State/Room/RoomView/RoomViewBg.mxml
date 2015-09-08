@@ -1,0 +1,4033 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   xmlns:s="library://ns.adobe.com/flex/spark"
+	width="900" 
+	height="600" 
+	minWidth="900"
+	minHeight="600"
+	borderColor="#efefef" 
+	borderStyle="inset"
+	borderVisible="true" 
+	xmlns:local="*"	
+	initialize="canvas1_initializeHandler(event)" >
+	
+	<mx:Image id="b1" left="0" right="0" top="0" bottom="0" source="assets/room_bg.jpg"/>
+	
+	<local:bg_chessboard id="board" x="0" y="0">		
+	</local:bg_chessboard>
+	
+	<mx:Image x="27" y="10" width="120" height="123" id="mc_person_img_up" 
+			  mask="{mc_person_img_mask_up}" 
+			  smoothBitmapContent="true"/>
+	<local:mc_person_head_mask x="27" y="12" id="mc_person_img_mask_up"/>
+	
+	<s:Image x="27"  y="444" width="120" height="125" id="mc_person_img_down" 
+			  mask="{mc_person_img_mask_down}"/>	
+	
+	
+	<local:mc_person_head_mask x="27"  y="444" id="mc_person_img_mask_down"/>
+	
+	<!--  backgroundAlpha="0.0" -->
+	<mx:TextArea id="textBox1" right="17" top="75" width="161" height="148" editable="false"
+				 fontSize="12"/>
+	
+	<mx:ComboBox id="cb1" right="17" top="227" width="158" height="22" close="closeHandler(event)"
+				 editable="true" fontSize="12" keyDown="cb1_keyDown(event)">
+		</mx:ComboBox>
+	
+	<mx:List id="roundList" right="12" bottom="110" width="170" height="165" borderStyle="none"
+			 dataProvider="{roundDisplayList}" fontFamily="SimSun" fontSize="12"
+			 itemRenderer="State.Room.RoomView.RoomRoundItem">
+			<!--  backgroundAlpha="0"  -->
+	</mx:List>
+
+	
+	<!--
+	<mx:List id="idleUserList" right="19" bottom="114" width="158" height="155">		
+	</mx:List>
+	-->
+	
+<mx:Script>
+	<![CDATA[
+		import State.Room.RoomModel.Qizi;
+		import State.Room.RoomModel.QiziColor;
+		import State.Room.RoomModel.QiziMoveRecord;
+		import State.Room.RoomModel.QiziName;
+		import State.Room.RoomModel.QiziRoad;
+		import State.Room.RoomModel.QiziRule;
+		
+		import com.greensock.TweenLite;
+		import com.neriksworkshop.lib.ASaudio.SoundPlaylist;
+		import com.neriksworkshop.lib.ASaudio.Track;
+		
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.events.CloseEvent;
+		import mx.events.CollectionEvent;
+		import mx.events.FlexEvent;
+		import mx.flash.UIMovieClip;
+		import mx.managers.PopUpManager;
+		
+		import net.silverfoxserver.extfactory.ChairModelFactory;
+		import net.silverfoxserver.extmodel.ItemModelByChChess;
+		import net.wdmir.core.QiPaiEvent;
+		import net.wdmir.core.QiPaiFont;
+		import net.wdmir.core.QiPaiState;
+		import net.wdmir.core.QiPaiStr;
+		import net.wdmir.core.QiPaiUser;
+		import net.wdqipai.core.factory.UserModelFactory;
+		import net.wdqipai.core.model.EUserSex;
+		import net.wdqipai.core.model.FChat;
+		import net.wdqipai.core.model.IChairModel;
+		import net.wdqipai.core.model.IHallRoomModel;
+		import net.wdqipai.core.model.ILookChairModel;
+		import net.wdqipai.core.model.IRoomModel;
+		import net.wdqipai.core.model.IRuleModel;
+		import net.wdqipai.core.model.IUserModel;
+		import net.wdqipai.core.model.level2.IdleModel;
+		import net.wdqipai.core.model.level2.VarModel;
+		
+		/**
+		 * 视图only
+		 * 
+		 * 棋子列表，方便遍历
+		 */ 		
+		public var qiziList:Array = new Array();
+		
+		/**
+		 * 路点
+		 */ 	
+		public var roadList:Array = new Array();	
+		
+		/**
+		 * 边框
+		 */
+		public var mList:Array = new Array();			 
+						
+		/**
+		 * 红方棋子
+		 */ 
+		private var red_bing_1:Qizi;																																					
+		private var red_bing_2:Qizi;																		
+		private var red_bing_3:Qizi;																				
+		private var red_bing_4:Qizi;						
+		private var red_bing_5:Qizi;
+		private var red_pao_1:Qizi;					
+		private var red_pao_2:Qizi;
+		private var red_ju_1:Qizi;								
+		private var red_ju_2:Qizi;
+		private var red_ma_1:Qizi;								
+		private var red_ma_2:Qizi;		
+		private var red_xiang_1:Qizi;
+		private var red_xiang_2:Qizi;
+		private var red_shi_1:Qizi;
+		private var red_shi_2:Qizi;
+		private var red_jiang_1:Qizi;
+		
+		/**
+		 * 黑方棋子
+		 */ 
+		private var black_bing_1:Qizi;							
+		private var black_bing_2:Qizi;							
+		private var black_bing_3:Qizi;								
+		private var black_bing_4:Qizi;
+		private var black_bing_5:Qizi;
+		private var black_pao_1:Qizi;			
+		private var black_pao_2:Qizi;	
+		private var black_ju_1:Qizi;	
+		private var black_ju_2:Qizi;		
+		private var black_ma_1:Qizi;								 
+		private var black_ma_2:Qizi;		
+		private var black_xiang_1:Qizi;
+		private var black_xiang_2:Qizi;
+		private var black_shi_1:Qizi;							
+		private var black_shi_2:Qizi;
+		private var black_jiang_1:Qizi;	
+		
+		/**
+		 * 走棋规则
+		 */
+		public var qiziRule:QiziRule;  
+		public var qiziMoveRecord:QiziMoveRecord;
+		
+		[Bindable]
+		public var roundDisplayList:ArrayCollection;
+		
+		
+		/**
+		 * 游戏开始时的局时设置窗口
+		 */ 
+		private var _gameStartWin:GameStartWin = new GameStartWin(); 		
+		
+		/**
+		 * 游戏结束窗口
+		 */ 
+		private var _gameOverWin3:GameOverWin3 = new GameOverWin3();
+		
+		/**
+		 * 退出房间询问窗口	
+		 */ 
+		private var _roomExitWin:RoomExitWin = new RoomExitWin();
+				
+		
+		/**
+		 * 求和询问窗口
+		 */  
+		private var _qiuHeWin:GameQiuHeWin = new GameQiuHeWin();		
+		
+		/**
+		 * 认输询问窗口
+		 */ 
+		private var _renShuWin:GameRenShuWin = new GameRenShuWin();			
+		
+		/**
+		 * 游戏设置窗口
+		 */ 
+		private var _configWin:GameConfigWin =  new GameConfigWin();				
+		
+		/**
+		 * 习惯设置窗口
+		 * 
+		 */  		 
+		private var _habitWin:HabitConfigWin = new HabitConfigWin();	
+		
+		/**
+		 * 屏幕截图保存窗口
+		 * 
+		 */ 
+		private var _screenSaveWin:ScreenSaveWin = new ScreenSaveWin(); 
+		
+		/**
+		 * 等待对方断线重连窗口
+		 */ 
+		private var _waitUserReconnectionWin:WaitUserReconnectionWin = new WaitUserReconnectionWin();
+		
+		/**
+		 * 显示对话内容
+		 */ 
+		private var _chat:FChat;	 
+		
+		/**
+		 * 
+		 * 	62.wav穷追猛打，太狠了吧？!
+		 *	63.wav拜托拜托，别这么用力想.
+		 *	66.wav老兄，加油加油
+		 *	68.wav老哥，穷寇莫追哦!
+		 *	71.wav前辈，快入局了!
+		 *	75.wav奇怪，会不会翻盘哪？
+		 */
+		public const talk:Array = new Array(
+								   "穷追猛打，太狠了吧？!",
+			                       "拜托拜托，别这么用力想.",
+			                       "老兄，加油加油",
+			                       "老哥，穷寇莫追哦!",
+			                       "前辈，快入局了!",
+		                           "奇怪，会不会翻盘哪？");
+		                           
+		private var talk0:Sound = new POW62();
+		private var talk1:Sound = new POW63();
+		private var talk2:Sound = new POW66();
+		private var talk3:Sound = new POW68();
+		private var talk4:Sound = new POW71();
+		private var talk5:Sound = new POW75();
+		
+		private var kbSnd:Sound = new kongbai();
+		
+						
+		/**
+		 * 将军
+		 * 将军应该分男女声音哦，会能代表自已的感觉
+		 */ 
+		private var s2JiangJun:S2JiangJun = new S2JiangJun();
+		
+		//选择声音太烦了，去掉
+		//private var s1Select:S1Select = new S1Select();
+		
+		private var s2Luozi:S2LuoZi = new S2LuoZi();
+		
+		/**
+		 * 局时显示Timer
+		 */ 
+		private var _juShiTimer:Timer = new Timer(1000);
+		
+		private var juShiUp:int = 0;
+		private var buShiUp:int = 0;
+		
+		private var juShiDown:int = 0;
+		private var buShiDown:int = 0;
+
+		
+		public function get lang_agree():String
+		{
+			return GameGlobals.qpc.data.configXML.langVari.agree;
+		}
+		
+		public function get lang_deny():String
+		{
+			return GameGlobals.qpc.data.configXML.langVari.deny;
+		}
+		
+		public function get lang_confirm():String
+		{
+			return GameGlobals.qpc.data.configXML.langVari.confirm;
+		}
+				
+		public function get lang_RoomName():String
+		{
+			return GameGlobals.qpc.data.lang_RoomName();
+		}
+		
+		public function get lang_GoldPointName():String
+		{
+			return GameGlobals.qpc.data.lang_GoldPointName();
+		}		
+				
+		public function GetLang_sorry_you_must_exit_room_str(difen:int):String
+		{
+			var langStr:String =  GameGlobals.qpc.data.configXML.langVariByChChess.RoomViewBgMXML_sorry_you_must_exit_room_str;
+			
+			langStr = langStr.replace("#param1",lang_RoomName);
+			langStr = langStr.replace("#param2",lang_GoldPointName);
+			langStr = langStr.replace("#param3",difen.toString());
+			
+			return langStr;
+			
+		}
+				
+		public function GetLang_qiu_he_str(value:String):String
+		{
+			var langStr:String =  GameGlobals.qpc.data.configXML.langVariByChChess.RoomViewBgMXML_qiu_he;
+			
+			langStr = langStr.replace("#param1",value);
+			
+			return langStr;
+			
+		}
+		
+		public function GetLang_qiu_he_deny_str(value:String):String
+		{
+			var langStr:String =  GameGlobals.qpc.data.configXML.langVariByChChess.RoomViewBgMXML_qiu_he_deny;
+			
+			langStr = langStr.replace("#param1",value);
+			
+			return langStr;
+			
+		}
+		
+		public function GetRoomViewBgMXML_ko_code(value:int):String
+		{
+		
+			return GameGlobals.qpc.data.configXML.langVariByChChess["RoomViewBgMXML_ko_code" + value.toString()];
+		}
+				
+		
+		public function canvas1_initializeHandler(event:FlexEvent):void
+		{
+			
+			//
+			//this.board.mc_btn_systemConfig.gotoAndStop(1);
+			//this.board.mc_btn_systemConfig.addEventListener(MouseEvent.ROLL_OVER,mc_btn_systemConfig_rollOver);
+			//this.board.mc_btn_systemConfig.addEventListener(MouseEvent.ROLL_OUT,mc_btn_systemConfig_rollOut);
+			this.board.mc_btn_systemConfig.addEventListener(MouseEvent.CLICK,mc_btn_systemConfig_click);
+			
+			(this.board.mc_btn_habitConfig as MovieClip).gotoAndStop(1);
+			(this.board.mc_btn_habitConfig as MovieClip).addEventListener(MouseEvent.ROLL_OVER,mc_btn_habitConfig_rollOver);
+			(this.board.mc_btn_habitConfig as MovieClip).addEventListener(MouseEvent.ROLL_OUT,mc_btn_habitConfig_rollOut);
+			(this.board.mc_btn_habitConfig as MovieClip).addEventListener(MouseEvent.CLICK,mc_btn_habitConfig_click);			
+			
+//			this.board.mc_btn_exitRoom.gotoAndStop(1);
+//			this.board.mc_btn_exitRoom.addEventListener(MouseEvent.ROLL_OVER,mc_btn_exitRoom_rollOver);
+//			this.board.mc_btn_exitRoom.addEventListener(MouseEvent.ROLL_OUT,mc_btn_exitRoom_rollOut);
+			this.board.mc_btn_exitRoom.addEventListener(MouseEvent.CLICK,mc_btn_exitRoom_click);
+			this.board.mc_btn_exit.addEventListener(MouseEvent.CLICK,mc_btn_exitRoom_click);
+			
+			
+			//this.board.mc_btn_ready.gotoAndStop(1);
+			//this.board.mc_btn_ready.addEventListener(MouseEvent.ROLL_OVER,mc_btn_ready_rollOver);
+			//this.board.mc_btn_ready.addEventListener(MouseEvent.ROLL_OUT,mc_btn_ready_rollOut);
+			//this.board.mc_btn_ready.addEventListener(MouseEvent.CLICK,mc_btn_ready_click);
+			
+			//this.board.mc_btn_renShu.gotoAndStop(3);
+			//this.board.mc_btn_renShu.addEventListener(MouseEvent.ROLL_OVER,mc_btn_renShu_rollOver);
+			//this.board.mc_btn_renShu.addEventListener(MouseEvent.ROLL_OUT,mc_btn_renShu_rollOut);
+			this.board.mc_btn_renShu.addEventListener(MouseEvent.CLICK,btnRenShu_clickHandler);
+			
+			this.board.mc_btn_qiuHe.addEventListener(MouseEvent.CLICK,btnQiuHe_clickHandler);
+			
+			
+			//this.board.mc_btn_screenSave.gotoAndStop(3);
+			//this.board.mc_btn_screenSave.addEventListener(MouseEvent.ROLL_OVER,mc_btn_screenSave_rollOver);
+			//this.board.mc_btn_screenSave.addEventListener(MouseEvent.ROLL_OUT,mc_btn_screenSave_rollOut);
+			this.mc_btn_screenSave.addEventListener(MouseEvent.CLICK,mc_btn_screenSave_click);
+			
+			//没有过渡，小黄色按钮
+			this.board.mc_btn_askIdleUser.gotoAndStop(1);
+			//this.board.mc_btn_exitRoom.addEventListener(MouseEvent.ROLL_OVER,mc_btn_exitRoom_rollOver);
+			//this.board.mc_btn_exitRoom.addEventListener(MouseEvent.ROLL_OUT,mc_btn_exitRoom_rollOut);
+			this.board.mc_btn_askIdleUser.addEventListener(MouseEvent.CLICK,mc_btn_askIdleUser_click);
+			(this.board.mc_btn_askIdleUser as MovieClip).buttonMode = true;
+			
+			
+			//
+			this.board.mc_bomb.gotoAndStop(1);
+			this.board.mc_bomb.alpha = 0.0;
+			this.board.mc_bomb.mouseEnabled = false;
+				
+			//走棋规则初始化
+			qiziRule = new QiziRule(this.roadList,this.qiziList);
+
+			qiziMoveRecord = new QiziMoveRecord();	
+			
+			roundDisplayList = new ArrayCollection();
+			
+			//路点初始化
+			//路点初始化
+			//10行9列	
+			var i:int = 0;
+			var j:int = 0;
+			var row:Array;
+			
+			for(i = qiziRule.H_MIN;i<=qiziRule.H_MAX;i++)
+			{
+				//temp Array
+				row = new Array();
+					
+				row.push(this.board["r" + (i).toString(16) + "1"]);	
+				row.push(this.board["r" + (i).toString(16) + "2"]);
+				row.push(this.board["r" + (i).toString(16) + "3"]);
+				row.push(this.board["r" + (i).toString(16) + "4"]);
+				row.push(this.board["r" + (i).toString(16) + "5"]);
+				row.push(this.board["r" + (i).toString(16) + "6"]);
+				row.push(this.board["r" + (i).toString(16) + "7"]);
+				row.push(this.board["r" + (i).toString(16) + "8"]);
+				row.push(this.board["r" + (i).toString(16) + "9"]);
+				
+				roadList.push(row);
+			}//end for
+				
+			//棋子初始化 begin	
+			//黑方棋子
+			black_bing_1 = new Qizi(QiziColor.BLACK,QiziName.En_Bing,QiziName.Ch_BLACK_Bing,
+			this.board["black_bing_1"],
+			getRoad(4,1).view);		
+																			
+			black_bing_2 = new Qizi(QiziColor.BLACK,QiziName.En_Bing,QiziName.Ch_BLACK_Bing,
+			this.board["black_bing_2"],
+			getRoad(4,3).view);			
+															
+			black_bing_3 = new Qizi(QiziColor.BLACK,QiziName.En_Bing,QiziName.Ch_BLACK_Bing,
+			this.board["black_bing_3"],
+			getRoad(4,5).view);		
+																
+			black_bing_4 = new Qizi(QiziColor.BLACK,QiziName.En_Bing,QiziName.Ch_BLACK_Bing,
+			this.board["black_bing_4"],
+			getRoad(4,7).view);
+			
+			black_bing_5 = new Qizi(QiziColor.BLACK,QiziName.En_Bing,QiziName.Ch_BLACK_Bing,
+			this.board["black_bing_5"],
+			getRoad(4,9).view);	
+				
+			black_pao_1 = new Qizi(QiziColor.BLACK,QiziName.En_Pao,QiziName.Ch_BLACK_Pao,
+			this.board["black_pao_1"],
+			getRoad(3,2).view);
+			
+			black_pao_2 = new Qizi(QiziColor.BLACK,QiziName.En_Pao,QiziName.Ch_BLACK_Pao,
+			this.board["black_pao_2"],
+			getRoad(3,8).view);											
+			
+			black_ju_1 = new Qizi(QiziColor.BLACK,QiziName.En_Ju,QiziName.Ch_BLACK_Ju,
+			this.board["black_ju_1"],
+			getRoad(1,1).view);			
+				
+			black_ju_2 = new Qizi(QiziColor.BLACK,QiziName.En_Ju,QiziName.Ch_BLACK_Ju,
+			this.board["black_ju_2"],
+			getRoad(1,9).view);						
+						
+			black_ma_1 = new Qizi(QiziColor.BLACK,QiziName.En_Ma,QiziName.Ch_BLACK_Ma,
+			this.board["black_ma_1"],
+			getRoad(1,2).view);			
+															 
+			black_ma_2 = new Qizi(QiziColor.BLACK,QiziName.En_Ma,QiziName.Ch_BLACK_Ma,
+			this.board["black_ma_2"],
+			getRoad(1,8).view);
+										
+			black_xiang_1 = new Qizi(QiziColor.BLACK,QiziName.En_Xiang,QiziName.Ch_BLACK_Xiang,
+			this.board["black_xiang_1"],
+			getRoad(1,3).view);				
+				
+			black_xiang_2 = new Qizi(QiziColor.BLACK,QiziName.En_Xiang,QiziName.Ch_BLACK_Xiang,
+			this.board["black_xiang_2"],
+			getRoad(1,7).view);
+								
+			black_shi_1 = new Qizi(QiziColor.BLACK,QiziName.En_Shi,QiziName.Ch_BLACK_Shi,
+			this.board["black_shi_1"],
+			getRoad(1,4).view);
+															
+			black_shi_2 = new Qizi(QiziColor.BLACK,QiziName.En_Shi,QiziName.Ch_BLACK_Shi,
+			this.board["black_shi_2"],
+			getRoad(1,6).view);
+							
+			black_jiang_1 = new Qizi(QiziColor.BLACK,QiziName.En_Jiang,QiziName.Ch_BLACK_Jiang,
+			this.board["black_jiang_1"],
+			getRoad(1,5).view);
+			
+			
+			//红方棋子
+			red_bing_1 = new Qizi(QiziColor.RED,QiziName.En_Bing,QiziName.Ch_RED_Bing,
+			this.board["red_bing_1"],
+			getRoad(7,9).view);
+			
+			red_bing_2 = new Qizi(QiziColor.RED,QiziName.En_Bing,QiziName.Ch_RED_Bing,
+			this.board["red_bing_2"],
+			getRoad(7,7).view);			
+																											
+			red_bing_3 = new Qizi(QiziColor.RED,QiziName.En_Bing,QiziName.Ch_RED_Bing,
+			this.board["red_bing_3"],
+			getRoad(7,5).view);
+																													
+			red_bing_4 = new Qizi(QiziColor.RED,QiziName.En_Bing,QiziName.Ch_RED_Bing,
+			this.board["red_bing_4"],
+			getRoad(7,3).view);
+															
+			red_bing_5 = new Qizi(QiziColor.RED,QiziName.En_Bing,QiziName.Ch_RED_Bing,
+			this.board["red_bing_5"],
+			getRoad(7,1).view);	
+								
+			red_pao_1 = new Qizi(QiziColor.RED,QiziName.En_Pao,QiziName.Ch_RED_Pao,
+			this.board["red_pao_1"],
+			getRoad(8,8).view);
+															
+			red_pao_2 = new Qizi(QiziColor.RED,QiziName.En_Pao,QiziName.Ch_RED_Pao,
+			this.board["red_pao_2"],
+			getRoad(8,2).view);	
+			
+			red_ju_1 = new Qizi(QiziColor.RED,QiziName.En_Ju,QiziName.Ch_RED_Ju,
+			this.board["red_ju_1"],
+			getRoad(10,9).view);
+																		
+			red_ju_2 = new Qizi(QiziColor.RED,QiziName.En_Ju,QiziName.Ch_RED_Ju,
+			this.board["red_ju_2"],
+			getRoad(10,1).view);									
+						
+			red_ma_1 = new Qizi(QiziColor.RED,QiziName.En_Ma,QiziName.Ch_RED_Ma,
+			this.board["red_ma_1"],
+			getRoad(10,8).view);	
+																	
+			red_ma_2 = new Qizi(QiziColor.RED,QiziName.En_Ma,QiziName.Ch_RED_Ma,
+			this.board["red_ma_2"],
+			getRoad(10,2).view);
+										
+			red_xiang_1 = new Qizi(QiziColor.RED,QiziName.En_Xiang,QiziName.Ch_RED_Xiang,
+			this.board["red_xiang_1"],
+			getRoad(10,7).view);
+				
+			red_xiang_2 = new Qizi(QiziColor.RED,QiziName.En_Xiang,QiziName.Ch_RED_Xiang,
+			this.board["red_xiang_2"],
+			getRoad(10,3).view);
+								
+			red_shi_1 = new Qizi(QiziColor.RED,QiziName.En_Shi,QiziName.Ch_RED_Shi,
+			this.board["red_shi_1"],
+			getRoad(10,6).view);
+			
+			red_shi_2 = new Qizi(QiziColor.RED,QiziName.En_Shi,QiziName.Ch_RED_Shi,
+			this.board["red_shi_2"],
+			getRoad(10,4).view);
+							
+			red_jiang_1 = new Qizi(QiziColor.RED,QiziName.En_Jiang,QiziName.Ch_RED_Jiang,
+			this.board["red_jiang_1"],
+			getRoad(10,5).view);
+			
+			//list
+			qiziList.push(red_bing_1);
+			qiziList.push(red_bing_2);
+			qiziList.push(red_bing_3);
+			qiziList.push(red_bing_4);
+			qiziList.push(red_bing_5);
+				
+			qiziList.push(red_pao_1);
+			qiziList.push(red_pao_2);	
+						
+			qiziList.push(red_ju_1);
+			qiziList.push(red_ju_2);		
+					
+			qiziList.push(red_ma_1);
+			qiziList.push(red_ma_2);		
+					
+			qiziList.push(red_xiang_1);
+			qiziList.push(red_xiang_2);	
+						
+			qiziList.push(red_shi_1);
+			qiziList.push(red_shi_2);
+				
+			qiziList.push(red_jiang_1);	
+			
+			//list
+			qiziList.push(black_bing_1);
+			qiziList.push(black_bing_2);
+			qiziList.push(black_bing_3);
+			qiziList.push(black_bing_4);
+			qiziList.push(black_bing_5);
+				
+			qiziList.push(black_pao_1);
+			qiziList.push(black_pao_2);	
+						
+			qiziList.push(black_ju_1);
+			qiziList.push(black_ju_2);	
+						
+			qiziList.push(black_ma_1);
+			qiziList.push(black_ma_2);
+							
+			qiziList.push(black_xiang_1);
+			qiziList.push(black_xiang_2);
+							
+			qiziList.push(black_shi_1);
+			qiziList.push(black_shi_2);
+			
+			qiziList.push(black_jiang_1);	
+			
+			//棋子初始化 end	
+			
+			//m绿边框初始化 begin
+			for(i = qiziRule.H_MIN;i<=qiziRule.H_MAX;i++)
+			{
+				//temp Array
+				row = new Array();
+					
+				row.push(this.board["m" + (i).toString(16) + "1"]);	
+				row.push(this.board["m" + (i).toString(16) + "2"]);
+				row.push(this.board["m" + (i).toString(16) + "3"]);
+				row.push(this.board["m" + (i).toString(16) + "4"]);
+				row.push(this.board["m" + (i).toString(16) + "5"]);
+				row.push(this.board["m" + (i).toString(16) + "6"]);
+				row.push(this.board["m" + (i).toString(16) + "7"]);
+				row.push(this.board["m" + (i).toString(16) + "8"]);
+				row.push(this.board["m" + (i).toString(16) + "9"]);
+				
+				mList.push(row);
+			}//end for
+						
+			//可行提示路点初始化
+			//对length进行优化
+			//10行，9列
+			for(i=0;i<10;i++)
+			{
+				for(j=0;j<9;j++)
+				{				
+					(roadList[i][j] as MovieClip).visible = false;						
+							
+				}//end for
+			}//end for	
+			
+			this.refreshRoadAlpha();
+			
+			//m绿边框初始化 end
+			for(i=0;i<10;i++)
+			{
+				for(j=0;j<9;j++)
+				{				
+					(mList[i][j] as MovieClip).visible = false;				
+				}//end for
+			}//end for	
+			
+			//
+			initRoadListClick();
+			
+			//象棋游戏聊天最大30行足以
+			_chat = new FChat(this.textBox1,50);
+			
+			_chat.outputBox.addEventListener(TextEvent.LINK,outputBoxTextLinkHandler);
+			
+			//
+			this.cb1.dataProvider = talk;
+			
+			//启动声音，防止降帧
+			//bgFs
+			
+			
+			//
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onUserEnterRoom,onUserEnterRoom);
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onUserLeaveRoom,onUserLeaveRoom);
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomVariablesUpdate,onRoomVariablesUpdate);
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomVariablesUpdateOk,onRoomVariablesUpdateOk);
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomVariablesUpdateKo,onRoomVariablesUpdateKo);
+			
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onIdleList,onIdleList);			
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomLeft,onRoomLeft);
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomGameStart,onRoomGameStart);						
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomGameReconnection,onRoomGameReconnection);
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onRoomGameOver,onRoomGameOver);
+			
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onPublicMessage,onPublicMessage);
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onPublicAudioMessage,onPublicAudioMessage);
+			
+			//
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onLoadHeadPhoto,onLoadHeadPhoto);
+			
+			//
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onUserWaitReconnectionRoomStart,onUserWaitReconnectionRoomStart);
+			GameGlobals.qpc.addEventListener(QiPaiEvent.onUserWaitReconnectionRoomEnd,onUserWaitReconnectionRoomEnd);
+			
+			//------------------ 维持帧率 --------------------------
+					
+			// 循环播放N次,int.MAX_VALUE够听几十年
+			kbSnd.play(0,int.MAX_VALUE); 
+			
+				
+		}//end function
+		
+		private function outputBoxTextLinkHandler(e:TextEvent):void
+		{
+			//trace(e);
+			
+			if(e.text.indexOf("look") == 0)
+			{
+				var uid:int = parseInt(e.text.replace("look",""));
+				
+				QiPaiUser.look(GameGlobals.qpc.data.selectDB.mode,
+					uid,
+					GameGlobals.rootUrl,
+					GameGlobals.GAMENAME);
+				
+				
+			}
+			
+		}
+		
+		/**
+		 * 
+		 * 
+		 */ 
+		private function onUserWaitReconnectionRoomStart(event:QiPaiEvent):void
+		{				
+			//
+			PopUpManager.addPopUp(_waitUserReconnectionWin,this,true);
+			PopUpManager.centerPopUp(_waitUserReconnectionWin);
+			
+			//
+			_waitUserReconnectionWin.waitUserNickName = event.params.userNickName;
+			_waitUserReconnectionWin.waitUserTime = event.params.userTime;
+			
+			//
+			//if(this.chuPaiTimer.running)
+			//{
+			//	chuPaiTimerPaused = true;
+			//	this.chuPaiTimer.stop();
+			//}
+			
+		}
+		
+		private function onUserWaitReconnectionRoomEnd(event:QiPaiEvent):void
+		{
+			//
+			_waitUserReconnectionWin.Close();
+			
+			//
+			//if(chuPaiTimerPaused)
+			//{
+			//	chuPaiTimerPaused = false;
+			//	this.chuPaiTimer.start();
+			//}
+			
+		}
+		
+		public function getRoad(h:uint,v:uint):QiziRoad
+		{
+			if(0 == h)
+			{
+				throw new Error("h can not be 0");
+			}
+			
+			if(0 == v)
+			{
+				throw new Error("v can not be 0");
+			}
+			
+			return new QiziRoad(this.roadList[h-1][v-1]);
+		}		
+		
+		public function getRoadByName(n:String):QiziRoad
+		{			
+			var h:uint = QiziRoad.get_static_RoadH(n);
+			var v:uint = QiziRoad.get_static_RoadV(n);
+			
+			if(0 == h)
+			{
+				throw new Error("h can not be 0");
+			}
+			
+			if(0 == v)
+			{
+				throw new Error("v can not be 0");
+			}			
+			
+			return new QiziRoad(this.roadList[h-1][v-1]);;		
+		}
+		
+		public function getRoadReverse(h:uint,v:uint):QiziRoad
+		{
+			if(0 == h)
+			{
+				throw new Error("h can not be 0");
+			}
+			
+			if(0 == v)
+			{
+				throw new Error("v can not be 0");
+			}
+			
+			return new QiziRoad(this.roadList[10-h][9-v]);
+		
+		}
+		
+		public function getM(h:uint,v:uint):MovieClip
+		{
+			if(0 == h)
+			{
+				throw new Error("h can not be 0");
+			}
+			
+			if(0 == v)
+			{
+				throw new Error("v can not be 0");
+			}
+			
+			return this.mList[h-1][v-1];
+		}	
+								
+		
+		
+		public function refreshRoadAlpha():void
+		{
+			var i:int = 0;
+			var j:int = 0;
+			
+			for(i=0;i<10;i++)
+			{
+				for(j=0;j<9;j++)
+				{	
+					if(GameGlobals.habit.seeWayPoint)
+					{
+						(roadList[i][j] as MovieClip).alpha = 1.0;
+					}else
+					{
+						(roadList[i][j] as MovieClip).alpha = 0.0;
+					}
+												
+				}//end for
+			}//end for	
+		
+		}
+		
+		
+		
+		
+		
+		/**
+		 * 游戏结束窗口
+		 * 
+		 */ 
+//		public function showGameOverWin():void
+//		{
+//			try
+//			{				
+//				/**
+//				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+//				 */ 
+//			 	PopUpManager.addPopUp(_gameOverWin,this,false); 
+//            	PopUpManager.centerPopUp(_gameOverWin); 
+//            	            	
+//            	//启动关闭窗口倒计时器
+//            	_gameOverWin.startCloseTimeCount();
+//        	
+//        	}
+//			catch (exd:Error) 
+//			{            		
+//			   	Alert.show(QiPaiStr.getErrorMessage("showGameStartWin",exd.message ,exd.getStackTrace()));
+//			}			
+//		}
+		
+		
+		
+		
+		
+		/**
+		 * 
+		 * 
+		 */
+		public function onLoadHeadPhoto(qevt:QiPaiEvent=null):void
+		{
+			//nothing
+			//go refreshRoom
+		}		
+		
+		
+		public function mc_btn_systemConfig_click(event:MouseEvent):void
+		{
+			this.showConfigWin();
+		
+		}
+		
+		public function mc_btn_systemConfig_rollOut(event:MouseEvent):void
+		{
+			//this.board.mc_btn_systemConfig.gotoAndStop(1);
+		}
+		
+		public function mc_btn_systemConfig_rollOver(event:MouseEvent):void
+		{
+			//this.board.mc_btn_systemConfig.gotoAndStop(2);
+		}
+		
+		
+		//------------------------------------------------------------
+		
+		
+		public function mc_btn_askIdleUser_click(event:MouseEvent):void
+		{
+			
+//			if(null != this.idleUserList.selectedItem)
+//			{
+//				var idleModel:IdleModel = this.idleUserList.selectedItem as IdleModel;
+//				
+//				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId;
+//				
+//				var varsList:Array = new Array(); 
+//			
+//				var var_mail:Object = {
+//			
+//					name:"askJoinRoom",
+//					val:idleModel.data
+//				}
+//				
+//				varsList.push(var_mail);
+//			
+//				GameGlobals.qpc.sendMail(varsList,roomId);
+//			
+//				Alert.show("您对" + idleModel.label + "的邀请已发出");
+//			}else
+//			{
+//				Alert.show("请点击选择空闲用户列表中的用户名");
+//			}			
+		
+		}
+		
+		public function mc_btn_habitConfig_click(event:MouseEvent):void
+		{
+			this.showHabitWin();		
+		}
+		
+		public function mc_btn_habitConfig_rollOut(event:MouseEvent):void
+		{
+			this.board.mc_btn_habitConfig.gotoAndStop(1);
+		}
+		
+		public function mc_btn_habitConfig_rollOver(event:MouseEvent):void
+		{
+			this.board.mc_btn_habitConfig.gotoAndStop(2);
+		}
+		
+		
+		//exitRoom只有1和2，锁定靠弹出的窗口
+		public function mc_btn_exitRoom_click(event:MouseEvent=null):void
+		{
+			//
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			var heroId:String = GameGlobals.qpc.data.hero.Id;	
+			
+			if("" != matchInfo.turn)
+			{
+				
+				//不可以直接退
+				if(matchInfo.red == heroId ||
+					matchInfo.black == heroId)
+				{
+					showRoomExitWin();
+					return;	
+				}	
+				
+			}
+			
+			GameGlobals.qpc.leaveRoom(GameGlobals.qpc.data.hero.activeRoomId);
+		
+		}
+		
+		public function mc_btn_exitRoom_rollOut(event:MouseEvent):void
+		{
+			this.board.mc_btn_exitRoom.gotoAndStop(1);
+		}
+		
+		public function mc_btn_exitRoom_rollOver(event:MouseEvent):void
+		{
+			this.board.mc_btn_exitRoom.gotoAndStop(2);
+		}
+		
+		
+		public function mc_btn_screenSave_rollOut(event:MouseEvent):void
+		{
+			//游戏准备ok，或开始后，置为1
+			if(3 != this.board.mc_btn_screenSave.currentFrame)
+			{
+				this.board.mc_btn_screenSave.gotoAndStop(1);
+			}
+		}
+		
+		public function mc_btn_screenSave_rollOver(event:MouseEvent):void
+		{
+			//游戏准备ok，或开始后，置为3
+			if(3 != this.board.mc_btn_screenSave.currentFrame)
+			{
+				this.board.mc_btn_screenSave.gotoAndStop(2);
+			}
+		}
+		
+		public function mc_btn_screenSave_click(event:MouseEvent=null):void
+		{
+			this.showScreenSaveWin();
+			
+			
+		
+		}		
+//		
+//		public function mc_btn_renShu_rollOut(event:MouseEvent):void
+//		{
+//			//游戏准备ok，或开始后，置为1
+//			if(3 != this.board.mc_btn_renShu.currentFrame)
+//			{
+//				this.board.mc_btn_renShu.gotoAndStop(1);
+//			}
+//		}
+//		
+//		public function mc_btn_renShu_rollOver(event:MouseEvent):void
+//		{
+//			//游戏准备ok，或开始后，置为3
+//			if(3 != this.board.mc_btn_renShu.currentFrame)
+//			{
+//				this.board.mc_btn_renShu.gotoAndStop(2);
+//			}
+//		}
+		
+		/**
+		 * 发出认输指令
+		 */ 
+		public function mc_btn_renShu_click(event:MouseEvent=null):void
+		{
+			//变灰则取消按钮动作
+			//if(3 != this.board.mc_btn_renShu.currentFrame)
+			//{
+			
+				
+							
+			//}
+		}
+		
+		/////////////////
+		
+//		public function mc_btn_ready_rollOut(event:MouseEvent):void
+//		{
+//			//游戏准备ok，或开始后，置为3
+//			if(3 != this.board.mc_btn_ready.currentFrame)
+//			{
+//				this.board.mc_btn_ready.gotoAndStop(1);
+//			}
+//		}
+//		
+//		public function mc_btn_ready_rollOver(event:MouseEvent):void
+//		{
+//			//游戏准备ok，或开始后，置为3
+//			if(3 != this.board.mc_btn_ready.currentFrame)
+//			{
+//				this.board.mc_btn_ready.gotoAndStop(2);
+//			}
+//		}
+		
+		/**
+		 * 发出准备指令
+		 */ 
+		public function mc_btn_ready_click(event:MouseEvent=null):void
+		{
+			//变灰则取消按钮动作
+			//if(3 != this.board.mc_btn_ready.currentFrame)
+			//{
+			
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 
+							
+				var var_qizi:Object = {
+				
+					name:"chairReady",
+					val:GameGlobals.qpc.data.hero.Id
+				}
+				
+				varsList.push(var_qizi);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId);
+				
+				//data
+				var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+				var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				chair.setReady(true);
+				
+				//view
+				if(EUserSex.Boy == GameGlobals.qpc.data.hero.Sex)
+				{
+					this.board.mc_person_down.gotoAndStop(4);
+				}
+				else
+				{
+					this.board.mc_person_down.gotoAndStop(5);
+				}
+				
+				//按钮变灰
+				//this.board.mc_btn_ready.gotoAndStop(3);
+							
+			//}
+		}
+		
+		
+		public function setNameUp(value:String):void
+		{
+			this.board.lbl_name_up.text = value;
+		}
+		
+		public function setNameDown(value:String):void
+		{
+			this.board.lbl_name_down.text = value;
+		}
+		
+		public function initRoadListClick():void
+		{
+			var i:int =0;
+			var j:int =0;
+			
+			//对length进行优化
+			//10行，9列
+			for(i=0;i<10;i++)
+			{
+				for(j=0;j<9;j++)
+				{
+					if(!(roadList[i][j] as MovieClip).hasEventListener(MouseEvent.CLICK))
+					{
+						(roadList[i][j] as MovieClip).addEventListener(MouseEvent.CLICK,road_click);
+					}			
+				}//end for
+			}//end for
+		}		
+		
+		public function removeRoadListClick():void
+		{
+			var i:int =0;
+			var j:int =0;
+			
+			//对length进行优化
+			//10行，9列
+			for(i=0;i<10;i++)
+			{
+				for(j=0;j<9;j++)
+				{				
+					(roadList[i][j] as MovieClip).removeEventListener(MouseEvent.CLICK,road_click);
+								
+				}//end for
+			}//end for
+		
+		
+		}
+		
+		
+		
+		/**
+		 * 棋子事件侦听
+		 * 应当在接收到游戏开始指令后
+		 */ 
+		public function initRedQiziClick():void
+		{
+			
+			red_bing_1.view.buttonMode = true;																																				
+			red_bing_2.view.buttonMode = true;																						
+			red_bing_3.view.buttonMode = true;																								
+			red_bing_4.view.buttonMode = true;					
+			red_bing_5.view.buttonMode = true;					
+			red_pao_1.view.buttonMode = true;										
+			red_pao_2.view.buttonMode = true;					
+			red_ju_1.view.buttonMode = true;													
+			red_ju_2.view.buttonMode = true;					
+			red_ma_1.view.buttonMode = true;													
+			red_ma_2.view.buttonMode = true;							
+			red_xiang_1.view.buttonMode = true;					
+			red_xiang_2.view.buttonMode = true;					
+			red_shi_1.view.buttonMode = true;					
+			red_shi_2.view.buttonMode = true;					
+			red_jiang_1.view.buttonMode = true;	
+			
+			black_bing_1.view.buttonMode = false;																																									
+			black_bing_2.view.buttonMode = false;																						
+			black_bing_3.view.buttonMode = false;																								
+			black_bing_4.view.buttonMode = false;										
+			black_bing_5.view.buttonMode = false;				
+			black_pao_1.view.buttonMode = false;									
+			black_pao_2.view.buttonMode = false;				
+			black_ju_1.view.buttonMode = false;												
+			black_ju_2.view.buttonMode = false;				
+			black_ma_1.view.buttonMode = false;												
+			black_ma_2.view.buttonMode = false;						
+			black_xiang_1.view.buttonMode = false;				
+			black_xiang_2.view.buttonMode = false;				
+			black_shi_1.view.buttonMode = false;				
+			black_shi_2.view.buttonMode = false;				
+			black_jiang_1.view.buttonMode = false;
+		
+			
+			red_bing_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);																																					
+			red_bing_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click);																		
+			red_bing_3.view.addEventListener(MouseEvent.CLICK,red_qizi_click);																				
+			red_bing_4.view.addEventListener(MouseEvent.CLICK,red_qizi_click);						
+			red_bing_5.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_pao_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);					
+			red_pao_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_ju_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);								
+			red_ju_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_ma_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);								
+			red_ma_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click);		
+			red_xiang_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_xiang_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_shi_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_shi_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_jiang_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click);
+		
+			//
+			black_bing_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);																																					
+			black_bing_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);																		
+			black_bing_3.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);																				
+			black_bing_4.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);						
+			black_bing_5.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_pao_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);					
+			black_pao_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_ju_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);								
+			black_ju_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_ma_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);								
+			black_ma_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);		
+			black_xiang_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_xiang_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_shi_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_shi_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_jiang_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click2);
+		
+			
+			
+			
+		}
+		
+		/**
+		 * 棋子事件移除
+		 * 能解决多次重复点击发送指令问题
+		 */ 
+		public function removeRedQiziClick():void
+		{
+			red_bing_1.view.buttonMode = false;																																				
+			red_bing_2.view.buttonMode = false;																						
+			red_bing_3.view.buttonMode = false;																								
+			red_bing_4.view.buttonMode = false;					
+			red_bing_5.view.buttonMode = false;					
+			red_pao_1.view.buttonMode = false;										
+			red_pao_2.view.buttonMode = false;					
+			red_ju_1.view.buttonMode = false;													
+			red_ju_2.view.buttonMode = false;					
+			red_ma_1.view.buttonMode = false;													
+			red_ma_2.view.buttonMode = false;							
+			red_xiang_1.view.buttonMode = false;					
+			red_xiang_2.view.buttonMode = false;					
+			red_shi_1.view.buttonMode = false;					
+			red_shi_2.view.buttonMode = false;					
+			red_jiang_1.view.buttonMode = false;				
+			
+			black_bing_1.view.buttonMode = false;																																									
+			black_bing_2.view.buttonMode = false;																						
+			black_bing_3.view.buttonMode = false;																								
+			black_bing_4.view.buttonMode = false;										
+			black_bing_5.view.buttonMode = false;				
+			black_pao_1.view.buttonMode = false;									
+			black_pao_2.view.buttonMode = false;				
+			black_ju_1.view.buttonMode = false;												
+			black_ju_2.view.buttonMode = false;				
+			black_ma_1.view.buttonMode = false;												
+			black_ma_2.view.buttonMode = false;						
+			black_xiang_1.view.buttonMode = false;				
+			black_xiang_2.view.buttonMode = false;				
+			black_shi_1.view.buttonMode = false;				
+			black_shi_2.view.buttonMode = false;				
+			black_jiang_1.view.buttonMode = false;
+			
+			red_bing_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);																																					
+			red_bing_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);																		
+			red_bing_3.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);																				
+			red_bing_4.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);						
+			red_bing_5.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_pao_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);					
+			red_pao_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_ju_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);								
+			red_ju_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_ma_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);								
+			red_ma_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);		
+			red_xiang_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_xiang_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_shi_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_shi_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+			red_jiang_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click);
+		
+			//
+			black_bing_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);																																					
+			black_bing_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);																		
+			black_bing_3.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);																				
+			black_bing_4.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);						
+			black_bing_5.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_pao_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);					
+			black_pao_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_ju_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);								
+			black_ju_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_ma_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);								
+			black_ma_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);		
+			black_xiang_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_xiang_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_shi_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_shi_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+			black_jiang_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click2);
+		
+		}
+		
+		/**
+		 * 棋子事件侦听
+		 * 应当在接收到游戏开始指令后
+		 */ 
+		public function initBlackQiziClick():void
+		{
+			red_bing_1.view.buttonMode = false;																																				
+			red_bing_2.view.buttonMode = false;																						
+			red_bing_3.view.buttonMode = false;																								
+			red_bing_4.view.buttonMode = false;					
+			red_bing_5.view.buttonMode = false;					
+			red_pao_1.view.buttonMode = false;										
+			red_pao_2.view.buttonMode = false;					
+			red_ju_1.view.buttonMode = false;													
+			red_ju_2.view.buttonMode = false;					
+			red_ma_1.view.buttonMode = false;													
+			red_ma_2.view.buttonMode = false;							
+			red_xiang_1.view.buttonMode = false;					
+			red_xiang_2.view.buttonMode = false;					
+			red_shi_1.view.buttonMode = false;					
+			red_shi_2.view.buttonMode = false;					
+			red_jiang_1.view.buttonMode = false;				
+			
+			black_bing_1.view.buttonMode = true;																																									
+			black_bing_2.view.buttonMode = true;																						
+			black_bing_3.view.buttonMode = true;																								
+			black_bing_4.view.buttonMode = true;										
+			black_bing_5.view.buttonMode = true;				
+			black_pao_1.view.buttonMode = true;									
+			black_pao_2.view.buttonMode = true;				
+			black_ju_1.view.buttonMode = true;												
+			black_ju_2.view.buttonMode = true;				
+			black_ma_1.view.buttonMode = true;												
+			black_ma_2.view.buttonMode = true;						
+			black_xiang_1.view.buttonMode = true;				
+			black_xiang_2.view.buttonMode = true;				
+			black_shi_1.view.buttonMode = true;				
+			black_shi_2.view.buttonMode = true;				
+			black_jiang_1.view.buttonMode = true;					
+			
+			//
+			red_bing_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);																																					
+			red_bing_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);																		
+			red_bing_3.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);																				
+			red_bing_4.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);						
+			red_bing_5.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_pao_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);					
+			red_pao_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_ju_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);								
+			red_ju_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_ma_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);								
+			red_ma_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);		
+			red_xiang_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_xiang_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_shi_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_shi_2.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_jiang_1.view.addEventListener(MouseEvent.CLICK,red_qizi_click2);
+		
+			//
+			black_bing_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);																																					
+			black_bing_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click);																		
+			black_bing_3.view.addEventListener(MouseEvent.CLICK,black_qizi_click);																				
+			black_bing_4.view.addEventListener(MouseEvent.CLICK,black_qizi_click);						
+			black_bing_5.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_pao_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);					
+			black_pao_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_ju_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);								
+			black_ju_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_ma_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);								
+			black_ma_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click);		
+			black_xiang_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_xiang_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_shi_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_shi_2.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_jiang_1.view.addEventListener(MouseEvent.CLICK,black_qizi_click);
+				
+			
+		}
+		
+		/**
+		 * 棋子事件移除
+		 * 能解决多次重复点击发送指令问题
+		 */ 
+		public function removeBlackQiziClick():void
+		{
+			red_bing_1.view.buttonMode = false;																																				
+			red_bing_2.view.buttonMode = false;																						
+			red_bing_3.view.buttonMode = false;																								
+			red_bing_4.view.buttonMode = false;					
+			red_bing_5.view.buttonMode = false;					
+			red_pao_1.view.buttonMode = false;										
+			red_pao_2.view.buttonMode = false;					
+			red_ju_1.view.buttonMode = false;													
+			red_ju_2.view.buttonMode = false;					
+			red_ma_1.view.buttonMode = false;													
+			red_ma_2.view.buttonMode = false;							
+			red_xiang_1.view.buttonMode = false;					
+			red_xiang_2.view.buttonMode = false;					
+			red_shi_1.view.buttonMode = false;					
+			red_shi_2.view.buttonMode = false;					
+			red_jiang_1.view.buttonMode = false;				
+			
+			black_bing_1.view.buttonMode = false;																																									
+			black_bing_2.view.buttonMode = false;																						
+			black_bing_3.view.buttonMode = false;																								
+			black_bing_4.view.buttonMode = false;										
+			black_bing_5.view.buttonMode = false;				
+			black_pao_1.view.buttonMode = false;									
+			black_pao_2.view.buttonMode = false;				
+			black_ju_1.view.buttonMode = false;												
+			black_ju_2.view.buttonMode = false;				
+			black_ma_1.view.buttonMode = false;												
+			black_ma_2.view.buttonMode = false;						
+			black_xiang_1.view.buttonMode = false;				
+			black_xiang_2.view.buttonMode = false;				
+			black_shi_1.view.buttonMode = false;				
+			black_shi_2.view.buttonMode = false;				
+			black_jiang_1.view.buttonMode = false;
+			
+			red_bing_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);																																					
+			red_bing_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);																		
+			red_bing_3.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);																				
+			red_bing_4.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);						
+			red_bing_5.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_pao_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);					
+			red_pao_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_ju_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);								
+			red_ju_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_ma_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);								
+			red_ma_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);		
+			red_xiang_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_xiang_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_shi_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_shi_2.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+			red_jiang_1.view.removeEventListener(MouseEvent.CLICK,red_qizi_click2);
+		
+			//
+			black_bing_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);																																					
+			black_bing_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);																		
+			black_bing_3.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);																				
+			black_bing_4.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);						
+			black_bing_5.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_pao_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);					
+			black_pao_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_ju_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);								
+			black_ju_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_ma_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);								
+			black_ma_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);		
+			black_xiang_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_xiang_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_shi_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_shi_2.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+			black_jiang_1.view.removeEventListener(MouseEvent.CLICK,black_qizi_click);
+		
+		
+		}
+		
+		
+		
+		public function road_click(event:MouseEvent):void
+		{
+			//remove event listen
+			var gridReverse:Boolean = isGridReverse;
+			
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+						
+			if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+			{
+				this.removeRedQiziClick();
+				
+			}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+			{
+				this.removeBlackQiziClick();
+			}
+			
+			
+			
+			//本机画面
+			var road:QiziRoad = this.getRoadByName(event.currentTarget.name);
+			this.moveStep2(road);
+			
+			
+			
+			//record
+			var qizi:Qizi = this.getSelectQizi();
+			qiziMoveRecord.setP2(qizi);
+			var zf:String = qiziMoveRecord.getZoufa_Display();			
+			
+			var ind:String = "";
+			if(this.qiziRule.recordList.length%2 == 0)
+			{
+				ind = (this.qiziRule.recordList.length/2).toString();
+			}
+			
+			this.roundDisplayList.addItem({index:ind,label:zf});
+			
+			
+			
+			//room vars
+			var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+												
+			var varsList:Array = new Array(); 
+			
+			if(gridReverse)
+			{
+				var r:QiziRoad = this.getRoadReverse(road.getRoadH(),road.getRoadV());
+								
+				var var_r:Object = {
+			
+					name:"moveToRoad",
+					val:r.view.name
+				}
+				
+				varsList.push(var_r);
+			}
+			else
+			{				
+				var var_road:Object = {
+			
+					name:"moveToRoad",
+					val:road.view.name
+				}
+				
+				varsList.push(var_road);
+			}				
+			
+			GameGlobals.qpc.setRoomVariables(varsList,roomId);
+			
+		}
+		
+		
+		
+		public function red_qizi_click(event:MouseEvent):void
+		{
+			//Alert.show("red_qizi_click");
+			
+			var qizi:Qizi = getQizi(event.target.name);
+			
+			var h:uint = qizi.h;
+			var v:uint = qizi.v;
+			
+			//绿色选定 and record
+			selectQizi(qizi);
+			
+			//显示提示可行路点
+			moveStep1(qizi);
+			
+			//room vars
+			var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+												
+			var varsList:Array = new Array(); 
+						
+			var var_qizi:Object = {
+			
+				name:"selectQizi",
+				val:qizi.view.name
+			}
+			
+			varsList.push(var_qizi);			
+			
+			GameGlobals.qpc.setRoomVariables(varsList,roomId);
+			
+		}
+		
+		/**
+		 * 被动点击
+		 * 只在 2 == qizi.view.currentFrame 执行代码
+		 */
+		public function red_qizi_click2(event:MouseEvent):void
+		{
+			var qizi:Qizi = getQizi(event.target.name);
+			
+			var h:uint = qizi.h;
+			var v:uint = qizi.v;
+			
+			if(2 == qizi.view.currentFrame)
+			{
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+							
+				if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+				{
+					this.removeRedQiziClick();
+					
+				}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+				{
+					this.removeBlackQiziClick();
+				}
+			
+				//执行move操作
+				//Alert.show("执行move操作");
+				this.moveStep2ByQizi(qizi);
+				
+				//棋子被吃掉，目前是直接消失
+				qizi.view.visible = false;
+				
+				//record
+				qiziMoveRecord.setP2(qizi);
+				var zf:String = qiziMoveRecord.getZoufa_Display();			
+				
+				var ind:String = "";
+				if(this.qiziRule.recordList.length%2 == 0)
+				{
+					ind = (this.qiziRule.recordList.length/2).toString();
+				}
+				
+				this.roundDisplayList.addItem({index:ind,label:zf});
+		
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 
+							
+				var var_qizi:Object = {
+				
+					name:"moveToQizi",
+					val:qizi.view.name
+				}
+				
+				varsList.push(var_qizi);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId)
+			}//end if			
+		}
+		
+		/**
+		 * 被动点击
+		 * 只在 2 == qizi.view.currentFrame 执行代码
+		 */ 
+		public function black_qizi_click2(event:MouseEvent):void
+		{
+			var qizi:Qizi = getQizi(event.target.name);
+			
+			var h:uint = qizi.h;
+			var v:uint = qizi.v;
+			
+			if(2 == qizi.view.currentFrame)
+			{
+				//棋盘
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+							
+				if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+				{
+					this.removeRedQiziClick();
+					
+				}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+				{
+					this.removeBlackQiziClick();
+				}
+			
+				//执行move操作
+				//Alert.show("执行move操作");
+				this.moveStep2ByQizi(qizi);
+				
+				//棋子被吃掉，目前是直接消失
+				qizi.view.visible = false;				
+				
+				//record
+				qiziMoveRecord.setP2(qizi);
+				var zf:String = qiziMoveRecord.getZoufa_Display();
+				this.roundDisplayList.addItem({label:zf});
+		
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+													
+				var varsList:Array = new Array(); 
+							
+				var var_qizi:Object = {
+				
+					name:"moveToQizi",
+					val:qizi.view.name
+				}
+				
+				varsList.push(var_qizi);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId)
+			}//end if			
+		}
+		
+		
+		public function black_qizi_click(event:MouseEvent):void
+		{			
+			//Alert.show("black_qizi_click");
+			
+			
+			
+			//
+			var qizi:Qizi = getQizi(event.target.name);
+			
+			var h:uint = qizi.h;
+			var v:uint = qizi.v;
+			
+			//绿色选定
+			selectQizi(qizi);
+			
+			//显示提示可行路点
+			moveStep1(qizi);
+			
+			//record
+			qiziMoveRecord.setP1(qizi);
+			
+			//room vars
+			var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+												
+			var varsList:Array = new Array(); 
+						
+			var var_qizi:Object = {
+			
+				name:"selectQizi",
+				val:qizi.view.name
+			}
+			
+			varsList.push(var_qizi);			
+			
+			GameGlobals.qpc.setRoomVariables(varsList,roomId);		
+					
+		
+		}		
+		
+		/**
+		 * 显示可行区域
+		 */ 
+		public function moveStep1(qizi:Qizi):void
+		{
+			//reset
+			//取消所有路点
+			qiziRule.reset();
+			
+			var qiziEnName:String = qizi.enName;
+			
+			//显示路点
+			switch(qiziEnName)
+			{
+				case QiziName.En_Bing:qiziRule.movePointGuize_bing(qizi.h,qizi.v);break;
+					 
+				case QiziName.En_Pao:qiziRule.movePointGuize_pao(qizi.h,qizi.v);break;
+				
+				case QiziName.En_Ju:qiziRule.movePointGuize_ju(qizi.h,qizi.v);break;
+				
+				case QiziName.En_Ma:qiziRule.movePointGuize_ma(qizi.h,qizi.v);break;
+				
+				case QiziName.En_Xiang:qiziRule.movePointGuize_xiang(qizi.h,qizi.v);break;
+				
+				case QiziName.En_Shi:qiziRule.movePointGuize_shi(qizi.h,qizi.v);break;
+				
+				case QiziName.En_Jiang:qiziRule.movePointGuize_jiang(qizi.h,qizi.v);break;
+				
+				default:throw new Error("can not find qiziEnName:" + qiziEnName + " func:moveStep1");
+				
+			}
+			
+			//选择时有声音太烦
+			//this.TipSelect();
+		
+		}
+		
+		public function moveStep2(road:QiziRoad):void
+		{
+			//reset
+			qiziRule.reset();	
+			
+			
+			//
+			var qizi:Qizi = this.getSelectQizi();			
+			qizi.setPos(road.view);	
+			
+			//
+			showM(qizi.h,qizi.v);
+			
+			this.TipLuoZi();
+			
+			if(qiziRule.canTipJiangJun(qizi.color))
+			{
+				
+				TipJiangJun();
+				//Alert.show("将军");
+			}
+			
+			//
+			this.startJuShiTimerUp();
+		}
+		
+		public function moveStep2ByQizi(q:Qizi):void
+		{
+			//reset
+			qiziRule.reset();
+			
+			var qizi:Qizi = this.getSelectQizi();			
+			qizi.setPos(q.getPos().view);
+			
+			//
+			showM(qizi.h,qizi.v);
+			
+			this.TipLuoZi();
+			
+			//
+			if(qiziRule.canTipJiangJun(qizi.color))
+			{
+				TipJiangJun();
+				//Alert.show("将军");
+			}
+			
+			//
+			this.startJuShiTimerUp();
+		}
+		
+		public function unselectQizi(qizi:Qizi):void
+		{
+			var h:uint = qizi.h;
+			var v:uint = qizi.v;
+			
+			var m:MovieClip = this.getM(h,v); 
+			
+			//优化，一个检测好过一次赋值
+			if(m.visible)
+			{
+				m.visible = false;
+			}		
+		
+		}
+		
+		/**
+		 * 显示绿边框
+		 */ 
+		public function showM(h:uint,v:uint):void
+		{			
+			var m:MovieClip = this.getM(h,v); 
+			
+			//优化，一个检测好过一次赋值
+			if(!m.visible)
+			{
+				m.visible = true;
+			}			
+		}
+		
+		public function selectQizi(qizi:Qizi):void
+		{			
+			//
+			this.qiziMoveRecord.setP1(qizi);
+				
+			//取消所有绿边框
+			for(var h:int =qiziRule.H_MIN;h<=qiziRule.H_MAX;h++)
+			{
+				for(var v:int = qiziRule.V_MIN;v<=qiziRule.V_MAX;v++)
+				{
+					var m:MovieClip = this.getM(h,v);
+					
+					m.visible = false; 
+				
+				}
+			}
+			
+			//显示绿边框
+			showM(qizi.h,qizi.v);	
+					
+		}
+		
+		/**
+		 * 获取选择的棋子
+		 * 
+		 */ 
+		public function getSelectQizi():Qizi
+		{	
+				
+			return this.qiziMoveRecord.getP1();
+			
+		}
+		
+		public function getQizi(view:String):Qizi
+		{
+			//red
+			if(red_bing_1.view.name == view)
+			{
+				return red_bing_1;
+				
+			}else if(red_bing_2.view.name == view)
+			{
+				return red_bing_2;
+			
+			}else if(red_bing_3.view.name == view)
+			{
+				return red_bing_3;
+			
+			}else if(red_bing_4.view.name == view)
+			{
+				return red_bing_4;
+			
+			}else if(red_bing_5.view.name == view)
+			{
+				return red_bing_5;
+			
+			}else if(red_pao_1.view.name == view)
+			{
+				return red_pao_1;
+			
+			}else if(red_pao_2.view.name == view)
+			{
+				return red_pao_2;
+			
+			}else if(red_ju_1.view.name == view)
+			{
+				return red_ju_1;
+			
+			}else if(red_ju_2.view.name == view)
+			{
+				return red_ju_2;
+			
+			}else if(red_ma_1.view.name == view)
+			{
+				return red_ma_1;
+			
+			}else if(red_ma_2.view.name == view)
+			{
+				return red_ma_2;
+			
+			}else if(red_xiang_1.view.name == view)
+			{
+				return red_xiang_1;
+			
+			}else if(red_xiang_2.view.name == view)
+			{
+				return red_xiang_2;
+			
+			}else if(red_shi_1.view.name == view)
+			{
+				return red_shi_1;
+			
+			}else if(red_shi_2.view.name == view)
+			{
+				return red_shi_2;
+			
+			}else if(red_jiang_1.view.name == view)
+			{
+				return red_jiang_1;
+			}
+			
+			//black
+			if(black_bing_1.view.name == view)
+			{
+				return black_bing_1;
+				
+			}else if(black_bing_2.view.name == view)
+			{
+				return black_bing_2;
+			
+			}else if(black_bing_3.view.name == view)
+			{
+				return black_bing_3;
+			
+			}else if(black_bing_4.view.name == view)
+			{
+				return black_bing_4;
+			
+			}else if(black_bing_5.view.name == view)
+			{
+				return black_bing_5;
+			
+			}else if(black_pao_1.view.name == view)
+			{
+				return black_pao_1;
+			
+			}else if(black_pao_2.view.name == view)
+			{
+				return black_pao_2;
+			
+			}else if(black_ju_1.view.name == view)
+			{
+				return black_ju_1;
+			
+			}else if(black_ju_2.view.name == view)
+			{
+				return black_ju_2;
+			
+			}else if(black_ma_1.view.name == view)
+			{
+				return black_ma_1;
+				
+			}else if(black_ma_2.view.name == view)
+			{
+				return black_ma_2;
+			
+			}else if(black_xiang_1.view.name == view)
+			{
+				return black_xiang_1;
+			
+			}else if(black_xiang_2.view.name == view)
+			{
+				return black_xiang_2;
+			
+			}else if(black_shi_1.view.name == view)
+			{
+				return black_shi_1;
+			
+			}else if(black_shi_2.view.name == view)
+			{
+				return black_shi_2;
+			
+			}else if(black_jiang_1.view.name == view)
+			{
+				return black_jiang_1;
+			}
+			
+			throw new Error("can not found '" + view + "',func:getQizi");
+			return null;
+		}
+		
+		
+		
+		/**
+		 * 走子更新
+		 * 
+		 */ 
+		public function updateChessBoard():void
+		{
+			
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			var gridReverse:Boolean = false;
+			
+			if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+			{
+				//不需要反转
+			}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+			{
+				gridReverse = true;
+			}else
+			{
+				//不需要反转
+			}			
+						
+			//棋子
+			var arr:Array = GameGlobals.qpc.data.activeRoom.getItemList();
+			var len:int = GameGlobals.qpc.data.activeRoom.getItemList().length;
+			
+			var len2:int = this.qiziList.length;
+			
+			//棋子pos
+			for(var i:int = 0 ;i < len;i++)
+			{
+				
+				var itemInfo:ItemModelByChChess = arr[i] as ItemModelByChChess;
+					
+				for(var j:int =0 ;j< len2;j++)
+				{
+					if(itemInfo.name == (this.qiziList[j] as Qizi).view.name)
+					{
+							(this.qiziList[j] as Qizi).view.visible = true;
+							
+							//反转 h,v
+							if(gridReverse)
+							{
+								(this.qiziList[j] as Qizi).setPos(getRoadReverse(itemInfo.h,itemInfo.v).view);
+							}
+							else
+							{
+								(this.qiziList[j] as Qizi).setPos(getRoad(itemInfo.h,itemInfo.v).view);
+							}
+							
+							break;
+					}	
+				}
+			}
+			
+			//棋子visible
+			for(var k:int =0;k<len2;k++)
+			{
+				var qizi:Qizi = this.qiziList[k] as Qizi;
+				
+				for(var m:int =0;m<len;m++)
+				{
+					if(qizi.view.name == (arr[m] as ItemModelByChChess).name)
+					{
+						break;
+					}
+					
+					if(m == (len-1))
+					{
+						qizi.view.visible = false;
+					}
+				
+				}
+			}
+			
+			//该谁走棋
+			if("" != matchInfo.turn)
+			{
+				//trace(matchInfo.turn,"updateChessBoard");
+				//trace(GameGlobals.qpc.data.hero.Id,"updateChessBoard");
+				
+				
+				
+				//我方走棋
+				if(matchInfo.turn == GameGlobals.qpc.data.hero.Id)
+				{
+					//我方为红方，初始化红方棋子事件监听
+					if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+					{
+						
+						this.initRedQiziClick();
+					}else
+					{
+						//我方为黑方，初始化黑方棋子(为第二帧时)事件监听
+						this.initBlackQiziClick();
+					}//end if	
+					
+				}//end if				
+			
+			}else{
+			
+			
+			}
+			
+			//
+			updateChessBoard_liangKuang(matchInfo,gridReverse);
+			
+		
+		}
+		
+		private function updateChessBoard_liangKuang(matchInfo:Object,gridReverse:Boolean):void
+		{
+		
+			if(matchInfo.turn != ""){
+				
+				if(matchInfo.turn == matchInfo.red)
+				{
+					if(!gridReverse){
+						this.board.mc_liangKuang_up.visible = false;
+						this.board.mc_liangKuang_down.visible = true;
+					}else{
+						this.board.mc_liangKuang_up.visible = true;
+						this.board.mc_liangKuang_down.visible = false;
+					}
+					
+				}else{
+					
+					
+					if(!gridReverse){
+						this.board.mc_liangKuang_up.visible = true;
+						this.board.mc_liangKuang_down.visible = false;
+					}else{
+						this.board.mc_liangKuang_up.visible = false;
+						this.board.mc_liangKuang_down.visible = true;
+					}
+				}
+				
+			}else{
+			
+				this.board.mc_liangKuang_up.visible = false;
+				this.board.mc_liangKuang_down.visible = false;
+			}
+		}
+		
+				
+		public function firstInRoom():void
+		{
+			try
+			{
+				
+				resetRoom();
+				
+				//
+				this.onLoadHeadPhoto();
+				
+				//
+				//if(GameGlobals.qpc.data.isTabAutoMatchMode)
+				//{
+					var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+					
+					//如果是断线重连房间则略过
+					if("0" == matchInfo.round &&
+						"" == matchInfo.turn &&
+						!matchInfo.iswaitreconn)
+					{
+						//this.mc_btn_ready_click();							
+					}
+					
+				//}
+				
+				//在本人名字下方，显示金钱数
+				this.displayG();
+				//this.checkG();
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("firstInRoom",exd.message));
+			}	
+		}
+		
+		public function displayG():void
+		{
+			//负分自动离开房间
+			var g:String = GameGlobals.qpc.data.hero.G;
+			
+			//
+			if(null != this.board.lbl_goldPoint_down)
+				(this.board.lbl_goldPoint_down as TextField).htmlText = "<font color='#ffff00'>$" + ":</font>" + g + "";
+		
+		
+		}
+		
+		public function checkG():Boolean
+		{
+			
+			//负分自动离开房间
+			var g:String = GameGlobals.qpc.data.hero.G;
+			
+			//
+			if(null != this.board.lbl_goldPoint_down)
+				(this.board.lbl_goldPoint_down as TextField).htmlText = "<font color='#ffff00'>$" + ":</font>" + g + "";
+			
+			//只要携带够，就能进入房间，而退出房间按底分来，
+			var first:IHallRoomModel = GameGlobals.qpc.data.hallRoomList[0] as IHallRoomModel;
+			var difen:int = first.getDiFen();
+			
+			
+			//负分无法发贴，现根据房间底分来改
+			if(parseInt(g) < difen)
+			{	
+				//Alert.show("抱歉啦！您被请离开" + lang_RoomName +",原因是您持有的" + lang_GoldPointName + 
+				//	"低于 " + difen.toString() +" 底分。",
+				//	QiPaiStr.ALERT_TITLE,4);
+				
+				Alert.show(
+					GetLang_sorry_you_must_exit_room_str(difen),
+					QiPaiStr.ALERT_TITLE,4);
+				
+				//close gameOverWin2
+//				if(_gameOverWin2.isPopUp)
+//				{
+//					_gameOverWin2.clickHandler();
+//				}
+				
+				this.mc_btn_exitRoom_click();
+				
+				return true;
+				
+			}else
+			{
+				//startAutoLeaveRoom();
+				
+				return false;
+			}
+			
+			
+		}
+		
+		private function resetRoom():void
+		{
+			resetRoomChat();
+			resetRoomJuShi();
+		}
+		
+		private function resetRoomChat():void
+		{
+			//聊天清除
+			this._chat.clear();
+		}
+		
+		private function resetRoomJuShi():void
+		{
+			this.juShiUp = 0;
+			this.buShiUp = 0;
+			this.juShiDown = 0;
+			this.buShiDown = 0;		
+		}
+		
+		
+		/**
+		 * 刷新房间
+		 * 
+		 */
+		public function refreshRoom():void
+		{
+			
+			this.lbl_room.text = GameGlobals.qpc.data.activeRoom.Name();
+			
+			//var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+			refreshRoom_HeadIco();
+			
+			refreshRoom_ButtonBar();
+			
+			this.refreshRoom_Time();
+			
+			
+			//棋盘
+			updateChessBoard();			
+			
+		}  
+		
+		private function refreshRoom_Time():void
+		{
+			
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			var gridReverse:Boolean = this.isGridReverse;
+			
+			//
+			if(gridReverse)
+			{
+				this.juShiUp = Math.round(matchInfo.curRedJuShiTime / 1000);
+				this.juShiDown = Math.round(matchInfo.curBlackJuShiTime / 1000);
+				
+			}else{
+				
+				this.juShiUp = Math.round(matchInfo.curBlackJuShiTime / 1000);
+				this.juShiDown = Math.round(matchInfo.curRedJuShiTime / 1000);					
+				
+				
+			}
+			
+			
+			//
+			if("" != matchInfo.turn && !matchInfo.iswaitreconn){
+			
+				
+				if(matchInfo.red == matchInfo.turn)
+				{
+					if(gridReverse)
+					{
+						
+						this.startJuShiTimerUp();
+						
+					}else{
+						
+						
+						this.startJuShiTimerDown();
+					}
+					
+					
+				}else
+				{
+					
+					if(gridReverse)
+					{				
+						
+						this.startJuShiTimerDown();
+						
+					}else{
+						
+						
+						this.startJuShiTimerUp();
+						
+					}
+					
+					
+				}
+				
+				
+				
+				
+				
+				
+			
+			}else{
+			
+				
+			
+			
+			}
+			
+		
+		}
+		
+		private function refreshRoom_HeadIco():void
+		{
+			//肯定有，没有在qpc里会报错
+			var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+			
+			
+			var gridReverse:Boolean = isGridReverse;
+			
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			//
+			var chairDown:IChairModel = GameGlobals.qpc.data.activeRoom.getChairByUserId(matchInfo.red);
+			var chairUp:IChairModel = GameGlobals.qpc.data.activeRoom.getChairByUserId(matchInfo.black);
+			
+			//无人
+			if(null == chairDown)
+			{
+				
+				if(gridReverse)
+				{
+					
+					//无人
+					this.board.mc_person_up.gotoAndStop(1);
+					
+					setNameUp("");
+					
+				}
+				else
+				{
+					//无人
+					this.board.mc_person_down.gotoAndStop(1);
+					
+					setNameDown("");
+				}
+				
+			}else{
+				
+				if(gridReverse)
+				{
+					
+					if(EUserSex.Boy == chairDown.getUser().Sex)
+					{
+						if(chairDown.getReady())
+						{
+							this.board.mc_person_up.gotoAndStop(4);
+						}else{
+							
+							this.board.mc_person_up.gotoAndStop(2);
+							
+						}
+						
+						
+						
+					}
+					else
+					{
+						if(chairDown.getReady())
+						{
+							this.board.mc_person_up.gotoAndStop(5);
+						}else
+						{
+							this.board.mc_person_up.gotoAndStop(3);
+						}
+						
+					}
+					
+					//
+					setNameUp(chairDown.getUser().NickName);
+					
+					//
+					var headUpUrl:String = chairDown.getUser().getHeadIco(
+						GameGlobals.qpc.data.getClientConfig().payUser,
+						GameGlobals.rootUrl,
+						GameGlobals.qpc.data.getClientConfig().InstallDir,
+						GameGlobals.qpc.data.selectDB.mode
+					);
+					
+					mc_person_img_up.source = headUpUrl;
+					
+				}else{
+					
+					
+					if(EUserSex.Boy == chairDown.getUser().Sex)
+					{
+						if(chairDown.getReady())
+						{
+							this.board.mc_person_down.gotoAndStop(4);
+						}else{
+							
+							this.board.mc_person_down.gotoAndStop(2);
+							
+						}
+						
+						
+					}
+					else
+					{
+						if(chairDown.getReady())
+						{
+							this.board.mc_person_down.gotoAndStop(5);
+						}else
+						{
+							this.board.mc_person_down.gotoAndStop(3);
+						}
+						
+					}
+					
+					
+					setNameDown(chairDown.getUser().NickName);
+					
+					//
+					var headDownUrl:String = chairDown.getUser().getHeadIco(
+						GameGlobals.qpc.data.getClientConfig().payUser,
+						GameGlobals.rootUrl,
+						GameGlobals.qpc.data.getClientConfig().InstallDir,
+						GameGlobals.qpc.data.selectDB.mode
+					);
+					
+					mc_person_img_down.source = headDownUrl;
+					
+				}
+				
+				
+			}
+			
+			
+			if(null == chairUp)
+			{
+				
+				if(gridReverse)
+				{
+					//无人
+					this.board.mc_person_down.gotoAndStop(1);
+					
+					setNameDown("");
+					
+					
+				}else
+				{
+					
+					//无人
+					this.board.mc_person_up.gotoAndStop(1);
+					
+					setNameUp("");
+					
+					
+				}
+				
+				
+			}
+			else{
+				
+				
+				//rival - 对手
+				//var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+				var rivalUser:IUserModel = chairUp.getUser();//null; 
+				var rivalChair:IChairModel = chairUp;//null; 
+				
+				//
+				if(gridReverse)
+				{
+					
+					if(EUserSex.Boy == rivalUser.Sex)
+					{
+						if(rivalChair.getReady())
+						{
+							this.board.mc_person_down.gotoAndStop(4);
+						}else
+						{				
+							this.board.mc_person_down.gotoAndStop(2);
+						}
+					}
+					else if(EUserSex.Girl == rivalUser.Sex)
+					{
+						if(rivalChair.getReady())
+						{
+							this.board.mc_person_down.gotoAndStop(5);
+						}else
+						{
+							this.board.mc_person_down.gotoAndStop(3);
+						}
+					}
+					else
+					{
+						//无人
+						this.board.mc_person_down.gotoAndStop(1);
+						
+						//无人启动邀请
+						refreshIdleList();
+					}
+					
+					//
+					if(rivalUser != null){
+						setNameDown(rivalUser.NickName);
+					}
+					
+					//
+					var headDownUrl:String = rivalUser.getHeadIco(
+						GameGlobals.qpc.data.getClientConfig().payUser,
+						GameGlobals.rootUrl,
+						GameGlobals.qpc.data.getClientConfig().InstallDir,
+						GameGlobals.qpc.data.selectDB.mode
+					);
+					
+					mc_person_img_down.source = headDownUrl;
+					
+					
+				}
+				else
+				{
+					
+					
+					if(EUserSex.Boy == rivalUser.Sex)
+					{
+						if(rivalChair.getReady())
+						{
+							this.board.mc_person_up.gotoAndStop(4);
+						}else
+						{				
+							this.board.mc_person_up.gotoAndStop(2);
+						}
+					}
+					else if(EUserSex.Girl == rivalUser.Sex)
+					{
+						if(rivalChair.getReady())
+						{
+							this.board.mc_person_up.gotoAndStop(5);
+						}else
+						{
+							this.board.mc_person_up.gotoAndStop(3);
+						}
+					}
+					else
+					{
+						//无人
+						this.board.mc_person_up.gotoAndStop(1);
+						
+						//无人启动邀请
+						refreshIdleList();
+					}
+					
+					//
+					if(rivalUser != null){
+						setNameUp(rivalUser.NickName);
+					}
+					
+					//
+					var headUpUrl:String = rivalUser.getHeadIco(
+						GameGlobals.qpc.data.getClientConfig().payUser,
+						GameGlobals.rootUrl,
+						GameGlobals.qpc.data.getClientConfig().InstallDir,
+						GameGlobals.qpc.data.selectDB.mode
+					);
+					
+					mc_person_img_up.source = headUpUrl;
+					
+				}
+				
+				
+				
+				
+				
+			}
+			
+		}
+		
+		private function refreshRoom_ButtonBar():void
+		{
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			var heroId:String = GameGlobals.qpc.data.hero.Id;
+			
+			if(meIsLook)
+			{
+				this.board.mc_btn_qiuHe.visible = false;
+				this.board.mc_btn_renShu.visible = false;
+							
+				this.cb1.visible = false;
+				
+			}else
+			{
+			
+				this.board.mc_btn_qiuHe.visible = true;
+				this.board.mc_btn_renShu.visible = true;			
+			
+				this.cb1.visible = true;
+			}
+			
+			
+			
+		}
+	
+		private function refreshIdleList(event:TimerEvent=null):void
+		{						
+			GameGlobals.qpc.loadIdleList();
+				
+			GameGlobals.qpc.data.startIdleListTimer(this.listIdle);
+		}	
+		
+		private function listIdle(event:TimerEvent=null):void
+		{
+			//
+			GameGlobals.qpc.loadIdleList();
+			
+		}
+		
+		public function onUserEnterRoom(qevt:QiPaiEvent):void
+		{
+			
+			var x:XML = qevt.params.x;
+			
+			//
+			var chairList:XMLList;
+			var lookList:XMLList;
+			
+			if(null != x.body.chair)
+			{
+				chairList = x.body.chair;	
+				
+				//
+				for each(var chair:XML in chairList)
+				{
+					//--------------------------------------------------------------
+					
+					var cId:int = int(chair.@id);
+					var cR:Boolean = Boolean(parseInt(chair.@ready));
+					
+					var uId:String      = chair.u.@id;
+					var id_sql:String  = chair.u.@id_sql;
+					var n:String = chair.u.@n;
+					var uSex:String      = chair.u.@s;
+					var uG:String        = chair.u.@g;
+					var uBbs:String      = chair.u.@bbs;
+					var uHeadIco:String  = chair.u.@hico;
+					var uIsAdmin:Boolean = Boolean(parseInt(chair.u.@iam));
+					
+					var cModel:IChairModel = ChairModelFactory.Create(cId,cR,GameGlobals.qpc.data.rule);
+					
+					var uModel:IUserModel = UserModelFactory.Create(uId,uSex,n,uBbs,uIsAdmin,GameGlobals.qpc.data.rule);
+					uModel.setG(uG);
+					uModel.setId_SQL(id_sql);
+					uModel.setHeadIco(uHeadIco);
+					
+					cModel.setUser(uModel);
+					
+					//
+					GameGlobals.qpc.data.activeRoom.setChair(cModel);
+					
+					//					
+					var line:String = "系统：<a href='event:look" + id_sql + "'><u>" + n + 
+						"</u></a> 进入了房间";
+					
+					_chat.addChat(line);//"系统:" + uNickName + " 进入了房间");
+					
+					
+					
+					//--------------------------------------------------------------
+				}
+				
+			}
+			
+			
+			
+			if(null != x.body.look)
+			{
+				lookList = x.body.look;	
+				
+				//
+				for each(var look:XML in lookList)
+				{
+					
+					
+				}
+				
+			}
+			
+			
+			
+			
+			
+			
+			
+			// stop timer
+			var a:int = GameGlobals.qpc.data.activeRoom.getChairCount();
+			var b:int = GameGlobals.qpc.data.activeRoom.getSomeBodyChairCount();
+			if(a == b)
+			{
+				GameGlobals.qpc.data.stopRefreshIdleListTimer();
+			}
+			
+			
+			//refreshRoom();		
+			this.refreshRoom_HeadIco();
+		}
+		
+		public function onUserLeaveRoom(qevent:QiPaiEvent):void
+		{
+			var x:XML = qevent.params.x;
+			
+			var cId:int = int(x.body.chair.@id);
+			var cR:Boolean = Boolean(parseInt(x.body.chair.@ready));
+			
+			var uId:String = x.body.chair.u.@id;
+			var id_sql:String = x.body.chair.u.@id_sql;
+			var uG:String = x.body.chair.u.@g;
+			var n:String = x.body.chair.u.@n;
+			var uSex:String = x.body.chair.u.@s;
+			
+			//这里与其他不同，创建的是空椅		
+			var cModel:IChairModel = ChairModelFactory.CreateEmpty(cId,GameGlobals.qpc.data.rule);
+			
+			//这里与其他不同，创建的是空用户				
+			var uModel:IUserModel = UserModelFactory.CreateEmpty();
+			uModel.setG("0");
+			uModel.setId_SQL("0");					
+			
+			cModel.setUser(uModel);			
+			
+			//			
+			
+			GameGlobals.qpc.data.activeRoom.setChair(cModel);
+			
+			var line:String = "系统：<a href='event:look" + id_sql + "'><u>" + n + 
+				"</u></a> 离开了房间";
+			
+			//
+			_chat.addChat(line);//"系统:" + uNickName + " 离开了房间");
+			
+			//
+			//refreshRoom();	
+			this.refreshRoom_HeadIco();
+		}
+		
+		public function onRoomLeft(qvet:QiPaiEvent):void
+		{
+			
+			// go to Hall
+			GameGlobals.currentState = QiPaiState.HALL;
+		
+		}
+		
+			
+		
+		/**
+		 * 
+		 * 
+		 */ 
+		public function onRoomGameStart(qevt:QiPaiEvent):void
+		{
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			//
+			var gridReverse:Boolean = this.isGridReverse;//false;
+			
+									
+			//提示游戏开始
+			//Alert.show("游戏开始！红先行.");
+			this.showGameStartWin();
+			
+			//
+			initRoadListClick();
+				
+			//
+			this.refreshRoom();
+			
+			//按钮更改到可用状态
+			//this.board.mc_btn_renShu.gotoAndStop(1);
+			//(this.board.mc_btn_screenSave as MovieClip).gotoAndStop(1);
+			
+			//置初值
+			this.juShiUp = this.juShiDown = 0;
+			(this.board.lbl_buShi_up as TextField).visible = true;
+			(this.board.lbl_buShi_down as TextField).visible = true;
+			
+			//if(getBaoGanRoomTab() == GameGlobals.qpc.data.activeTab)
+			if(isBaoGanRoomTab(GameGlobals.qpc.data.activeTab))
+			{
+				(this.board.lbl_buShi_up as TextField).visible = false;
+				(this.board.lbl_buShi_down as TextField).visible = false;
+			}
+			
+			//start
+			//if(GameGlobals.qpc.data.hero.Id == matchInfo.turn)
+			if(matchInfo.red == matchInfo.turn)
+			{
+				if(gridReverse)
+				{
+					this.startJuShiTimerUp();
+				}else{
+					this.startJuShiTimerDown();
+				}
+			
+			
+			}else
+			{
+				if(gridReverse)
+				{				
+					this.startJuShiTimerDown();
+					
+				}else{
+					
+					this.startJuShiTimerUp();
+				
+				}
+				
+				
+			}
+		}
+		
+		/**
+		 * 另外一种形式的GameStart
+		 * 
+		 */ 
+		public function onRoomGameReconnection(qevt:QiPaiEvent):void
+		{
+			//trace(qevt);
+		
+		}
+					
+		/**
+		 * 
+		 * 
+		 */ 
+		public function onRoomGameOver(qevt:QiPaiEvent):void
+		{	
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			var matchGInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchGInfo();
+			
+			var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+			var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+			var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					
+			
+			//remove qizi evtListen
+			if(GameGlobals.qpc.data.hero.Id == matchInfo.red)
+			{
+				this.removeRedQiziClick();
+							
+			}else if(GameGlobals.qpc.data.hero.Id == matchInfo.black)
+			{
+				this.removeBlackQiziClick();
+			}
+			else
+			{
+			
+				//旁观
+				this.removeRedQiziClick();
+				this.removeBlackQiziClick();
+			}
+			
+			//remove road evtListen
+			removeRoadListClick();
+				
+			//按钮还原
+			//this.board.mc_btn_ready.gotoAndStop(1);
+			//this.board.mc_btn_renShu.gotoAndStop(3);
+			//(this.board.mc_btn_screenSave as MovieClip).gotoAndStop(3);
+				
+			//游戏结束窗口
+			//this.showGameOverWin();
+			this.showGameOverWin3();
+			
+			
+			
+			//
+			this.stopJuShiTimer();
+			
+		}
+						
+		public function onIdleList(qevt:QiPaiEvent):void
+		{			
+//			var sourceArr:Array =GameGlobals.qpc.data.activeRoom.getIdleList();
+//			var len:int = sourceArr.length;
+//			
+//			//
+//			var list:ArrayCollection = new ArrayCollection();
+//			
+//			for(var i:int =0;i<len;i++)
+//			{
+//				list.addItem(sourceArr[i]);
+//			}
+//			
+//			this.idleUserList.dataProvider = list;
+		
+		}
+		
+		public function onRoomVariablesUpdateKo(qevt:QiPaiEvent):void
+		{
+			
+		
+			Alert.show(GetRoomViewBgMXML_ko_code(qevt.params.code),QiPaiStr.ERROR_TITLE);
+		
+		}
+		
+		public function onRoomVariablesUpdateOk(qevt:QiPaiEvent):void
+		{
+		
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			var gridReverse:Boolean = false;
+			
+			if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+			{
+				//不需要反转
+			}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+			{
+				gridReverse = true;
+			}else
+			{
+				//不需要反转
+			}	
+			
+			
+			//
+			updateChessBoard_liangKuang(matchInfo,gridReverse);
+			
+		}
+		
+		/**
+		 * 主要为转发的指令
+		 */ 
+		public function onRoomVariablesUpdate(qevt:QiPaiEvent):void
+		{
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			var hero:IUserModel = GameGlobals.qpc.data.hero;
+			
+			var rival:Array;
+			var rivalUser:IUserModel;
+			var rivalChair:IChairModel;
+			
+			var gridReverse:Boolean = false;
+			
+			if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+			{
+				//不需要反转
+			}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+			{
+				gridReverse = true;
+			}else
+			{
+				//不需要反转
+			}	
+			
+			//room variables update
+			var arr:Array = GameGlobals.qpc.data.activeRoom.getVarsList();
+			var len:int = GameGlobals.qpc.data.activeRoom.getVarsList().length;
+			
+			
+			//
+			for(var i:int =0;i<len;i++)
+			{
+				var val:VarModel = arr[i] as VarModel;
+				
+				//房间变量处理表
+				if("chairReady" == val.n)
+				{
+					rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+					rivalUser = (rival[0] as IChairModel).getUser();
+					rivalChair = rival[0] as IChairModel;
+					
+					//
+					rivalChair.setReady(true);			
+								
+					if(EUserSex.Boy == rivalUser.Sex)
+					{
+						if(rivalChair.getReady())
+						{
+							this.board.mc_person_up.gotoAndStop(4);
+						}else
+						{				
+							this.board.mc_person_up.gotoAndStop(2);
+						}
+					}
+					else if(EUserSex.Girl == rivalUser.Sex)
+					{
+						if(rivalChair.getReady())
+						{
+							this.board.mc_person_up.gotoAndStop(5);
+						}else
+						{
+							this.board.mc_person_up.gotoAndStop(3);
+						}
+					}
+					else
+					{
+						//无人
+						this.board.mc_person_up.gotoAndStop(1);
+					}
+				
+				}else if("selectQizi" == val.n)
+				{
+					var qizi:Qizi = this.getQizi(val.value);
+					
+					this.selectQizi(qizi);
+					
+					//record
+					qiziMoveRecord.setP1(qizi);
+				
+				}else if("moveToRoad" == val.n)
+				{
+					var road:QiziRoad = this.getRoadByName(val.value);
+					
+					if(gridReverse)
+					{
+						var r:QiziRoad = this.getRoadReverse(road.getRoadH(),road.getRoadV());
+						this.moveStep2(r);
+						
+						//record
+						var q:Qizi = this.getSelectQizi();
+						qiziMoveRecord.setP2(q);
+						var zf:String = qiziMoveRecord.getZoufa_Display();
+						this.roundDisplayList.addItem({label:zf});
+				
+					}
+					else
+					{
+						this.moveStep2(road);
+						//record
+						var q2:Qizi = this.getSelectQizi();
+						qiziMoveRecord.setP2(q2);
+						var zf:String = qiziMoveRecord.getZoufa_Display();
+						this.roundDisplayList.addItem({label:zf});
+						
+				
+					}//end if
+										
+					//对方走棋
+					//该我方走
+					if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+					{
+						this.initRedQiziClick();
+						//
+						
+						
+					}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+					{
+						this.initBlackQiziClick();
+						//
+						
+					}
+					
+					//
+					this.startJuShiTimerDown();
+					
+				}else if("moveToQizi" == val.n)
+				{
+					var qiziTarget:Qizi = this.getQizi(val.value);
+					
+					this.moveStep2ByQizi(qiziTarget)
+					
+					//棋子被吃掉，目前是直接消失
+					qiziTarget.view.visible = false;					
+					
+					//record
+					qiziMoveRecord.setP2(qiziTarget);
+					var zf:String = qiziMoveRecord.getZoufa_Display();
+					this.roundDisplayList.addItem({label:zf});
+					
+					//对方走棋
+					//该我方走
+					if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+					//if(matchInfo.black == matchInfo.turn)
+					{
+						this.initRedQiziClick();
+						
+						
+					}
+					else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+					//else if(matchInfo.red == matchInfo.turn)
+					{
+						this.initBlackQiziClick();
+					}
+					
+					
+					
+					//
+					this.startJuShiTimerDown();
+				
+				}
+				else if("qiuHe" == val.n){
+				
+				
+					//trace(val.n);
+					
+					if(matchInfo.red == hero.Id ||
+					   matchInfo.black == hero.Id)
+					{
+						
+						rival = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+						rivalUser = (rival[0] as IChairModel).getUser();
+						rivalChair = rival[0] as IChairModel;
+						
+						//
+						Alert.okLabel = lang_agree;//"同意";
+						Alert.noLabel = lang_deny;//"拒绝";
+						
+						var qiuHeStr:String = GetLang_qiu_he_str(rivalUser.NickName);
+						
+						//Alert.show(rivalUser.NickName + " 向你求和","",
+						Alert.show(qiuHeStr,QiPaiStr.ALERT_TITLE,						
+							Alert.OK | Alert.NO,null,qiuHeAgreeOrDeny);						
+						
+					}else
+					{
+						//旁观
+					}
+					
+				
+				}
+				else if("qiuHeDeny" == val.n){
+				
+					//trace(val.n);
+					
+					if(matchInfo.red == hero.Id ||
+						matchInfo.black == hero.Id)
+					{
+						
+						rivalUser = GameGlobals.qpc.data.activeRoom.getUserById(val.value);
+						
+						Alert.okLabel = this.lang_confirm;//"确定";
+						
+						var denyStr:String = GetLang_qiu_he_deny_str(rivalUser.NickName);
+												
+						//Alert.show(rivalUser.NickName + " 拒绝了您的求和申请","",
+						Alert.show(denyStr,QiPaiStr.ALERT_TITLE,
+							Alert.OK);	
+					
+					}else
+					{
+						//旁观
+					}
+					
+				}
+				else if("renShu" == val.n){
+					
+					
+					//直接系统就裁定了，不需要询问
+				}
+				
+			}//end for
+		
+			//
+			updateChessBoard_liangKuang(matchInfo,gridReverse);
+		}
+		
+		private function qiuHeAgreeOrDeny(event:mx.events.CloseEvent):void
+		{
+			
+			if(event.detail == Alert.OK)
+			{
+				qiuHeAgree();
+			
+			}else{
+			
+				qiuHeDeny();
+			
+			
+			}
+		
+		}
+		
+		private function qiuHeAgree():void
+		{
+			//room vars
+			var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+			
+			var varsList:Array = new Array(); 
+			
+			var var_qizi:Object = {
+				
+				name:"qiuHeAgree",
+				val:GameGlobals.qpc.data.hero.Id
+			}
+			
+			varsList.push(var_qizi);			
+			
+			GameGlobals.qpc.setRoomVariables(varsList,roomId);
+		
+		}
+		
+		private function qiuHeDeny():void
+		{
+			//room vars
+			var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+			
+			var varsList:Array = new Array(); 
+			
+			var var_qizi:Object = {
+				
+				name:"qiuHeDeny",
+				val:GameGlobals.qpc.data.hero.Id
+			}
+			
+			varsList.push(var_qizi);			
+			
+			GameGlobals.qpc.setRoomVariables(varsList,roomId);
+			
+		}
+		
+		
+		private function btn_chatSend():void
+		{
+			//避免发空字符串
+			if("" != cb1.text)
+			{
+				var line:String = GameGlobals.qpc.data.hero.NickName + ":" + cb1.text;
+				
+				this._chat.addChat(line);				
+				cb1.text = "";
+				
+				GameGlobals.qpc.sendPublicMessage(line);				
+			}
+			
+		}
+		
+		private function onPublicMessage(qevt:QiPaiEvent):void
+		{		
+			var line:String = qevt.params.line;
+			this._chat.addChat(line);
+		}
+		
+		private function onPublicAudioMessage(qevt:QiPaiEvent):void
+		{		
+			var line:String = qevt.params.line;
+			this._chat.addChat(line);
+			
+			playAudioChat(line);
+		}
+		
+		/**
+		 * 声音聊天
+		 * 
+		 */ 
+		private function closeHandler(event:Event):void
+		{
+			//Alert.show(ComboBox(event.target).text); 
+			var line:String = GameGlobals.qpc.data.hero.NickName + ":" + cb1.text;
+			this._chat.addChat(line);	 
+			
+			playAudioChat(line);
+			
+
+			GameGlobals.qpc.sendPublicAudioMessage(line);
+		
+		}
+		
+		private function cb1_keyDown(event:KeyboardEvent):void
+		{
+			if(13 == event.keyCode)
+		    {
+		       //Alert.show("回车");
+		       this.btn_chatSend();
+		    }
+		}
+		
+		/**
+		 * 声音大了太刺耳，所以音量强制调为60%
+		 * 
+		 * 不大不小很清晰，也不会吓人一跳
+		 * 
+		 */ 
+		private function playAudioChat(line:String):void
+		{
+			var len:int = this.talk.length;
+			var channel:SoundChannel;
+			
+			//
+			var volume:Number = GameGlobals.audio.curVolume;			
+			var transform:SoundTransform = new SoundTransform(volume,0);
+			
+			for(var i:int =0;i<len;i++)
+			{
+				var find:int = line.indexOf(this.talk[i].toString(),0);
+				
+				if(-1 != find)
+				{
+					if(0 == i)
+					{
+						channel = this.talk0.play();
+						
+						if(null != channel)
+						{
+							channel.soundTransform = transform;
+						}
+					}
+					
+					if(1 == i)
+					{
+						channel = this.talk1.play();
+						
+						if(null != channel)
+						{
+							channel.soundTransform = transform;
+						}
+					}
+										
+					if(2 == i)
+					{
+						channel = this.talk2.play();
+						
+						if(null != channel)
+						{
+							channel.soundTransform = transform;
+						}
+					}
+					
+					if(3 == i)
+					{
+						channel = this.talk3.play();
+						
+						if(null != channel)
+						{
+							channel.soundTransform = transform;
+						}
+					}
+					
+					if(4 == i)
+					{
+						channel = this.talk4.play();
+						
+						if(null != channel)
+						{
+							channel.soundTransform = transform;
+						}
+					}
+					
+					if(5 == i)
+					{
+						channel = this.talk5.play();
+						
+						if(null != channel)
+						{
+							channel.soundTransform = transform;
+						}
+					}
+				
+					break;
+				}
+			
+			
+			}
+			
+		
+		}
+		
+		private function TipJiangJun():void
+		{				
+			//
+			var volume:Number = GameGlobals.audio.curVolume;			
+			var transform:SoundTransform = new SoundTransform(volume,0);
+			var channel:SoundChannel = this.s2JiangJun.play();
+			
+			if(null != channel)
+			{
+				channel.soundTransform = transform;
+			}
+			
+			//
+			board.mc_bomb.gotoAndStop(1);
+			TweenLite.to(board.mc_bomb,1.25,{alpha:1.0});
+			TweenLite.delayedCall(2.5,function ():void{
+			
+				board.mc_bomb.alpha = 0.0;
+			});
+			
+		}
+		
+		/*
+		private function TipSelect():void
+		{
+			var volume:Number = GameGlobals.audio.curVolume;			
+			var transform:SoundTransform = new SoundTransform(volume,0);
+			var channel:SoundChannel = this.s1Select.play();
+			
+			//
+			if(null != channel)
+			{
+				channel.soundTransform = transform;
+			}
+		
+		}
+		*/
+		
+		private function TipLuoZi():void
+		{
+			//Alert.show("TipLuoZi");
+			var volume:Number = GameGlobals.audio.curVolume;			
+			var transform:SoundTransform = new SoundTransform(volume,0);
+			var channel:SoundChannel = this.s2Luozi.play();
+			
+			//
+			if(null != channel)
+			{
+				channel.soundTransform = transform;
+			}
+		
+		}		
+		
+		
+		private var juShiTimerFunc:Function;
+		
+		
+		public function startJuShiTimerUp():void
+		{
+			if(this._juShiTimer.running)
+			{
+				this._juShiTimer.reset();
+			}
+			
+			if(this._juShiTimer.hasEventListener(TimerEvent.TIMER))
+			{
+				if(null != juShiTimerFunc)
+				{
+					this._juShiTimer.removeEventListener(TimerEvent.TIMER,juShiTimerFunc);
+				}
+			}
+			
+			juShiTimerFunc = juShi_up;
+			//reset
+			if(juShiUp == this.getJuShiTotal())
+			{
+				this.buShiUp = this.getDuMiaoTotal();
+			}else
+			{
+				this.buShiUp = this.getBuShiTotal();
+			}	
+					
+			this._juShiTimer.addEventListener(TimerEvent.TIMER,juShiTimerFunc);
+			this._juShiTimer.start();					
+		}
+		
+		public function startJuShiTimerDown():void
+		{
+			if(this._juShiTimer.running)
+			{
+				this._juShiTimer.reset();
+			}
+			
+			if(this._juShiTimer.hasEventListener(TimerEvent.TIMER))
+			{
+				if(null != juShiTimerFunc)
+				{
+					this._juShiTimer.removeEventListener(TimerEvent.TIMER,juShiTimerFunc);
+				}
+			}		
+		
+			//我方资料始终在下
+			juShiTimerFunc = juShi_down;
+			//reset
+			if(juShiDown == this.getJuShiTotal())
+			{
+				this.buShiDown = this.getDuMiaoTotal();
+			}else
+			{
+				this.buShiDown = this.getBuShiTotal();
+			}
+					
+			this._juShiTimer.addEventListener(TimerEvent.TIMER,juShiTimerFunc);
+			this._juShiTimer.start();
+		}		
+				
+		public function stopJuShiTimer():void
+		{
+			this._juShiTimer.stop();
+		}
+		
+		/**
+		 * 局时，步时
+		 */ 
+		private function juShi_up(event:TimerEvent):void
+		{
+			if(juShiUp == this.getJuShiTotal())
+			{
+				//局时满
+			}else
+			{				
+				juShiUp++;
+			}
+			
+			if(0 == buShiUp)
+			{
+			
+			}else
+			{
+				buShiUp--;
+			} 
+			
+			(this.board.lbl_juShi_up as TextField).text = getTime(juShiUp);
+			(this.board.lbl_buShi_up as TextField).text = getTime(buShiUp);			
+						
+			//包干场局时用完，则自动发出认输指令	
+			//if(getBaoGanRoomTab() == GameGlobals.qpc.data.activeTab)
+			//{
+				//由于是up，是对方，不需要处理
+								
+			//}else
+			//{
+				//如果为非包干场，则自动发出认输指令
+				//由于是up，是对方，不需要处理
+			//}			
+		}
+		
+		/**
+		 * 局时，步时
+		 */ 
+		private function juShi_down(event:TimerEvent):void
+		{
+			if(juShiDown == this.getJuShiTotal())
+			{
+				//局时满
+			}else
+			{				
+				juShiDown++;
+			}
+			
+			if(0 == buShiDown)
+			{
+			
+			}else
+			{
+				buShiDown--;
+			} 
+			
+			(this.board.lbl_juShi_down as TextField).text = getTime(juShiDown);
+			(this.board.lbl_buShi_down as TextField).text = getTime(buShiDown);
+						
+			//包干场局时用完，则自动发出认输指令	
+			//if(getBaoGanRoomTab() == GameGlobals.qpc.data.activeTab)
+			if(isBaoGanRoomTab(GameGlobals.qpc.data.activeTab))
+			{
+				if(this.getJuShiTotal() == this.juShiDown)
+				{
+					this.mc_btn_renShu_click();
+					this.stopJuShiTimer();
+				}
+				
+			}else
+			{
+				//如果为非包干场，步时用完，则自动发出认输指令
+				if(0 == buShiDown)
+				{
+					this.mc_btn_renShu_click();
+					this.stopJuShiTimer();
+				}
+			}
+			
+		}
+		
+		/**
+		 * 返回 00:00 格式
+		 * 根据游戏逻辑,时间不会超过1小时
+		 */ 
+		private function getTime(n:int):String
+		{			
+			//check
+			if(n > 3600)
+			{
+				throw new Error("n can not be > 1 hour(3600 second)");
+			}
+			
+			//
+			var minute:int = n / 60;			
+			var second:int = n % 60;
+			
+			if(minute < 10 && second < 10)
+			{
+				return "0" + minute.toString() + ":" + "0" + second.toString();
+			}
+			
+			if(minute >= 10 && second >= 10)
+			{
+				return minute.toString() + ":" + second.toString();
+			}
+			
+			if(minute >= 10 && second < 10)
+			{
+				return minute.toString() + ":" + "0" + second.toString();
+			}
+			
+			if(minute < 10 && second >= 10)
+			{
+				return "0" + minute.toString() + ":" + second.toString();
+			}
+			
+			return "";		
+		
+		}
+		
+		public function getJuShiTotal():int
+		{
+			var activeTab:int = GameGlobals.qpc.data.activeTab;
+			
+			//if(getBaoGanRoomTab() == GameGlobals.qpc.data.activeTab)
+			if(0 == activeTab)
+			{
+				return 600;
+				
+			}else if(1 == activeTab)
+			{
+				return 1200;
+				
+			}else if(2 == activeTab)
+			{
+				return 1500;
+				
+			}else
+			{
+				return 1500;
+			}		
+		}
+		
+		public function getBuShiTotal():int
+		{	
+			var activeTab:int = GameGlobals.qpc.data.activeTab;
+			
+			//if(getBaoGanRoomTab() == GameGlobals.qpc.data.activeTab)
+			if(0 == activeTab)
+			{
+				return 0;//包干场
+				
+			}else if(1 == activeTab)
+			{
+				return 0;//包干场 //180;
+				
+			}else if(2 == activeTab)
+			{
+				return 150;
+				
+			}else
+			{
+				return 150;
+			}		
+		}
+		
+		public function getDuMiaoTotal():int
+		{	
+			var activeTab:int = GameGlobals.qpc.data.activeTab;
+			
+			//if(getBaoGanRoomTab() == GameGlobals.qpc.data.activeTab)
+			if(0 == GameGlobals.qpc.data.activeTab)
+			{
+				return 0;//包干场
+				
+			}else if(1 == GameGlobals.qpc.data.activeTab)
+			{
+				return 0;//包干场 //60;
+				
+			}else if(2 == GameGlobals.qpc.data.activeTab)
+			{
+				return 60;
+				
+			}else
+			{
+				return 60;
+			}		
+		}
+		
+		/**
+		 * 包干场
+		 */ 
+		public function isBaoGanRoomTab(tab:int):Boolean
+		{
+			if(0 == tab || 
+			   1 == tab)
+			{
+				return true;
+			}
+			
+			
+			return false;
+		}
+					
+
+		protected function btnRenShu_clickHandler(event:MouseEvent):void
+		{
+			// TODO Auto-generated method stub
+			
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			if(matchInfo.turn == "")
+			{				
+				//游戏尚未开始
+				return;
+			}
+			
+			this.showRenShuWin();
+			
+		}
+		
+
+		protected function btnQiuHe_clickHandler(event:MouseEvent):void
+		{
+			
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			if(matchInfo.turn == "")
+			{			
+				//游戏尚未开始
+				return;
+			}
+			
+			// TODO Auto-generated method stub
+			this.showQiuHeWin();
+		}
+		
+		/**
+		 * 棋盘是否反转
+		 */ 
+		public function get isGridReverse():Boolean{
+			
+			
+			//棋盘
+			var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+			
+			var gridReverse:Boolean = false;
+			
+			if(matchInfo.red == GameGlobals.qpc.data.hero.Id)
+			{
+				//不需要反转
+				
+			}else if(matchInfo.black == GameGlobals.qpc.data.hero.Id)
+			{
+				gridReverse = true;
+				
+				
+			}else
+			{
+				//不需要反转
+			}	
+			
+			return gridReverse;
+		}
+		
+		public function get meIsLook():Boolean
+		{
+			var heroId:String = GameGlobals.qpc.data.hero.Id;
+		
+			var heroChair:IChairModel = GameGlobals.qpc.data.activeRoom.getChairByUserId(heroId);
+		
+			if(null == heroChair)
+			{
+				return true;
+			}
+			
+			return false;
+		}
+		
+		
+		public function showScreenSaveWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 * 这个是modal透明的窗口
+				 */ 
+				PopUpManager.addPopUp(this._screenSaveWin,this,true); 
+				PopUpManager.centerPopUp(_screenSaveWin); 
+				
+				//
+				var bmpData_input:BitmapData = new BitmapData(
+					this.width,//this.board是没有背景
+					this.height, 
+					true, 
+					4294967295);
+				
+				bmpData_input.draw(this);//chessboard
+				
+				var screen_bmp:Bitmap = new Bitmap(bmpData_input);
+				
+				this._screenSaveWin.img1.source = screen_bmp;
+				
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showScreenSaveWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		
+		/**
+		 * 局时设置窗口
+		 * 
+		 */ 
+		public function showGameStartWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 */ 
+				PopUpManager.addPopUp(_gameStartWin,this,false); 
+				PopUpManager.centerPopUp(_gameStartWin); 
+				
+				//启动关闭窗口倒计时器
+				_gameStartWin.startCloseTimeCount();
+				
+				//
+				_gameStartWin.txtJuShi.text = this.getTime(this.getJuShiTotal());
+				_gameStartWin.txtBuShi.text = this.getTime(this.getBuShiTotal());
+				_gameStartWin.txtDuMiao.text = this.getTime(this.getDuMiaoTotal());
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showGameStartWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		/**
+		 * 游戏结束窗口
+		 * 
+		 * 带有金点变化值
+		 * 
+		 */ 
+		public function showGameOverWin3():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 */ 
+				PopUpManager.addPopUp(_gameOverWin3,this,true);				 	
+				PopUpManager.centerPopUp(_gameOverWin3); 
+				
+				//
+				_gameOverWin3.refresh();
+				
+				//启动关闭窗口倒计时器
+				//_gameOverWin3.startCloseTimeCount();
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showGameOverWin3",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		/**
+		 * 
+		 * 
+		 */ 
+		public function showRoomExitWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 */ 
+				PopUpManager.addPopUp(_roomExitWin,this,false); 
+				PopUpManager.centerPopUp(_roomExitWin); 
+				
+				//启动关闭窗口倒计时器
+				_roomExitWin.startCloseTimeCount();
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showRoomExitWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		/**
+		 * 求和询问窗口
+		 * 
+		 */ 
+		public function showQiuHeWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 */ 
+				PopUpManager.addPopUp(_qiuHeWin,this,true); 
+				PopUpManager.centerPopUp(_qiuHeWin); 
+				
+				
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showQiuHeWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		/**
+		 * 认输询问窗口
+		 */ 
+		public function showRenShuWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 */ 
+				PopUpManager.addPopUp(_renShuWin,this,true); 
+				PopUpManager.centerPopUp(_renShuWin); 
+				
+				
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showRenShuWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		public function showConfigWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 * 这个是modal透明的窗口
+				 */ 
+				PopUpManager.addPopUp(this._configWin,this,true); 
+				PopUpManager.centerPopUp(_configWin); 
+				
+				_configWin.soundSlide.value = GameGlobals.audio.curVolume;
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showSystemConfigWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+		public function showHabitWin():void
+		{
+			try
+			{				
+				/**
+				 * 只有Alert窗口有权利让背景变暗，明暗分主次
+				 * 这个是modal透明的窗口
+				 */ 
+				PopUpManager.addPopUp(this._habitWin,this,true); 
+				PopUpManager.centerPopUp(_habitWin); 
+				
+				_habitWin.chk1.selected = GameGlobals.habit.seeWayPoint;
+				
+			}
+			catch (exd:Error) 
+			{            		
+				Alert.show(QiPaiStr.getErrorMessage("showHabitWin",exd.message ,exd.getStackTrace()));
+			}			
+		}
+		
+	]]>
+	</mx:Script>
+	<mx:Button id="mc_btn_screenSave" right="44" bottom="59" width="100" label="截 屏"
+			   fontFamily="SimSun" fontSize="14"/>
+	<mx:Label id="lbl_room" left="2" top="2" width="145" color="0xffffff"
+			  fontFamily="{QiPaiFont.MicrosoftYaHei}" fontSize="13" fontWeight="bold" text="..."
+			  textAlign="left"/>
+	
+	
+
+	
+	
+</mx:Canvas>

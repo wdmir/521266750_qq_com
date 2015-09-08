@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+				layout="absolute" 
+				width="340" 
+				height="172" 
+				title="输入房间密码"
+				showCloseButton="true" 
+				creationComplete="creationComplete()">
+	
+		
+	<mx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.MailModel;
+			
+			private static var _instance:InputRoomPwdWin = null;
+			
+			public static function get instance():InputRoomPwdWin
+			{
+				if(_instance == null)
+				{
+					_instance = new InputRoomPwdWin();
+				}
+			
+				return _instance;
+			}
+			
+			public var roomId:int = 0;
+			
+			public var look:Boolean = false;
+			
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				pwdTxt.addEventListener(KeyboardEvent.KEY_DOWN,onKeyDown);
+				
+			}
+			
+			public function onKeyDown(event:KeyboardEvent):void
+			{
+				if(13 == event.keyCode)
+				{
+					//Alert.show("回车");
+					btnJoin_clickHandler();
+				}
+				
+			}	
+			
+			public function open():void
+			{
+				this.title = "输入房间" + roomId.toString() +"密码";
+				
+				PopUpManager.addPopUp(this,(FlexGlobals.topLevelApplication as ChChess).hallViewBg, true);
+				
+				PopUpManager.centerPopUp(this);
+				
+				pwdTxt.setFocus();
+			
+			}
+			
+			protected function btnJoin_clickHandler(event:MouseEvent=null):void
+			{
+				// TODO Auto-generated method stub
+				(FlexGlobals.topLevelApplication as ChChess).hallViewBg.roomList1.joinRoom(roomId,pwdTxt.text,look);
+				
+				this.Close();
+			}
+			
+			protected function displayPwdChk_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+				//
+				roomId = 0;			
+				pwdTxt.text = "";
+				displayPwdChk.selected = false;
+				this.title = "";
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+			
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:TextInput id="pwdTxt" x="90" y="61" width="180"
+				  displayAsPassword="{!this.displayPwdChk.selected}" maxChars="12"/>
+	<mx:Button id="btnJoin" x="138" y="123" label="加入" click="btnJoin_clickHandler(event)"/>
+	<mx:CheckBox id="displayPwdChk" x="92" y="91" label="显示字符"
+				 click="displayPwdChk_clickHandler(event)"/>
+	
+	
+</mx:TitleWindow>

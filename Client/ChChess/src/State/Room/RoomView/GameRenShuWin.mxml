@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:local="*" 
+		 width="360" 
+		 height="260" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;
+			import net.silverfoxserver.extfactory.ChairModelFactory;
+			import net.silverfoxserver.extmodel.ItemModelByChChess;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				bg_win.mc_close.useHandCursor = true;
+				bg_win.mc_close.buttonMode = true;
+				bg_win.mc_close.addEventListener(MouseEvent.CLICK,mc_close_click);
+				
+				
+				bg_win.mc_cancel.useHandCursor = true;
+				bg_win.mc_cancel.buttonMode = true;
+				bg_win.mc_cancel.addEventListener(MouseEvent.CLICK,mc_cancel_click);
+				
+				
+				bg_win.mc_submit.useHandCursor = true;
+				bg_win.mc_submit.buttonMode = true;
+				bg_win.mc_submit.addEventListener(MouseEvent.CLICK,mc_submit_click);
+			}
+			
+			public function refresh():void
+			{
+				
+				
+				
+				
+			}
+			
+			public function mc_submit_click(event:MouseEvent):void
+			{
+			
+				//room vars
+				var roomId:int = GameGlobals.qpc.data.hero.activeRoomId; 
+				
+				var varsList:Array = new Array(); 
+				
+				var var_qizi:Object = {
+					
+					name:"renShu",
+					val:GameGlobals.qpc.data.hero.Id
+				}
+				
+				varsList.push(var_qizi);			
+				
+				GameGlobals.qpc.setRoomVariables(varsList,roomId);
+				
+				//			
+				this.Close();
+			}
+			
+			public function mc_cancel_click(event:MouseEvent):void
+			{
+				this.Close();
+			}
+			
+			public function mc_close_click(event:MouseEvent):void
+			{
+				this.Close();
+			}
+			
+			
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<local:bg_renShu id="bg_win" x="9" y="25">		
+	</local:bg_renShu>
+	
+</s:Group>

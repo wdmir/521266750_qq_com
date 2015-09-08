@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				width="450" height="300" creationComplete="creationComplete()" fontFamily="SimSum"
+				fontSize="14" layout="absolute" showCloseButton="true" title="截图保存">
+	
+	<mx:Button id="btnOk" x="332" y="167" label="保存到本地" click="btnOk_clickHandler(event)"
+			   fontFamily="SimSum" fontSize="14"/>
+	<mx:Button id="btnCancel" x="332" y="208" label="取消" click="btnCancel_clickHandler(event)"
+			   fontFamily="SimSum" fontSize="14"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.images.PNGEncoder;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.graphics.codec.JPEGEncoder;
+			import mx.managers.PopUpManager;
+			
+			
+			private var __fileReference:FileReference;
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				this.btnOk.addEventListener(MouseEvent.CLICK,btnOk_clickHandler);
+							
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}			
+			
+			/**
+			 * 设置音量并关闭窗口
+			 */ 
+			public function btnOk_clickHandler(event:MouseEvent):void
+			{				
+				//保存图片到本地
+				//if(null != this.img1.source)
+				//{
+					
+					var _loc_2:FileReference = new FileReference();
+            		
+            		//
+            		var bd:BitmapData = (this.img1.source as Bitmap).bitmapData;					
+					
+					//					
+					var _loc_2_n:String = "房间" + GameGlobals.qpc.data.activeRoom.Id.toString();
+            		
+            		_loc_2.save(PNGEncoder.encode(bd), _loc_2_n + ".png");
+            		
+				//}
+				
+				
+				//
+				__close();			
+			}
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent):void
+			{
+				//
+				__close();	
+			}
+			
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Image id="img1" left="10" right="120" top="40" bottom="10"/>
+	
+	
+</mx:TitleWindow>

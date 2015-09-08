@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="630" 
+	height="466"
+	title="游戏玩法"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.managers.CursorManager;
+			import net.wdmir.core.QiPaiUser;
+			import mx.utils.StringUtil;
+		
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;	
+						
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{					
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+				
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(evt:CloseEvent):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(evt:CloseEvent=null):void
+			{
+				__close(evt);
+			}			
+			
+			
+			[Bindable]
+			public var introStr:String = "    象棋，是中国传统的二人对弈棋类游戏。\n" +
+										 "    象棋由棋盘和棋子组成，棋盘由九条直线和十条橫线相交而成。棋子放在各条线的相交点上，并在线上移动。棋子的颜色分紅和黑或（蓝、绿），双方各有 16 个棋子，分別是将（帥）、士（仕）、象（相）、車（俥）、馬（傌）、砲（炮）、卒（兵）。\n" +
+										 "    行棋规则：\n" + 
+										 "    帥（將）只可在己方之九宮格內前后左右移动，每次一步\n" + 
+										 "    仕（士）沿九宮格內的斜线行走，每次一步\n" + 
+										 "    象（相）行田：每一着斜走两步（路线如“田”字的对角线）\n" + 
+										 "    俥（車）只要无子阻隔，前后左右不限距离直线移动\n" + 										 
+										 "    傌（馬）馬行日：任何方向前進一步然后斜走一步（即「一步一尖」）\n" + 
+										 "    炮（砲）吃子時需隔任何一方的棋子（该子称为炮架）\n" + 
+										 "    兵（卒）过河前每次只可直行一步；過河后可左右或往前走一步，永远不能退后\n";
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Button bottom="40" width="80" label="确 定" click="Close()" horizontalCenter="0"/>	
+	<mx:TextArea left="20" right="20" top="40" height="317" fontSize="12" htmlText="{introStr}"/>
+	
+	
+</mx:TitleWindow>

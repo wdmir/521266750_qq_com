@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="420" 
+	height="182" 
+	xmlns:local="*" creationComplete="creationComplete()">
+	
+	<local:bg_winner id="winner" y="10" horizontalCenter="0">		
+	</local:bg_winner>
+	<mx:Button id="btnOk" y="76" label="Button" horizontalCenter="0"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			
+			private var closeTimer:Timer;
+			//快些关闭窗口，但游戏结束要长一点，因此设为1500
+			private var closeTimerDealy:int = 1500;
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				this.isPopUp = false;		
+				
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+				
+							
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			/**
+			 * popup后调用该方法
+			 * 
+			 * 该方法3秒后会自动关闭窗口
+			 * 
+			 */ 
+			public function startCloseTimeCount():void
+			{
+				//
+				this.btnOk.label = "确定(3)";
+				this.btnOk.addEventListener(MouseEvent.CLICK,clickHandler);
+				
+				//
+				closeTimer = new Timer(closeTimerDealy,3);
+				
+				closeTimer.addEventListener(TimerEvent.TIMER,timeHandler);
+				closeTimer.addEventListener(TimerEvent.TIMER_COMPLETE,timeCompleteHandler);
+				
+				closeTimer.start();
+			
+			}
+			
+			public function clickHandler(event:MouseEvent):void
+			{
+				if(null != closeTimer)
+				{
+					if(closeTimer.hasEventListener(TimerEvent.TIMER))
+					{
+						closeTimer.removeEventListener(TimerEvent.TIMER,timeHandler);
+					}
+					
+					if(closeTimer.hasEventListener(TimerEvent.TIMER_COMPLETE))
+					{
+						closeTimer.removeEventListener(TimerEvent.TIMER_COMPLETE,timeCompleteHandler);
+					}
+					
+					closeTimer.stop();
+				
+				}//end if
+			
+				__close();
+			
+			}
+			
+			public function timeHandler(event:TimerEvent):void
+			{
+				this.btnOk.label = "确定(" + (3-closeTimer.currentCount).toString() + ")";
+			
+			}
+			
+			public function timeCompleteHandler(event:TimerEvent):void
+			{
+				__close();			
+			}
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>

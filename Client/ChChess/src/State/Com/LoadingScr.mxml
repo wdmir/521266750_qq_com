@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ProgressBar xmlns:mx="http://www.adobe.com/2006/mxml" 
+	label="载入中..."  indeterminate="true"
+	fontSize="12">
+	
+</mx:ProgressBar>

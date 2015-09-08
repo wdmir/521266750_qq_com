@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="absolute" 
+	width="400" 
+	height="230" 
+	title="邮件消息"
+	showCloseButton="true" 
+	creationComplete="creationComplete()">
+		
+	<mx:ButtonBar y="102" itemClick="BtnBarClick(event);" x="113">
+		       <mx:dataProvider>
+		           <mx:Array>
+		               <mx:String>接受</mx:String>
+		               <mx:String>下一条</mx:String>
+		               <mx:String>取消</mx:String>
+		           </mx:Array>
+		       </mx:dataProvider>
+	</mx:ButtonBar>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			import net.wdqipai.core.model.level2.MailModel;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.core.FlexGlobals;
+			
+			/**
+			 * 事件侦听
+			 */ 
+			public function creationComplete():void
+			{	
+				//规矩:无关闭按钮时，不可拖动
+				//showCloseButton="false" 
+				//this.isPopUp = false;	
+				
+				//
+				this.addEventListener(CloseEvent.CLOSE, __close);
+											
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			// Event handler function to print a message
+            // describing the selected Button control.
+            private function BtnBarClick(event:ItemClickEvent):void
+            {
+                //myTA.text="Selected button index: " + String(event.index) +
+                //    "\n" + "Selected button label: " + event.label;
+                
+                if(0 == event.index)
+                {                
+                	this.btnOk_clickHandler();
+                
+                }else if(1 == event.index)
+                {
+                	this.btnNext_clickHandler();
+                
+                }else if(2 == event.index)
+                {
+                	this.btnCancel_clickHandler();
+                	
+                }
+                
+            }
+			
+			/**
+			 * 设置音量并关闭窗口
+			 */ 
+			public function btnOk_clickHandler(event:MouseEvent=null):void
+			{				
+				//
+				if(null != m)
+				{
+					//join room
+					if("askJoinRoom" == m.n)
+					{
+						var p:Array = m.p.split(',');
+						
+						//不设置activeTab，局时那边会出bug
+						GameGlobals.qpc.data.activeTab = parseInt(p[0]);
+						
+						//
+						(FlexGlobals.topLevelApplication as ChChess).hallViewBg.roomList1.joinRoom(parseInt(p[1]));
+					
+					}//end if
+				}
+				
+				//
+				__close();			
+			}
+			
+			public function btnNext_clickHandler(event:MouseEvent=null):void
+			{
+				//
+				look();
+			
+			}
+			
+			/**
+			 * 关闭窗口
+			 */ 
+			public function btnCancel_clickHandler(event:MouseEvent=null):void
+			{
+				//
+				__close();	
+			}			
+			
+			private var m:MailModel;
+			public function look():void
+			{				
+				//刷新标题
+				if(GameGlobals.qpc.data.mailList.length > 0)
+				{
+					this.title = "邮件消息(" + GameGlobals.qpc.data.mailList.length.toString() + ")";
+				}else
+				{
+					this.title = "邮件消息";						
+				}				
+					
+				//
+				if(GameGlobals.qpc.data.mailList.length > 0)
+				{
+					m = GameGlobals.qpc.data.mailList.shift() as MailModel;
+					
+					if("askJoinRoom" == m.n)
+					{
+						var p:Array = m.p.split(',');
+						
+						this.lblMsg.text = m.fromUser.NickName + 
+						"邀请您到" + p[1] + "号桌子进行游戏!"
+					
+					
+					}//end if					
+					
+				}else
+				{
+					//点下一条时出现
+					this.lblMsg.text = "没有任何邮件";
+				}	
+				
+				
+							
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Text x="10" y="32" width="360" height="62" id="lblMsg" fontSize="14" textAlign="center"/>
+	
+	
+</mx:TitleWindow>

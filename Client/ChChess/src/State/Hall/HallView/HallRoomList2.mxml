@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+		   xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   
+		   xmlns:ns1="*"
+		   borderSkin="{null}" 
+		   minWidth="300" 
+		   minHeight="200">
+
+<mx:TabNavigator id="tabNavi1" left="0" right="0" top="0" bottom="0" backgroundAlpha="0.0"
+				 borderSkin="{null}" creationComplete="creationComplete()" fontFamily="SimSun"
+				 fontSize="14" styleName="TabBar1">
+	
+	<!-- borderThickness="0" -->
+	
+	<mx:Canvas label="10分钟包干场" width="100%" height="100%" borderSkin="{null}">		
+	</mx:Canvas>	
+	<mx:Canvas label="20分钟包干场" width="100%" height="100%" borderSkin="{null}">		
+	</mx:Canvas>
+	<mx:Canvas label="新手场" width="100%" height="100%" borderSkin="{null}">		
+	</mx:Canvas>
+	<mx:Canvas label="普通场" width="100%" height="100%" borderSkin="{null}">
+	</mx:Canvas>
+	<mx:Canvas label="高级场" width="100%" height="100%" borderSkin="{null}">
+	</mx:Canvas>
+	<mx:Canvas label="VIP会员专区" width="100%" height="100%" borderSkin="{null}">
+	</mx:Canvas>
+	
+</mx:TabNavigator>
+
+<!-- alternatingItemColors="[#D4AE83, #CC9966]" -->
+<!-- doubleClickEnabled="true" -->
+<mx:DataGrid id="dg1" left="1" right="1" top="27" bottom="1" alpha="1.0" borderSkin="{null}"
+			 doubleClickEnabled="false" fontFamily="SimSun" fontSize="14"
+			 itemDoubleClick="dg1_itemDoubleClickHandler(event)" styleName="DataGrid1">
+					<!-- borderThickness="0" -->
+					<mx:columns>
+						
+						<mx:DataGridColumn width="80" headerText="房间号" dataField="Id">
+							<mx:itemRenderer>
+							                 <mx:Component>
+							                     <mx:Label text="{data.Id}" textAlign="center"/>
+							                 </mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn width="175" headerText="房间名称" dataField="Name" itemRenderer="State.Hall.HallView.HallRoomNameItemRender">
+							
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn width="160" headerText="玩家" dataField="HasPeopleChairCountStr" itemRenderer="State.Hall.HallView.HallRoomChairItemRender">
+							
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn width="160" headerText="旁观" dataField="HasPeopleLookChairCountStr" itemRenderer="State.Hall.HallView.HallRoomLookChairItemRender">
+							
+						</mx:DataGridColumn>
+						
+						<mx:DataGridColumn headerText="底分" dataField="DiFen" textAlign="center">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{data.DiFen}" textAlign="center"  textIndent="3"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						
+					</mx:columns>
+				</mx:DataGrid>
+	
+<mx:Style>
+	
+	.TabBar1
+	{
+		tabStyleName: "tabBarTab";
+		firstTabStyleName: "tabBarTab";
+		lastTabStyleName: "tabBarTab";
+		
+		font-weight:normal;
+		selected-tab-text-style-name :selectedTab;
+		
+		tabStyleName: "tabBarTab";
+		firstTabStyleName: "tabBarTab";
+		lastTabStyleName: "tabBarTab";
+		
+	}
+	
+	.tabBarTab
+	{
+		upSkin: Embed(source="Skins/TabBar-tab_upSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		overSkin: Embed(source="Skins/TabBar-tab_overSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		downSkin: Embed(source="Skins/TabBar-tab_downSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		disabledSkin: Embed(source="Skins/TabBar-tab_disabledSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		selectedDisabledSkin: Embed(source="Skins/TabBar-tab_selectedDisabledSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		selectedUpSkin: Embed(source="Skins/TabBar-tab_selectedUpSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		selectedOverSkin: Embed(source="Skins/TabBar-tab_selectedUpSkin.png",scaleGridLeft="2",scaleGridTop="3",scaleGridRight="50",scaleGridBottom="20");
+		
+		padding-left:6;
+		padding-right:6;
+		padding-top:4;
+		padding-bottom:3;
+		
+		color: #352412;
+		textRollOverColor: #FFFFFF;
+		text-selected-color:#F00;
+		disabledColor: #A3A3A3;
+	}
+
+	
+	.TabNavigator{
+		border-style: solid;
+		background-color:#FFF;
+		border-color:#DDD;
+		selectedTabTextStyleName: "selectedTab";
+	}
+	.selectedTab{
+		font-weight:bold;
+		
+		fontSize: 13;
+		
+		color:#FFFFFF; 
+		
+		/* textRollOverColor: #00ADE1;*/
+	}
+	
+	.DataGrid1
+	{
+		background-color:transparent;
+		border-color:#DDD;
+		
+		columnDropIndicatorSkin: Embed(source="Skins/DataGrid_columnDropIndicatorSkin.png");
+		columnResizeSkin: Embed(source="Skins/DataGrid_columnResizeSkin.png");
+		
+		headerBackgroundSkin: Embed(source="Skins/DataGrid_headerBackgroundSkin.png");
+		headerSeparatorSkin: Embed(source="Skins/DataGrid_headerSeparatorSkin.png");
+		
+		/* header-colors:#303030,#161616; */
+		header-style-name:dgridHeader;
+		
+		sortArrowSkin: Embed(source="Skins/DataGrid_sortArrowSkin.png");
+		stretchCursor: Embed(source="Skins/DataGrid_stretchCursor.png");
+		
+		rollOverColor: #f4d376;
+		selectionColor: #AA6600;
+		
+		color: #333;
+		text-selected-color:#FFF;
+		text-roll-over-color:#202020;
+		
+		verticalGridLines: false;
+		/* alternatingItemColors: transparent, #ECECEC; */
+		horizontalGridLines: false;
+		
+		backgroundAlpha: 0.0;
+		/* alternatingItemColors: #000000, #ECECEC; */
+	}
+	
+	.dgridHeader{
+		color:#ffffff;
+		/* background-color:#202020; */
+		/* fill-colors:#202020; */
+		
+		font-weight:bold;
+		textIndent: 3;
+	}
+	
+</mx:Style>
+	
+	
+<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.controls.TabBar;
+			import mx.core.Application;
+			import mx.core.FlexGlobals;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ListEvent;
+			
+			import net.wdmir.core.QiPaiStr;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			public function get lang_HallRoomList2MXML_please_select_room_str():String
+			{
+				
+				return GameGlobals.qpc.data.configXML.langVariByChChess.HallRoomList2MXML_please_select_room_str;
+			}
+			
+			/**
+			 * 
+			 */ 
+			private var _inputRoomPwdWin:InputRoomPwdWin = null;
+			
+			public function get inputRoomPwdWin():InputRoomPwdWin
+			{
+				if(_inputRoomPwdWin == null)
+				{
+					_inputRoomPwdWin = new InputRoomPwdWin();
+				}
+				
+				return _inputRoomPwdWin;
+			}
+			
+			//IRoomModel(data).Name()
+			public function creationComplete():void
+			{
+				tabNavi1.addEventListener(IndexChangedEvent.CHANGE,indexChangeHandler);
+				
+				dg1.dataProvider = GameGlobals.qpc.data.hallRoomList;
+			
+			
+			}
+	
+			protected function dg1_itemDoubleClickHandler(event:ListEvent):void
+			{					
+				
+				//trace(event);
+				
+				//
+				var room:IHallRoomModel = event.itemRenderer.data as IHallRoomModel;
+								
+				if(room.getPwdLen() > 0)
+				{
+					InputRoomPwdWin.instance.roomId = room.Id;
+					InputRoomPwdWin.instance.open();
+				
+				}
+				else{
+					
+					joinRoom(room.Id);
+				}
+			}
+			
+			private function indexChangeHandler(event:IndexChangedEvent):void 
+			{
+                // Access target TabBar control.
+                //var targetComp:TabBar = TabBar(event.currentTarget);
+                
+               
+                /*
+                forClick.text="label is: " + event.label + ", index is: " + 
+                    event.index + ", capital is: " +
+                    targetComp.dataProvider[event.index].data;
+                */
+                
+                //GameGlobals.qpc.data.activeTab = event.index;
+                
+                GameGlobals.qpc.data.activeTab = event.newIndex;
+                    
+				(FlexGlobals.topLevelApplication as ChChess).HallEnter(); 
+            }   
+			
+			// Event handler function to print a message
+            // describing the selected Button control.
+            private function BtnBarClick(event:ItemClickEvent):void
+            {
+                //myTA.text="Selected button index: " + String(event.index) +
+                //    "\n" + "Selected button label: " + event.label;
+                
+                if(0 == event.index)
+                {
+                
+                	BtnJoinRoom_Click();
+                
+                }else if(1 == event.index)
+                {
+                	BtnAutoJoinRoom_Click();
+                
+                }
+                
+                
+              
+                
+            }
+			
+			public function BtnJoinRoom_Click(event:MouseEvent=null):void
+			{
+				if(null != dg1.selectedItem)
+				{
+					var room:IHallRoomModel = dg1.selectedItem as IHallRoomModel;
+					
+					if(room.getPwdLen() > 0)
+					{
+						InputRoomPwdWin.instance.roomId = room.Id;
+						InputRoomPwdWin.instance.look = false;
+						InputRoomPwdWin.instance.open();
+						
+					}
+					else{
+						joinRoom(room.Id);
+					}
+				
+				}else if(null == dg1.selectedItem && null != event)
+				{
+					
+					Alert.show(lang_HallRoomList2MXML_please_select_room_str,QiPaiStr.ALERT_TITLE);
+				
+				}
+			
+			}
+			
+			/**
+			 * 
+			 */ 
+			public function BtnJoinRoom_Look_Click(event:MouseEvent=null):void
+			{
+				if(null != dg1.selectedItem)
+				{
+					var room:IHallRoomModel = dg1.selectedItem as IHallRoomModel;
+					
+					if(room.getPwdLen() > 0)
+					{
+						InputRoomPwdWin.instance.roomId = room.Id;
+						InputRoomPwdWin.instance.look = true;
+						InputRoomPwdWin.instance.open();
+						
+					}
+					else{
+						joinRoom(room.Id,"",true);
+					}
+					
+				}else if(null == dg1.selectedItem && null != event)
+				{
+					
+					Alert.show(lang_HallRoomList2MXML_please_select_room_str,QiPaiStr.ALERT_TITLE);
+					
+				}
+				
+			}
+			
+			public function BtnAutoJoinRoom_Click(event:MouseEvent=null):void
+			{
+			
+				autoJoinRoom();
+			
+			}
+			
+			public function joinRoom(id:int,pwd:String="",look:Boolean=false):void
+			{
+				//
+				//(FlexGlobals.topLevelApplication as ChChess).showLoadingScr();
+				
+				GameGlobals.qpc.joinRoom(id,pwd,look);
+			}
+			
+			protected function autoJoinRoom():void
+			{
+			
+				//
+				//(FlexGlobals.topLevelApplication as ChChess).showLoadingScr();
+				
+				GameGlobals.qpc.autoJoinRoom();
+			}
+			
+			
+			
+
+			
+
+		]]>
+	</mx:Script>	
+
+</mx:Canvas>

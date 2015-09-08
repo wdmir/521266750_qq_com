@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 123.196.116.30 -->
+<www.wdmir.net>
+	<ip>127.0.0.1</ip>
+	<port>9302</port>
+	<installDir></installDir>
+	<refreshHallRoomListTimeDelay>30000</refreshHallRoomListTimeDelay>
+	<refreshIdleListTimeDelay>30000</refreshIdleListTimeDelay>
+	<autoLeaveRoomTimeDelay>90000</autoLeaveRoomTimeDelay>
+	<photoUploadUrl>upload.aspx</photoUploadUrl>
+	<payUser></payUser>
+	<notice>《健康游戏忠告》
+		抵制不良游戏，拒绝盗版游戏。
+		注意自我保护，谨防受骗上当。
+		适度游戏益脑，沉迷游戏伤身。
+		合理安排时间，享受健康生活。
+	</notice>
+	<langVari>
+		<goldPoint>金钱</goldPoint>
+		<room>房间</room>		
+		<ranking>排行榜</ranking>
+		<chart>报表</chart>
+		<agree>同意</agree>
+		<deny>拒绝</deny>
+		<confirm>确定</confirm>
+	</langVari>
+	
+	<langVariByChChess>	
+	
+		<Every_day_login_str>活动系统每日登陆（每天一次）奖励#param1。</Every_day_login_str>
+			
+		<LoadingScrMXML_ProgressBar_label>载入中...</LoadingScrMXML_ProgressBar_label>
+		
+		<AlertAS_TIP_TITLE>提示</AlertAS_TIP_TITLE>
+		
+		<HallRoomList2MXML_tabNavi1_canvas1_label>新手场</HallRoomList2MXML_tabNavi1_canvas1_label>
+		<HallRoomList2MXML_tabNavi1_canvas2_label>普通场一</HallRoomList2MXML_tabNavi1_canvas2_label>
+		<HallRoomList2MXML_tabNavi1_canvas3_label>普通场二</HallRoomList2MXML_tabNavi1_canvas3_label>
+		<HallRoomList2MXML_tabNavi1_canvas4_label>高倍场一</HallRoomList2MXML_tabNavi1_canvas4_label>
+		<HallRoomList2MXML_tabNavi1_canvas5_label>高倍场二</HallRoomList2MXML_tabNavi1_canvas5_label>
+		
+		<HallRoomList2MXML_btnTabAutoMatch_0_str>加入</HallRoomList2MXML_btnTabAutoMatch_0_str>
+		<HallRoomList2MXML_btnTabAutoMatch_1_str>人</HallRoomList2MXML_btnTabAutoMatch_1_str>
+		
+		<HallRoomList2MXML_dg1_col1_str>编号</HallRoomList2MXML_dg1_col1_str>
+		<HallRoomList2MXML_dg1_col2_str>名称</HallRoomList2MXML_dg1_col2_str>
+		<HallRoomList2MXML_dg1_col3_str>玩家</HallRoomList2MXML_dg1_col3_str>
+		<HallRoomList2MXML_dg1_col4_str>底分</HallRoomList2MXML_dg1_col4_str>
+		<HallRoomList2MXML_dg1_col5_str>入场资格</HallRoomList2MXML_dg1_col5_str>
+		
+		<HallRoomList2MXML_btnBar1_0_str>加入</HallRoomList2MXML_btnBar1_0_str>
+		<HallRoomList2MXML_btnBar1_1_str>自动加入</HallRoomList2MXML_btnBar1_1_str>
+		<HallRoomList2MXML_btnBar1_2_str>创建</HallRoomList2MXML_btnBar1_2_str>
+		
+		<HallRoomList2MXML_please_select_room_str>请选择要进入的房间！ </HallRoomList2MXML_please_select_room_str>
+		
+		<HallRoomList2MXML_barAutoMatch_label>请点击加入，开始自动匹配...</HallRoomList2MXML_barAutoMatch_label>
+		<HallRoomList2MXML_barAutoMatch_Matching_str>匹配中,已用时#param1秒</HallRoomList2MXML_barAutoMatch_Matching_str>
+		
+		<HallRoomList2MXML_canJoinRoom_carryIsNotEnough_str>抱歉，进入房间失败！您持有的#param1低于#param2。</HallRoomList2MXML_canJoinRoom_carryIsNotEnough_str>
+		
+		<HallAutoMatchViewBgMXML_barAutoMatch_label>重新匹配中...</HallAutoMatchViewBgMXML_barAutoMatch_label>
+		<HallAutoMatchViewBgMXML_barAutoMatch_Matching_str>重新匹配中,已用时#param1秒</HallAutoMatchViewBgMXML_barAutoMatch_Matching_str>
+		
+		<HallViewBg_JoinRoomKoMsg_NoIdleChair1>没有空闲的坐位。</HallViewBg_JoinRoomKoMsg_NoIdleChair1>	
+		<HallViewBg_JoinRoomKoMsg_ErrorRoomPassword2>错误的房间密码。</HallViewBg_JoinRoomKoMsg_ErrorRoomPassword2>	
+		<HallViewBg_JoinRoomKoMsg_ProviderError3>未知的错误。</HallViewBg_JoinRoomKoMsg_ProviderError3>	
+		<HallViewBg_JoinRoomKoMsg_WaitReconnectioRoom5>该房间当前状态为断线重连。</HallViewBg_JoinRoomKoMsg_WaitReconnectioRoom5>	
+		<HallViewBg_JoinRoomKoMsg_vipRoom6>该房间为VIP房间。</HallViewBg_JoinRoomKoMsg_vipRoom6>	
+		<HallRoomList2MXML_tabNavi1_canvas1_label>新 手 场</HallRoomList2MXML_tabNavi1_canvas1_label>
+		<HallRoomList2MXML_tabNavi1_canvas2_label>普 通 场</HallRoomList2MXML_tabNavi1_canvas2_label>
+		<HallRoomList2MXML_tabNavi1_canvas3_label>普 通 场二</HallRoomList2MXML_tabNavi1_canvas3_label>
+		<HallRoomList2MXML_tabNavi1_canvas4_label>高 倍 场</HallRoomList2MXML_tabNavi1_canvas4_label>
+		<HallRoomList2MXML_tabNavi1_canvas5_label>高 倍 场2</HallRoomList2MXML_tabNavi1_canvas5_label>
+		
+		
+		<MailWinMXML_title>邮件消息</MailWinMXML_title>
+		<MailWinMXML_btnBar1_0_str>接受</MailWinMXML_btnBar1_0_str>
+		<MailWinMXML_btnBar1_1_str>下一条</MailWinMXML_btnBar1_1_str>
+		<MailWinMXML_btnBar1_2_str>取消</MailWinMXML_btnBar1_2_str>				
+		<MailWinMXML_invitJoinGame_str>#param1邀请您到#param2号#param3进行游戏!</MailWinMXML_invitJoinGame_str>
+		<MailWinMXML_noMails_str>没有任何邮件</MailWinMXML_noMails_str>
+		
+		<NoticeWinMXML_title>通知</NoticeWinMXML_title>
+		<NoticeWinMXML_btnCancel_label>确 定</NoticeWinMXML_btnCancel_label>
+		
+		<AutoLoginWinMXML_title>用户登陆</AutoLoginWinMXML_title>		
+		<AutoLogiWinMXML_lbl1_text>用户名:</AutoLogiWinMXML_lbl1_text>		
+		<AutoLogiWinMXML_btn_login_label>登  陆</AutoLogiWinMXML_btn_login_label>		
+		<AutoLogiWinMXML_lbl2_text>* 因各个浏览器不同，请输入用户名登陆</AutoLogiWinMXML_lbl2_text>
+		
+		<GameIntroWinMXML_title>游戏玩法</GameIntroWinMXML_title>	
+			
+		<GameJiFenWinMXML_title>游戏积分</GameJiFenWinMXML_title>		
+		<GameJiFenWinMXML_lbl1_text>功能尚未开放</GameJiFenWinMXML_lbl1_text>
+		<GameJiFenWinMXML_btn1_label>关 闭</GameJiFenWinMXML_btn1_label>
+		
+		<GameVideoWinMXML_title>游戏录像</GameVideoWinMXML_title>		
+		<GameVideoWinMXML_lbl1_text>功能尚未开放</GameVideoWinMXML_lbl1_text>
+		<GameVideoWinMXML_btn1_label>关 闭</GameVideoWinMXML_btn1_label>
+				
+		<LoginWinMXML_title>用户登陆</LoginWinMXML_title>	
+		<LoginWinMXML_lbl1_text>用户名:</LoginWinMXML_lbl1_text>
+		<LoginWinMXML_lbl2_text>密  码：</LoginWinMXML_lbl2_text>
+		<LoginWinMXML_check1_label>记住用户名</LoginWinMXML_check1_label>
+		<LoginWinMXML_btn_login_label>登  陆</LoginWinMXML_btn_login_label>
+		<LoginWinMXML_btn_reg_label>注  册</LoginWinMXML_btn_reg_label>
+		
+		<LoginWinMXML_MembershipLoginStatus_0>登录成功。</LoginWinMXML_MembershipLoginStatus_0>
+		<LoginWinMXML_MembershipLoginStatus_1>在数据库中未找到用户名。</LoginWinMXML_MembershipLoginStatus_1>
+		<LoginWinMXML_MembershipLoginStatus_2>密码不正确。</LoginWinMXML_MembershipLoginStatus_2>
+		<LoginWinMXML_MembershipLoginStatus_3>Session无效</LoginWinMXML_MembershipLoginStatus_3>
+		<LoginWinMXML_MembershipLoginStatus_4>未注册的用户ID</LoginWinMXML_MembershipLoginStatus_4>
+		<LoginWinMXML_MembershipLoginStatus_5></LoginWinMXML_MembershipLoginStatus_5>
+		<LoginWinMXML_MembershipLoginStatus_6></LoginWinMXML_MembershipLoginStatus_6>
+		<LoginWinMXML_MembershipLoginStatus_7></LoginWinMXML_MembershipLoginStatus_7>
+		<LoginWinMXML_MembershipLoginStatus_8>因为提供程序定义的某个原因而未登录成功。</LoginWinMXML_MembershipLoginStatus_8>
+		<LoginWinMXML_MembershipLoginStatus_9></LoginWinMXML_MembershipLoginStatus_9>
+		<LoginWinMXML_MembershipLoginStatus_10></LoginWinMXML_MembershipLoginStatus_10>
+		<LoginWinMXML_MembershipLoginStatus_11>错误。</LoginWinMXML_MembershipLoginStatus_11>
+		<LoginWinMXML_MembershipLoginStatus_12>服务器人满，请稍后登录。</LoginWinMXML_MembershipLoginStatus_12>
+		<LoginWinMXML_MembershipLoginStatus_13>Session无效，您可能需要重新登录。</LoginWinMXML_MembershipLoginStatus_13>
+				
+		<RegWinMXML_title>用户注册</RegWinMXML_title>
+		<RegWinMXML_lbl1_text>性    别：</RegWinMXML_lbl1_text>
+		<RegWinMXML_lbl2_text>用户名：</RegWinMXML_lbl2_text>
+		<RegWinMXML_lbl3_text>密    码：</RegWinMXML_lbl3_text>
+		<RegWinMXML_lbl4_text>重复密码：</RegWinMXML_lbl4_text>
+		<RegWinMXML_lbl5_text>电子邮箱：</RegWinMXML_lbl5_text>
+		<RegWinMXML_btn_reg_label>我填好了，注  册</RegWinMXML_btn_reg_label>
+		<RegWinMXML_radio1_label>男</RegWinMXML_radio1_label>
+		<RegWinMXML_radio2_label>女</RegWinMXML_radio2_label>
+		<RegWinMXML_please_select_yours_sex_str>·请选择性别！</RegWinMXML_please_select_yours_sex_str>
+		<RegWinMXML_username_cannot_be_empty_str>·用户名不可为空！</RegWinMXML_username_cannot_be_empty_str>
+		<RegWinMXML_pwd_cannot_be_empty_str>·密码不可为空！</RegWinMXML_pwd_cannot_be_empty_str>
+		<RegWinMXML_secondary_passwords_do_not_match_str>·二次密码不相符</RegWinMXML_secondary_passwords_do_not_match_str>
+		<RegWinMXML_email_cannot_be_empty_str>邮箱未填写！注册成功后可在个人资料中\n补充！</RegWinMXML_email_cannot_be_empty_str>
+		
+		<RegWinMXML_MembershipCreateStatus_0>创建用户成功。</RegWinMXML_MembershipCreateStatus_0>
+		<RegWinMXML_MembershipCreateStatus_1>在数据库中未找到用户名。</RegWinMXML_MembershipCreateStatus_1>
+		<RegWinMXML_MembershipCreateStatus_2>密码的格式设置不正确。</RegWinMXML_MembershipCreateStatus_2>
+		<RegWinMXML_MembershipCreateStatus_3>Session无效</RegWinMXML_MembershipCreateStatus_3>
+		<RegWinMXML_MembershipCreateStatus_4></RegWinMXML_MembershipCreateStatus_4>
+		<RegWinMXML_MembershipCreateStatus_5>电子邮件地址的格式设置不正确。</RegWinMXML_MembershipCreateStatus_5>
+		<RegWinMXML_MembershipCreateStatus_6>用户名已存在于应用程序的数据库中。</RegWinMXML_MembershipCreateStatus_6>
+		<RegWinMXML_MembershipCreateStatus_7>电子邮件地址已存在于应用程序的数据库中。</RegWinMXML_MembershipCreateStatus_7>
+		<RegWinMXML_MembershipCreateStatus_8>因为提供程序定义的某个原因而未创建用户。</RegWinMXML_MembershipCreateStatus_8>
+		<RegWinMXML_MembershipCreateStatus_9></RegWinMXML_MembershipCreateStatus_9>
+		<RegWinMXML_MembershipCreateStatus_10></RegWinMXML_MembershipCreateStatus_10>
+		<RegWinMXML_MembershipCreateStatus_11>错误。</RegWinMXML_MembershipCreateStatus_11>
+		<RegWinMXML_MembershipCreateStatus_12>密码长度不足 #param1 位</RegWinMXML_MembershipCreateStatus_12>
+		<RegWinMXML_MembershipCreateStatus_13>用户名含有过滤字符。</RegWinMXML_MembershipCreateStatus_13>
+		
+		<MainPreloadAS_connect_server_str>游戏加载完成,连接游戏服务器中...</MainPreloadAS_connect_server_str>
+		<MainPreloadAS_connect_server_success_str>连接游戏服务器成功!</MainPreloadAS_connect_server_success_str>
+		<MainPreloadAS_connect_server_failed_str>服务器连接无效,请稍候访问！</MainPreloadAS_connect_server_failed_str>
+		<MainPreloadAS_server_connection_lost_str>您与服务器连接已断开！</MainPreloadAS_server_connection_lost_str>
+		<MainPreloadAS_server_connection_security_error_str>因安全策略文件限制或无法获取此文件，与服务器连接断开！</MainPreloadAS_server_connection_security_error_str>
+		<MainPreloadAS_refresh_retry_str>刷新重试</MainPreloadAS_refresh_retry_str>
+		<MainPreloadAS_refresh_press_retry_str>点此重连</MainPreloadAS_refresh_press_retry_str>
+		<MainPreloadAS_auto_reconnection_str>自动重连中...</MainPreloadAS_auto_reconnection_str>
+		
+		
+		<ChuPaiBarMXML_btnMust1_label>出牌</ChuPaiBarMXML_btnMust1_label>
+		<ChuPaiBarMXML_btnMust2_label>提示</ChuPaiBarMXML_btnMust2_label>
+		
+		
+		<ChuPaiBarMXML_btn1_label>出牌</ChuPaiBarMXML_btn1_label>
+		<ChuPaiBarMXML_btn2_label>不出</ChuPaiBarMXML_btn2_label>
+		<ChuPaiBarMXML_btn3_label>提示</ChuPaiBarMXML_btn3_label>
+		
+		<GameConfigWinMXML_title>音量调节</GameConfigWinMXML_title>
+		<GameConfigWinMXML_btnOk_label>确定</GameConfigWinMXML_btnOk_label>
+		<GameConfigWinMXML_btnCancel_label>取消</GameConfigWinMXML_btnCancel_label>		
+		<GameConfigWinMXML_lblSoundVolume_text>音量</GameConfigWinMXML_lblSoundVolume_text>
+		
+		<GameOverWinMXML_lbl1_text>姓名</GameOverWinMXML_lbl1_text>
+		<GameOverWinMXML_btnOk_label>确定</GameOverWinMXML_btnOk_label>		
+		
+		<GameOverWin2MXML_lbl1_text>姓名</GameOverWin2MXML_lbl1_text>
+		<GameOverWin2MXML_btnOk_label>确定</GameOverWin2MXML_btnOk_label>	
+		
+		<GameOverWin3MXML_lbl1_text>姓名</GameOverWin3MXML_lbl1_text>
+		<GameOverWin3MXML_lbl2_text>得分</GameOverWin3MXML_lbl2_text>
+		<GameOverWin3MXML_btnOk_label>确定</GameOverWin3MXML_btnOk_label>	
+		<GameOverWin3MXML_btnOk_ContinueGame_label>继续游戏</GameOverWin3MXML_btnOk_ContinueGame_label>	
+		
+		<HabitConfigWinMXML_title>习惯设置</HabitConfigWinMXML_title>
+		<HabitConfigWinMXML_btnOk_label>确定</HabitConfigWinMXML_btnOk_label>
+		<HabitConfigWinMXML_btnCancel_label>取消</HabitConfigWinMXML_btnCancel_label>		
+								
+		<RoomExitWinMXML_title>退出房间</RoomExitWinMXML_title>
+		<RoomExitWinMXML_btnOk_label>确定</RoomExitWinMXML_btnOk_label>
+		<RoomExitWinMXML_btnCancel_label>取消</RoomExitWinMXML_btnCancel_label>
+		<RoomExitWinMXML_lbl1_text>您当前正在游戏中，退出会算做逃跑，您确定要退出吗？</RoomExitWinMXML_lbl1_text>
+		<RoomExitWinMXML_cancel_str>取消</RoomExitWinMXML_cancel_str>
+		
+			
+		<RoomViewBgMXML_btnTuoGuan_label>托　管</RoomViewBgMXML_btnTuoGuan_label>		
+		<RoomViewBgMXML_btnTuoGuan_cancel_str>取消托管</RoomViewBgMXML_btnTuoGuan_cancel_str>
+		<RoomViewBgMXML_send_mail_str>您对#param1的邀请已发出</RoomViewBgMXML_send_mail_str>
+		<RoomViewBgMXML_please_click_idel_user_list_str>请点击选择空闲用户列表中的用户名</RoomViewBgMXML_please_click_idel_user_list_str>
+		
+		<RoomViewBgMXML_qiu_he>#param1 向你求和</RoomViewBgMXML_qiu_he>
+		<RoomViewBgMXML_qiu_he_deny>#param1 拒绝了您的求和申请</RoomViewBgMXML_qiu_he_deny>
+				
+		<RoomViewBgMXML_ko_code1>必须先坐下，才可以发送这些指令</RoomViewBgMXML_ko_code1>		
+				
+		<ScreenSaveWinMXML_title>截图保存</ScreenSaveWinMXML_title>		
+		<ScreenSaveWinMXML_btnOk_label>保存到相册</ScreenSaveWinMXML_btnOk_label>
+		<ScreenSaveWinMXML_btnCancel_label>取消</ScreenSaveWinMXML_btnCancel_label>
+
+		<WaitUserReconnectionWinMXML_title>oh!对方掉线了,请您等待对方重连...</WaitUserReconnectionWinMXML_title>
+		<WaitUserReconnectionWinMXML_btnKick_label>断 开</WaitUserReconnectionWinMXML_btnKick_label>
+		
+		
+	</langVariByChChess>	
+</www.wdmir.net>

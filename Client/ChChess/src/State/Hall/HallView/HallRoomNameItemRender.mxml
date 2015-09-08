@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						  xmlns:s="library://ns.adobe.com/flex/spark" 
+						  xmlns:mx="library://ns.adobe.com/flex/mx" 
+						  focusEnabled="true" 
+						  autoDrawBackground="false" xmlns:local="*">
+	
+	<s:HGroup>
+		
+		<mx:Label id="lblData" top="0" left="0" 
+				  text="{dataGridListData.label}" 
+				  textAlign="left" 
+				  textIndent="3"/>
+		
+		
+		<local:mc_roomPwd top="0" visible="{data.PwdLen == 0?false:true}" ></local:mc_roomPwd>
+		
+	</s:HGroup>
+	
+	
+	
+</s:MXDataGridItemRenderer>

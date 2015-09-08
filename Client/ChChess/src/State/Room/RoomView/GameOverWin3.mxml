@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:local="*" 
+		 width="496" 
+		 height="444" 
+		 creationComplete="group1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			import net.wdmir.core.QiPaiEvent;
+			import net.wdmir.core.QiPaiState;
+			import net.wdmir.core.QiPaiStr;
+			import net.silverfoxserver.extfactory.ChairModelFactory;
+			import net.silverfoxserver.extmodel.ItemModelByChChess;
+			import net.wdqipai.core.factory.UserModelFactory;
+			import net.wdqipai.core.model.EUserSex;
+			import net.wdqipai.core.model.FChat;
+			import net.wdqipai.core.model.IChairModel;
+			import net.wdqipai.core.model.IHallRoomModel;
+			import net.wdqipai.core.model.ILookChairModel;
+			import net.wdqipai.core.model.IRoomModel;
+			import net.wdqipai.core.model.IRuleModel;
+			import net.wdqipai.core.model.IUserModel;
+			import net.wdqipai.core.model.level2.IdleModel;
+			import net.wdqipai.core.model.level2.VarModel;
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				bg_win.mc_close.useHandCursor = true;
+				bg_win.mc_close.buttonMode = true;
+				bg_win.mc_close.addEventListener(MouseEvent.CLICK,mc_close_click);
+				
+				
+				bg_win.mc_cancel.useHandCursor = true;
+				bg_win.mc_cancel.buttonMode = true;
+				bg_win.mc_cancel.addEventListener(MouseEvent.CLICK,mc_cancel_click);
+			}
+			
+			public function refresh():void
+			{
+				var matchInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchInfo();
+				var matchGInfo:Object = GameGlobals.qpc.data.activeRoom.getMatchGInfo();
+				
+				//var hero:IUserModel = GameGlobals.qpc.data.activeRoom.findHero(GameGlobals.qpc.data.hero);
+				//var chair:IChairModel = GameGlobals.qpc.data.activeRoom.getChair(hero);
+				//var rival:Array = GameGlobals.qpc.data.activeRoom.findUser(GameGlobals.qpc.data.hero);
+				
+				//
+				var redUser:IUserModel = GameGlobals.qpc.data.activeRoom.getUserById(matchInfo.red);
+				var blackUser:IUserModel = GameGlobals.qpc.data.activeRoom.getUserById(matchInfo.black);
+				
+				//设置游戏结束窗口		
+				if("red" == matchInfo.win)
+				{
+					
+					this.bg_win.redIcon.gotoAndStop(1);
+					this.bg_win.blackIcon.gotoAndStop(2);
+					
+					
+				}else if("black" == matchInfo.win)
+				{                     
+					
+					this.bg_win.redIcon.gotoAndStop(2);
+					this.bg_win.blackIcon.gotoAndStop(1);
+					
+					
+				}else if("he" == matchInfo.win)
+				{
+					
+					this.bg_win.redIcon.gotoAndStop(3);
+					this.bg_win.blackIcon.gotoAndStop(3);
+					
+				}
+
+				//
+				if(redUser != null)
+				{
+					
+					bg_win.lbl_red_player.htmlText = "<b>" + redUser.NickName + "</b>";
+					
+				}else{
+				
+					bg_win.lbl_red_player.htmlText = matchInfo.red;
+					
+				}
+				
+				if(blackUser != null)
+				{					
+					bg_win.lbl_black_player.htmlText = "<b>" + blackUser.NickName + "</b>";
+					
+				}else{
+					
+					bg_win.lbl_black_player.htmlText = matchInfo.black;
+					
+				}
+				
+				//
+				bg_win.lbl_red_player_fen.text = matchGInfo.redG;
+								
+				bg_win.lbl_black_player_fen.text = matchGInfo.blackG;
+				
+				
+			
+			}
+			
+			public function mc_close_click(event:MouseEvent):void
+			{
+				this.Close();
+			}
+			
+			public function mc_cancel_click(event:MouseEvent):void
+			{
+				this.Close();
+			}
+			
+			/**
+			 * 移掉窗口
+			 */ 			
+			private function __close(event:CloseEvent=null):void
+			{				
+				//
+				PopUpManager.removePopUp(this);
+				
+				
+			}
+			
+			/**
+			 * 外部调用
+			 */ 
+			public function Close(event:CloseEvent=null):void
+			{
+				__close(event);
+			}
+			
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<local:bg_winner id="bg_win" x="9" y="25">		
+	</local:bg_winner>
+	
+</s:Group>

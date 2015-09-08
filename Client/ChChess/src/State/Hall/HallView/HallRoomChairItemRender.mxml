@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXDataGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						  xmlns:s="library://ns.adobe.com/flex/spark" 
+						  xmlns:mx="library://ns.adobe.com/flex/mx" 
+						  focusEnabled="true" 
+						  autoDrawBackground="false" xmlns:local="*">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.core.FlexGlobals;
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				(FlexGlobals.topLevelApplication as ChChess).hallViewBg.roomList1.BtnJoinRoom_Click();
+					
+			
+			}
+		]]>
+	</fx:Script>
+	
+	
+	<s:HGroup>
+		
+		<mx:Label id="lblData" top="0" left="0" 
+				  text="{dataGridListData.label}" 
+				  textAlign="left" 
+				  textIndent="3"/>
+		
+		
+		<s:Button id="joinBtn" top="0" label="进入" click="button1_clickHandler(event)"
+				  fontFamily="SimSun" fontSize="12"/>
+		
+	</s:HGroup>
+	
+	
+	
+	
+</s:MXDataGridItemRenderer>
