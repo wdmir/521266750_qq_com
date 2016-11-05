@@ -53,6 +53,37 @@ package net.wdqipai.client.extmodel
 		 * 如为空则采用 桌子 + id组合的方法
 		 */ 
 		private var _name:String;
+		/**
+		 * 基础扣分
+		 * 
+		 */ 
+		private var _diG:int;
+		
+		public function getDiG():int
+		{
+			return this._diG;
+		}
+		
+		public function setDiG(value:int):void
+		{
+			this._diG = value;
+		}
+		
+		/**
+		 * 最少携带
+		 * 
+		 */ 
+		private var _carryG:int;
+		
+		public function getCarryG():int
+		{
+			return this._carryG;
+		}
+		
+		public function setCarryG(value:int):void
+		{
+			this._carryG = value;
+		}
 		
 		/**
 		 * 椅子集合
@@ -175,6 +206,8 @@ package net.wdqipai.client.extmodel
 			
 			}
 			
+			this._diG = -1;
+			this._carryG = -1;
 			this._pai = new Array();
 			this._vars = new Array();
 			this._idle = new Array();
